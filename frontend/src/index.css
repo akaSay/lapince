@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --secondary: #10b981;
+  --secondary-dark: #059669;
+  --danger: #ef4444;
+  --danger-dark: #dc2626;
+}
+
+body {
+  @apply text-gray-100 bg-gray-900;
+}
+
+.btn-primary {
+  @apply px-4 py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700;
+}
+
+.btn-secondary {
+  @apply px-4 py-2 font-medium text-white rounded-md bg-emerald-600 hover:bg-emerald-700;
+}
+
+.btn-danger {
+  @apply px-4 py-2 font-medium text-white bg-red-600 rounded-md hover:bg-red-700;
+}
+
+.input-field {
+  @apply block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700;
+}
+
+/* Pour les icônes Material */
+.material-icons-outlined {
+  font-family: "Material Icons Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
