@@ -25,62 +25,55 @@ export class TransactionService {
     filters?: FilterTransactionDto,
     pagination?: PaginationDto,
   ): Promise<PaginatedResponse<Transaction>> {
+    console.log('Service received filters:', filters);
+
     const where: Prisma.TransactionWhereInput = {
       userId,
-      ...(filters?.startDate &&
-        filters?.endDate && {
-          date: {
-            gte: new Date(filters.startDate),
-            lte: new Date(filters.endDate),
-          },
-        }),
-      ...(filters?.category && {
-        category: filters.category,
-      }),
-      ...(filters?.type && {
-        type: filters.type,
-      }),
-      ...(filters?.minAmount && {
-        amount: {
-          gte: filters.minAmount,
-        },
-      }),
-      ...(filters?.maxAmount && {
-        amount: {
-          lte: filters.maxAmount,
-        },
-      }),
     };
 
-    // Calculer le skip pour la pagination
-    const page = pagination?.page || 1;
-    const limit = pagination?.limit || 10;
-    const skip = (page - 1) * limit;
+    if (filters?.startDate && filters?.endDate) {
+      const startDate = new Date(filters.startDate);
+      const endDate = new Date(filters.endDate);
 
-    // Récupérer les données et le total
-    const [data, total] = await Promise.all([
-      this.prisma.transaction.findMany({
-        where,
-        orderBy: {
-          date: 'desc',
-        },
-        skip,
-        take: limit,
-      }),
-      this.prisma.transaction.count({ where }),
-    ]);
+      console.log('Date filter:', {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        startDateType: typeof startDate,
+        endDateType: typeof endDate,
+      });
 
-    // Calculer les métadonnées de pagination
-    const lastPage = Math.ceil(total / limit);
+      where.date = {
+        gte: startDate,
+        lte: endDate,
+      };
+    }
+
+    console.log('Final where clause:', JSON.stringify(where, null, 2));
+
+    const data = await this.prisma.transaction.findMany({
+      where,
+      orderBy: {
+        date: 'desc',
+      },
+      skip: pagination?.skip,
+      take: pagination?.take,
+    });
+
+    console.log('Found transactions:', {
+      count: data.length,
+      dates: data.map((t) => t.date),
+    });
+
+    const total = await this.prisma.transaction.count({ where });
 
     return {
       data,
       meta: {
         total,
-        page,
-        lastPage,
-        hasNextPage: page < lastPage,
-        hasPreviousPage: page > 1,
+        page: pagination?.page || 1,
+        lastPage: Math.ceil(total / (pagination?.take || 10)),
+        hasNextPage: false,
+        hasPreviousPage: false,
       },
     };
   }

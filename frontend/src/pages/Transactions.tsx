@@ -12,14 +12,7 @@ const Transactions: React.FC = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<
     Transaction | undefined
   >();
-
-  const handleFilterChange = (newFilters: Filters) => {
-    setFilters(newFilters);
-    // Logique de filtrage à implémenter ici
-  };
-
-  // Données exemple
-  const transactions = [
+  const [transactions, setTransactions] = useState([
     {
       id: "1",
       description: "Courses Carrefour",
@@ -38,8 +31,52 @@ const Transactions: React.FC = () => {
       type: "income" as const,
       categoryIcon: "payments",
     },
-    // ... autres transactions
-  ];
+  ]);
+
+  const handleFilterChange = async (newFilters: Filters) => {
+    setFilters(newFilters);
+
+    // Préparer les dates pour le backend
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
+
+    if (newFilters.dateRange) {
+      const today = new Date();
+      endDate = new Date();
+
+      switch (newFilters.dateRange) {
+        case "this-month":
+          startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+          break;
+        case "last-month":
+          startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+          endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+          break;
+        case "3-months":
+          startDate = new Date(today.getFullYear(), today.getMonth() - 3, 1);
+          break;
+        case "year":
+          startDate = new Date(today.getFullYear(), 0, 1);
+          break;
+      }
+    }
+
+    try {
+      // Construire les paramètres de requête
+      const params = new URLSearchParams();
+      if (newFilters.category) params.append("category", newFilters.category);
+      if (startDate) params.append("startDate", startDate.toISOString());
+      if (endDate) params.append("endDate", endDate.toISOString());
+
+      // Faire la requête au backend
+      const response = await fetch(`/api/transactions?${params}`);
+      const data = await response.json();
+      // Mettre à jour les transactions
+      setTransactions(data);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    }
+  };
 
   const statistics = [
     {

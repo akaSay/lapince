@@ -13,4 +13,6 @@ export class PaginationDto {
   @Min(1)
   @Type(() => Number)
   limit?: number = 10;
+  skip: any;
+  take: any;
 }

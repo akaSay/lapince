@@ -32,16 +32,23 @@ export class TransactionController {
   }
 
   @Get()
-  findAll(
+  async findAll(
     @Request() req,
     @Query() filters: FilterTransactionDto,
     @Query() pagination: PaginationDto,
   ) {
-    return this.transactionService.findAll(
+    console.log('Controller received query:', req.query);
+    console.log('Parsed filters:', filters);
+    console.log('Parsed pagination:', pagination);
+
+    const result = await this.transactionService.findAll(
       req.user.userId,
       filters,
       pagination,
     );
+
+    console.log('Service returned transactions:', result.data.length);
+    return result;
   }
 
   @Get(':id')
