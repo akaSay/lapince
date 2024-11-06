@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api } from "../lib/api";
+import api from "../lib/api";
 import { User } from "../types/User";
 
 export const useProfile = () => {
@@ -10,7 +10,7 @@ export const useProfile = () => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const data = await api.getProfile();
+      const { data } = await api.get("/profile");
       setProfile(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue");

@@ -4,103 +4,110 @@ import DashboardFilters from "../components/dashboard/DashboardFilters";
 import ExpenseChart from "../components/dashboard/ExpenseChart";
 import StatisticsCard from "../components/dashboard/StatisticsCard";
 import BudgetModal from "../components/modals/BudgetModal";
-import { Filters } from "../types/Filters";
+import { useFilters } from "../contexts/FilterContext";
+import { useBudget } from "../hooks/useBudget";
+import { useTransaction } from "../hooks/useTransaction";
+import { isDateInRange } from "../lib/dateUtils";
+import type { Budget, BudgetData } from "../types/Budget";
+import { useStatistics } from "../hooks/useStatistics";
 
 const Budget: React.FC = () => {
-  const [filters, setFilters] = useState<Filters>({});
+  const { budgets, loading, error, createBudget, deleteBudget, updateBudget } =
+    useBudget();
+  const { transactions } = useTransaction();
+  const { filters } = useFilters();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBudget, setSelectedBudget] = useState<
-    | {
-        category: string;
-        limit: number;
-        icon: string;
-      }
-    | undefined
+    (BudgetData & { id?: string }) | undefined
   >();
 
-  const budgets = [
-    {
-      category: "Alimentation",
-      icon: "restaurant",
-      spent: 450,
-      limit: 600,
-      status: "success" as const,
-    },
-    {
-      category: "Transport",
-      icon: "directions_car",
-      spent: 280,
-      limit: 300,
-      status: "warning" as const,
-    },
-    {
-      category: "Loisirs",
-      icon: "sports_esports",
-      spent: 350,
-      limit: 300,
-      status: "danger" as const,
-    },
-  ];
+  // Filtrer les transactions
+  const filteredTransactions = transactions.filter((transaction) =>
+    isDateInRange(transaction.date, filters.dateRange)
+  );
 
-  const statistics = [
-    {
-      title: "Budget mensuel",
-      value: "2 500€",
-      icon: "account_balance_wallet",
-      trend: { value: 5, isPositive: true },
-    },
-    {
-      title: "Dépenses totales",
-      value: "1 850€",
-      icon: "trending_down",
-      trend: { value: 8, isPositive: false },
-    },
-    {
-      title: "Économies",
-      value: "650€",
-      icon: "savings",
-      trend: { value: 12, isPositive: true },
-    },
-  ];
+  const hasDataForPeriod =
+    filteredTransactions.length > 0 || !filters.dateRange;
 
-  const expenseData = budgets.map((budget) => ({
-    category: budget.category,
-    amount: budget.spent,
-  }));
+  // Utiliser useStatistics
+  const { commonStats } = useStatistics(
+    transactions,
+    budgets,
+    filteredTransactions,
+    hasDataForPeriod,
+    filters.dateRange
+  );
 
-  const handleBudgetSubmit = (budgetData: {
-    category: string;
-    limit: number;
-    icon: string;
-  }) => {
-    console.log("Budget soumis:", budgetData);
-    // Implémentez la logique de sauvegarde ici
+  // Handlers
+  const handleCreateBudget = async (budgetData: BudgetData) => {
+    try {
+      if (selectedBudget?.id) {
+        await updateBudget(
+          selectedBudget.id,
+          budgetData as Omit<Budget, "id" | "spent">
+        );
+      } else {
+        await createBudget(budgetData as Omit<Budget, "id" | "spent">);
+      }
+      setIsModalOpen(false);
+      setSelectedBudget(undefined);
+    } catch (err) {
+      console.error("Erreur lors de l'opération sur le budget:", err);
+    }
   };
 
-  const handleBudgetClick = (budget: typeof selectedBudget) => {
-    setSelectedBudget(budget);
+  const handleBudgetClick = (budget: Budget) => {
+    setSelectedBudget({
+      id: budget.id,
+      category: budget.category,
+      limit: budget.limit,
+      icon: budget.icon,
+    });
     setIsModalOpen(true);
   };
 
-  const handleFilterChange = (newFilters: Filters) => {
-    setFilters(newFilters);
-    // Logique de filtrage à implémenter ici
+  const handleDeleteBudget = async (id: string) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce budget ?")) {
+      try {
+        await deleteBudget(id);
+      } catch (err) {
+        console.error("Erreur lors de la suppression:", err);
+      }
+    }
   };
 
-  const filteredBudgets = budgets.filter((budget) => {
-    if (
-      filters.category &&
-      budget.category.toLowerCase() !== filters.category.toLowerCase()
-    ) {
-      return false;
-    }
+  const handleAddTransaction = (category: string) => {
+    console.log("Ajouter une transaction pour:", category);
+  };
 
-    if (filters.status) {
-      return budget.status === filters.status;
-    }
+  if (loading) return <div className="text-white">Chargement...</div>;
+  if (error) return <div className="text-white">Erreur: {error}</div>;
 
-    return true;
-  });
+  // Préparation des données
+  const budgetArray = Array.isArray(budgets) ? budgets : [];
+
+  const filteredBudgets = budgetArray
+    .map((budget) => {
+      const spent = filteredTransactions
+        .filter((t) => t.category === budget.category && t.type === "expense")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      return {
+        ...budget,
+        spent,
+        shouldShow: spent > 0 || !filters.dateRange,
+      };
+    })
+    .filter(
+      (budget) =>
+        !filters.category ||
+        budget.category.toLowerCase() === filters.category.toLowerCase()
+    );
+
+  const expenseData = filteredBudgets.map((budget) => ({
+    category: budget.category,
+    amount: budget.spent || 0,
+  }));
 
   return (
     <div className="space-y-6">
@@ -117,33 +124,36 @@ const Budget: React.FC = () => {
         </button>
       </div>
 
-      <DashboardFilters onFilterChange={handleFilterChange} />
+      <DashboardFilters />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {statistics.map((stat) => (
+        {commonStats.map((stat) => (
           <StatisticsCard key={stat.title} {...stat} />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="space-y-6">
-          {filteredBudgets.map((budget) => (
-            <div
-              key={budget.category}
-              onClick={() =>
-                handleBudgetClick({
-                  category: budget.category,
-                  limit: budget.limit,
-                  icon: budget.icon,
-                })
-              }
-            >
-              <BudgetCard {...budget} />
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {hasDataForPeriod ? (
+          filteredBudgets.map((budget) => (
+            <BudgetCard
+              key={budget.id}
+              {...budget}
+              onDelete={() => handleDeleteBudget(budget.id)}
+              onAddTransaction={handleAddTransaction}
+              onClick={() => handleBudgetClick(budget)}
+              variant="editable"
+            />
+          ))
+        ) : (
+          <div className="col-span-2 p-6 bg-gray-800 rounded-lg shadow-lg">
+            <div className="py-4 text-center text-gray-400">
+              Aucune donnée disponible pour la période sélectionnée
             </div>
-          ))}
-        </div>
-        <ExpenseChart data={expenseData} />
+          </div>
+        )}
       </div>
+
+      {hasDataForPeriod && <ExpenseChart data={expenseData} />}
 
       <BudgetModal
         isOpen={isModalOpen}
@@ -151,8 +161,8 @@ const Budget: React.FC = () => {
           setIsModalOpen(false);
           setSelectedBudget(undefined);
         }}
-        onSubmit={handleBudgetSubmit}
-        initialData={selectedBudget}
+        onSubmit={handleCreateBudget}
+        budget={selectedBudget}
       />
     </div>
   );

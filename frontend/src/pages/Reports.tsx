@@ -1,80 +1,126 @@
-import React, { useState } from "react";
+import React from "react";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
 import ExpenseChart from "../components/dashboard/ExpenseChart";
 import StatisticsCard from "../components/dashboard/StatisticsCard";
-import { Filters } from "../types/Filters";
+import TrendChart from "../components/reports/TrendChart";
+import { useFilters } from "../contexts/FilterContext";
+import { useBudget } from "../hooks/useBudget";
+import { useStatistics } from "../hooks/useStatistics";
+import { useTransaction } from "../hooks/useTransaction";
+import { getMonthlyData } from "../lib/chartUtils";
+import { isDateInRange } from "../lib/dateUtils";
+import { formatCurrency } from "../lib/utils";
 
 const Reports: React.FC = () => {
-  const [filters, setFilters] = useState<Filters>({});
+  const { filters } = useFilters();
+  const { transactions } = useTransaction();
+  const { budgets } = useBudget();
 
-  const handleFilterChange = (newFilters: Filters) => {
-    setFilters(newFilters);
-  };
+  const filteredTransactions = transactions.filter((transaction) => {
+    if (!isDateInRange(transaction.date, filters.dateRange)) {
+      return false;
+    }
 
-  const statistics = [
-    {
-      title: "Dépenses moyennes",
-      value: "1 850€",
-      icon: "analytics",
-      trend: { value: 8, isPositive: false },
-    },
-    {
-      title: "Économies moyennes",
-      value: "650€",
-      icon: "savings",
-      trend: { value: 12, isPositive: true },
-    },
-    {
-      title: "Budget utilisé",
-      value: "74%",
-      icon: "pie_chart",
-      trend: { value: 5, isPositive: true },
-    },
-  ];
-
-  const expenseData = [
-    { category: "Alimentation", amount: 450 },
-    { category: "Transport", amount: 280 },
-    { category: "Loisirs", amount: 350 },
-    { category: "Logement", amount: 800 },
-    { category: "Santé", amount: 150 },
-  ];
-
-  const filteredExpenseData = expenseData.filter((expense) => {
     if (
       filters.category &&
-      expense.category.toLowerCase() !== filters.category.toLowerCase()
+      transaction.category.toLowerCase() !== filters.category.toLowerCase()
     ) {
       return false;
     }
+
     return true;
   });
+
+  const hasDataForPeriod =
+    filteredTransactions.length > 0 || !filters.dateRange;
+
+  const { currentExpenses, previousExpenses, expensesTrend } = useStatistics(
+    transactions,
+    budgets,
+    filteredTransactions,
+    hasDataForPeriod,
+    filters.dateRange
+  );
+
+  const reportStats = [
+    {
+      title: "Dépenses actuelles",
+      value: formatCurrency(currentExpenses),
+      icon: "trending_down",
+      trend: { value: expensesTrend, isPositive: expensesTrend <= 0 },
+    },
+    {
+      title: "Mois précédent",
+      value: formatCurrency(previousExpenses),
+      icon: "calendar_today",
+      trend: { value: 0, isPositive: true },
+    },
+    {
+      title: "Variation mensuelle",
+      value: `${expensesTrend > 0 ? "+" : ""}${expensesTrend.toFixed(1)}%`,
+      icon: expensesTrend > 0 ? "trending_up" : "trending_down",
+      trend: { value: expensesTrend, isPositive: expensesTrend <= 0 },
+    },
+  ];
+
+  // Données pour le graphique
+  const expenseData = hasDataForPeriod
+    ? Object.entries(
+        filteredTransactions
+          .filter((t) => t.type === "expense")
+          .reduce((acc, transaction) => {
+            const category = transaction.category;
+            acc[category] = (acc[category] || 0) + transaction.amount;
+            return acc;
+          }, {} as Record<string, number>)
+      ).map(([category, amount]) => ({
+        category,
+        amount,
+      }))
+    : [];
+
+  // Créer les données pour TrendChart dans le bon format
+  const monthlyData = getMonthlyData(filteredTransactions);
+
+  const trendChartData = {
+    labels: monthlyData.labels,
+    datasets: [
+      {
+        label: "Dépenses mensuelles",
+        data: monthlyData.values,
+        borderColor: "rgb(53, 162, 235)",
+        backgroundColor: "rgba(53, 162, 235, 0.5)",
+      },
+    ],
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Rapports & Analyses</h1>
-        <button className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700">
-          Télécharger le rapport
-        </button>
+        <h1 className="text-2xl font-bold text-white">Rapports</h1>
       </div>
 
-      <DashboardFilters onFilterChange={handleFilterChange} />
+      <DashboardFilters />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {statistics.map((stat) => (
+        {reportStats.map((stat) => (
           <StatisticsCard key={stat.title} {...stat} />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <ExpenseChart data={filteredExpenseData} />
-        <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
-          <h3 className="mb-6 text-lg font-medium text-white">
-            Tendances mensuelles
-          </h3>
-          {/* Ajoutez ici un autre graphique ou des statistiques */}
-        </div>
+      <div className="grid grid-cols-1 gap-6">
+        {hasDataForPeriod ? (
+          <>
+            <TrendChart data={trendChartData} />
+            <ExpenseChart data={expenseData} />
+          </>
+        ) : (
+          <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
+            <div className="py-4 text-center text-gray-400">
+              Aucune donnée disponible pour la période sélectionnée
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

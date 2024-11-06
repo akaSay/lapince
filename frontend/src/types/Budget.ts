@@ -1,9 +1,11 @@
-interface Budget {
-  id: string;
+export interface BudgetData {
   category: string;
   limit: number;
-  spent: number;
-  period: "monthly" | "yearly";
+  icon: string;
 }
 
-export default Budget;
+export interface Budget extends BudgetData {
+  status: string;
+  id: string;
+  spent?: number;
+}

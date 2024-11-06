@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import type { BudgetData } from "../../types/Budget";
 
 interface BudgetFormProps {
-  onSubmit: (budget: { category: string; limit: number; icon: string }) => void;
-  initialData?: {
-    category: string;
-    limit: number;
-    icon: string;
-  };
-  onCancel: () => void;
+  onSubmit: (data: BudgetData) => void;
+  initialData?: BudgetData;
+  onCancel?: () => void;
 }
 
 const BudgetForm: React.FC<BudgetFormProps> = ({
@@ -15,87 +13,67 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
   initialData,
   onCancel,
 }) => {
-  const [formData, setFormData] = useState({
-    category: initialData?.category || "",
-    limit: initialData?.limit || 0,
-    icon: initialData?.icon || "account_balance_wallet",
+  const { register, handleSubmit } = useForm<BudgetData>({
+    defaultValues: initialData,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
+        <label className="block mb-1 text-sm font-medium text-gray-300">
           Catégorie
         </label>
-        <select
-          value={formData.category}
-          onChange={(e) =>
-            setFormData({ ...formData, category: e.target.value })
-          }
-          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        >
-          <option value="">Sélectionner une catégorie</option>
-          <option value="Alimentation">Alimentation</option>
-          <option value="Transport">Transport</option>
-          <option value="Loisirs">Loisirs</option>
-          <option value="Logement">Logement</option>
-          <option value="Santé">Santé</option>
-        </select>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
-          Limite mensuelle
-        </label>
         <input
-          type="number"
-          value={formData.limit}
-          onChange={(e) =>
-            setFormData({ ...formData, limit: parseFloat(e.target.value) })
-          }
-          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-          min="0"
-          step="0.01"
+          {...register("category")}
+          className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ex: Alimentation"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
+        <label className="block mb-1 text-sm font-medium text-gray-300">
+          Limite (€)
+        </label>
+        <input
+          type="number"
+          {...register("limit")}
+          className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ex: 500"
+        />
+      </div>
+
+      <div>
+        <label className="block mb-1 text-sm font-medium text-gray-300">
           Icône
         </label>
         <select
-          value={formData.icon}
-          onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          {...register("icon")}
+          className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="restaurant">Restaurant</option>
-          <option value="directions_car">Transport</option>
-          <option value="sports_esports">Loisirs</option>
-          <option value="home">Logement</option>
-          <option value="local_hospital">Santé</option>
+          <option value="account_balance">💰 Budget</option>
+          <option value="restaurant">🍽️ Restaurant</option>
+          <option value="shopping_cart">🛒 Courses</option>
+          <option value="directions_car">🚗 Transport</option>
+          <option value="home">🏠 Logement</option>
+          <option value="sports_esports">🎮 Loisirs</option>
+          <option value="medical_services">🏥 Santé</option>
+          <option value="school">📚 Education</option>
         </select>
       </div>
 
-      <div className="flex justify-end space-x-3 pt-4">
+      <div className="flex justify-end pt-4 space-x-3">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-gray-300 hover:text-white transition-colors"
+          className="px-4 py-2 text-gray-300 transition-colors hover:text-white"
         >
           Annuler
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
         >
-          {initialData ? "Modifier" : "Créer"}
+          {initialData ? "Modifier" : "Ajouter"}
         </button>
       </div>
     </form>

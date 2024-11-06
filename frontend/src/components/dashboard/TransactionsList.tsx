@@ -66,7 +66,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                           {transaction.category}
                         </p>
                         <p className="text-xs text-gray-400 sm:hidden">
-                          {formatDate(transaction.date)}
+                          {formatDate(new Date(transaction.date))}
                         </p>
                       </div>
                     </div>
@@ -84,7 +84,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                         {formatCurrency(transaction.amount)}
                       </p>
                       <p className="hidden text-sm text-gray-400 sm:block">
-                        {formatDate(transaction.date)}
+                        {formatDate(new Date(transaction.date))}
                       </p>
                     </div>
                     {variant !== "compact" && (

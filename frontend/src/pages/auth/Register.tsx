@@ -2,15 +2,14 @@ import {
   Apple as AppleIcon,
   Facebook as FacebookIcon,
   Google as GoogleIcon,
-  LockOpen as LockOpenIcon,
+  Lock as LockIcon,
 } from "@mui/icons-material";
 import {
+  Alert,
   Box,
   Button,
-  Checkbox,
   Container,
   Divider,
-  FormControlLabel,
   IconButton,
   Link,
   Paper,
@@ -19,44 +18,59 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 const Register: React.FC = () => {
   const theme = useTheme();
-  const navigate = useNavigate();
+  const { register, error: authError, loading } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
     password: "",
     confirmPassword: "",
-    acceptTerms: false,
   });
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, checked } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "acceptTerms" ? checked : value,
+      [name]: value,
     }));
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Les mots de passe ne correspondent pas");
+    setError(null);
+
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
+      setError("Veuillez remplir tous les champs");
       return;
     }
-    setLoading(true);
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Les mots de passe ne correspondent pas");
+      return;
+    }
+
     try {
-      // Implémentez ici votre logique d'inscription
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulation
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Erreur d'inscription:", error);
-    } finally {
-      setLoading(false);
+      await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Une erreur inattendue s'est produite");
+      }
     }
   };
 
@@ -80,16 +94,27 @@ const Register: React.FC = () => {
             alignItems: "center",
             backgroundColor: theme.palette.background.paper,
             borderRadius: 2,
+            width: "100%",
           }}
         >
-          <LockOpenIcon
+          <LockIcon
             sx={{ fontSize: 40, color: theme.palette.primary.main, mb: 2 }}
           />
           <Typography component="h1" variant="h5" gutterBottom>
             Inscription
           </Typography>
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          {(error || authError) && (
+            <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+              {error || authError}
+            </Alert>
+          )}
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ mt: 1, width: "100%" }}
+          >
             <TextField
               margin="normal"
               required
@@ -101,6 +126,7 @@ const Register: React.FC = () => {
               autoFocus
               value={formData.name}
               onChange={handleChange}
+              error={!!error}
             />
             <TextField
               margin="normal"
@@ -112,16 +138,7 @@ const Register: React.FC = () => {
               autoComplete="email"
               value={formData.email}
               onChange={handleChange}
-            />
-            <TextField
-              margin="normal"
-              fullWidth
-              id="phone"
-              label="Numéro de téléphone"
-              name="phone"
-              autoComplete="tel"
-              value={formData.phone}
-              onChange={handleChange}
+              error={!!error}
             />
             <TextField
               margin="normal"
@@ -131,8 +148,10 @@ const Register: React.FC = () => {
               label="Mot de passe"
               type="password"
               id="password"
+              autoComplete="new-password"
               value={formData.password}
               onChange={handleChange}
+              error={!!error}
             />
             <TextField
               margin="normal"
@@ -142,47 +161,25 @@ const Register: React.FC = () => {
               label="Confirmer le mot de passe"
               type="password"
               id="confirmPassword"
+              autoComplete="new-password"
               value={formData.confirmPassword}
               onChange={handleChange}
-            />
-
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="acceptTerms"
-                  color="primary"
-                  checked={formData.acceptTerms}
-                  onChange={handleChange}
-                  required
-                />
-              }
-              label={
-                <Typography variant="body2">
-                  J'accepte les{" "}
-                  <Link href="/terms" target="_blank">
-                    conditions générales
-                  </Link>{" "}
-                  et la{" "}
-                  <Link href="/privacy" target="_blank">
-                    politique de confidentialité
-                  </Link>
-                </Typography>
-              }
+              error={!!error}
             />
 
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              disabled={loading || !formData.acceptTerms}
+              disabled={loading}
               sx={{ mt: 3, mb: 2 }}
             >
-              {loading ? "Inscription..." : "S'inscrire"}
+              {loading ? "Inscription en cours..." : "S'inscrire"}
             </Button>
 
-            <Box sx={{ textAlign: "center", mb: 2 }}>
+            <Box sx={{ textAlign: "center" }}>
               <Link href="/login" variant="body2">
-                {"Déjà inscrit ? Se connecter"}
+                Déjà inscrit ? Se connecter
               </Link>
             </Box>
 

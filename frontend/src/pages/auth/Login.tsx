@@ -5,6 +5,7 @@ import {
   Lock as LockIcon,
 } from "@mui/icons-material";
 import {
+  Alert,
   Box,
   Button,
   Checkbox,
@@ -19,17 +20,17 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 const Login: React.FC = () => {
   const theme = useTheme();
-  const navigate = useNavigate();
+  const { login, error: authError, loading } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
   });
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = e.target;
@@ -37,19 +38,26 @@ const Login: React.FC = () => {
       ...prev,
       [name]: name === "rememberMe" ? checked : value,
     }));
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setError(null);
+
+    if (!formData.email || !formData.password) {
+      setError("Veuillez remplir tous les champs");
+      return;
+    }
+
     try {
-      // Implémentez ici votre logique d'authentification
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulation
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Erreur de connexion:", error);
-    } finally {
-      setLoading(false);
+      await login({
+        email: formData.email,
+        password: formData.password,
+      });
+    } catch (err) {
+      console.error("Erreur de connexion:", err);
+      setError(err instanceof Error ? err.message : "Erreur de connexion");
     }
   };
 
@@ -73,6 +81,7 @@ const Login: React.FC = () => {
             alignItems: "center",
             backgroundColor: theme.palette.background.paper,
             borderRadius: 2,
+            width: "100%",
           }}
         >
           <LockIcon
@@ -82,7 +91,17 @@ const Login: React.FC = () => {
             Connexion
           </Typography>
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          {(error || authError) && (
+            <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+              {error || authError}
+            </Alert>
+          )}
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ mt: 1, width: "100%" }}
+          >
             <TextField
               margin="normal"
               required
@@ -94,6 +113,7 @@ const Login: React.FC = () => {
               autoFocus
               value={formData.email}
               onChange={handleChange}
+              error={!!error}
             />
             <TextField
               margin="normal"
@@ -106,6 +126,7 @@ const Login: React.FC = () => {
               autoComplete="current-password"
               value={formData.password}
               onChange={handleChange}
+              error={!!error}
             />
 
             <FormControlLabel

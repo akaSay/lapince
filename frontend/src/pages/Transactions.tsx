@@ -3,107 +3,40 @@ import DashboardFilters from "../components/dashboard/DashboardFilters";
 import StatisticsCard from "../components/dashboard/StatisticsCard";
 import TransactionsList from "../components/dashboard/TransactionsList";
 import TransactionModal from "../components/modals/TransactionModal";
-import { Filters } from "../types/Filters";
+import { useFilters } from "../contexts/FilterContext";
+import { useTransaction } from "../hooks/useTransaction";
+import { isDateInRange } from "../lib/dateUtils";
 import { Transaction } from "../types/Transaction";
+import { formatCurrency } from "../lib/utils";
 
 const Transactions: React.FC = () => {
-  const [filters, setFilters] = useState<Filters>({});
+  const { filters } = useFilters();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<
     Transaction | undefined
   >();
-  const [transactions, setTransactions] = useState([
-    {
-      id: "1",
-      description: "Courses Carrefour",
-      amount: 85.5,
-      date: new Date(),
-      category: "Alimentation",
-      type: "expense" as const,
-      categoryIcon: "shopping_cart",
-    },
-    {
-      id: "2",
-      description: "Salaire",
-      amount: 2500,
-      date: new Date(),
-      category: "Revenu",
-      type: "income" as const,
-      categoryIcon: "payments",
-    },
-  ]);
 
-  const handleFilterChange = async (newFilters: Filters) => {
-    setFilters(newFilters);
+  const {
+    transactions,
+    createTransaction,
+    updateTransaction,
+    deleteTransaction,
+  } = useTransaction();
 
-    // Préparer les dates pour le backend
-    let startDate: Date | undefined;
-    let endDate: Date | undefined;
-
-    if (newFilters.dateRange) {
-      const today = new Date();
-      endDate = new Date();
-
-      switch (newFilters.dateRange) {
-        case "this-month":
-          startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-          break;
-        case "last-month":
-          startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-          endDate = new Date(today.getFullYear(), today.getMonth(), 0);
-          break;
-        case "3-months":
-          startDate = new Date(today.getFullYear(), today.getMonth() - 3, 1);
-          break;
-        case "year":
-          startDate = new Date(today.getFullYear(), 0, 1);
-          break;
-      }
-    }
-
-    try {
-      // Construire les paramètres de requête
-      const params = new URLSearchParams();
-      if (newFilters.category) params.append("category", newFilters.category);
-      if (startDate) params.append("startDate", startDate.toISOString());
-      if (endDate) params.append("endDate", endDate.toISOString());
-
-      // Faire la requête au backend
-      const response = await fetch(`/api/transactions?${params}`);
-      const data = await response.json();
-      // Mettre à jour les transactions
-      setTransactions(data);
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-    }
-  };
-
-  const statistics = [
-    {
-      title: "Total des revenus",
-      value: "3 500€",
-      icon: "trending_up",
-      trend: { value: 12, isPositive: true },
-    },
-    {
-      title: "Total des dépenses",
-      value: "1 850€",
-      icon: "trending_down",
-      trend: { value: 8, isPositive: false },
-    },
-    {
-      title: "Solde",
-      value: "1 650€",
-      icon: "account_balance",
-      trend: { value: 15, isPositive: true },
-    },
-  ];
-
-  const handleTransactionSubmit = (
+  const handleTransactionSubmit = async (
     transactionData: Omit<Transaction, "id">
   ) => {
-    console.log("Transaction soumise:", transactionData);
-    // Implémentez la logique de sauvegarde ici
+    try {
+      if (selectedTransaction) {
+        await updateTransaction(selectedTransaction.id, transactionData);
+      } else {
+        await createTransaction(transactionData);
+      }
+      setIsModalOpen(false);
+      setSelectedTransaction(undefined);
+    } catch (error) {
+      console.error("Erreur lors de la gestion de la transaction:", error);
+    }
   };
 
   const handleEdit = (transaction: Transaction) => {
@@ -111,16 +44,23 @@ const Transactions: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (transaction: Transaction) => {
+  const handleDelete = async (transaction: Transaction) => {
     if (
       window.confirm("Êtes-vous sûr de vouloir supprimer cette transaction ?")
     ) {
-      console.log("Supprimer:", transaction);
-      // Implémentez la logique de suppression ici
+      try {
+        await deleteTransaction(transaction.id);
+      } catch (error) {
+        console.error("Erreur lors de la suppression:", error);
+      }
     }
   };
 
   const filteredTransactions = transactions.filter((transaction) => {
+    if (!isDateInRange(transaction.date, filters.dateRange)) {
+      return false;
+    }
+
     if (
       filters.category &&
       transaction.category.toLowerCase() !== filters.category.toLowerCase()
@@ -128,36 +68,52 @@ const Transactions: React.FC = () => {
       return false;
     }
 
-    if (filters.dateRange) {
-      const today = new Date();
-      const transactionDate = new Date(transaction.date);
-
-      switch (filters.dateRange) {
-        case "this-month": {
-          return (
-            transactionDate.getMonth() === today.getMonth() &&
-            transactionDate.getFullYear() === today.getFullYear()
-          );
-        }
-        case "last-month": {
-          const lastMonth = new Date(today.setMonth(today.getMonth() - 1));
-          return (
-            transactionDate.getMonth() === lastMonth.getMonth() &&
-            transactionDate.getFullYear() === lastMonth.getFullYear()
-          );
-        }
-        case "3-months": {
-          const threeMonthsAgo = new Date(today.setMonth(today.getMonth() - 3));
-          return transactionDate >= threeMonthsAgo;
-        }
-        case "year": {
-          return transactionDate.getFullYear() === today.getFullYear();
-        }
-      }
-    }
-
     return true;
   });
+
+  const getFilteredAmount = (
+    type: "expense" | "income",
+    dateRange?: string
+  ) => {
+    return transactions
+      .filter((t) => t.type === type && isDateInRange(t.date, dateRange))
+      .reduce((acc, t) => acc + t.amount, 0);
+  };
+
+  const currentMonthExpenses = getFilteredAmount("expense", "this-month");
+  const lastMonthExpenses = getFilteredAmount("expense", "last-month");
+  const currentMonthIncome = getFilteredAmount("income", "this-month");
+  const lastMonthIncome = getFilteredAmount("income", "last-month");
+
+  const currentBalance = currentMonthIncome - currentMonthExpenses;
+  const lastBalance = lastMonthIncome - lastMonthExpenses;
+
+  const statistics = [
+    {
+      title: "Dépenses du mois",
+      value: formatCurrency(
+        filteredTransactions.length > 0 ? currentMonthExpenses : 0
+      ),
+      icon: "trending_down",
+      trend: { value: 0, isPositive: true },
+    },
+    {
+      title: "Total des revenus",
+      value: formatCurrency(
+        filteredTransactions.length > 0 ? currentMonthIncome : 0
+      ),
+      icon: "trending_up",
+      trend: { value: 0, isPositive: true },
+    },
+    {
+      title: "Solde",
+      value: formatCurrency(
+        filteredTransactions.length > 0 ? currentBalance : 0
+      ),
+      icon: "account_balance",
+      trend: { value: 0, isPositive: true },
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -174,7 +130,7 @@ const Transactions: React.FC = () => {
         </button>
       </div>
 
-      <DashboardFilters onFilterChange={handleFilterChange} />
+      <DashboardFilters />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {statistics.map((stat) => (
@@ -182,11 +138,19 @@ const Transactions: React.FC = () => {
         ))}
       </div>
 
-      <TransactionsList
-        transactions={filteredTransactions}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      {filteredTransactions.length > 0 ? (
+        <TransactionsList
+          transactions={filteredTransactions}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      ) : (
+        <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
+          <div className="py-4 text-center text-gray-400">
+            Aucune donnée disponible pour la période sélectionnée
+          </div>
+        </div>
+      )}
 
       <TransactionModal
         isOpen={isModalOpen}

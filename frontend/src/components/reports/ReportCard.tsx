@@ -1,4 +1,5 @@
 import React from "react";
+import { formatCurrency } from "../../lib/utils";
 
 interface ReportCardProps {
   title: string;
@@ -9,21 +10,32 @@ interface ReportCardProps {
 }
 
 const ReportCard: React.FC<ReportCardProps> = ({ title, data }) => {
+  if (!data.labels.length || data.values.every((v) => v === 0)) {
+    return (
+      <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
+        <h3 className="mb-6 text-lg font-medium text-white">{title}</h3>
+        <div className="py-4 text-center text-gray-400">
+          Aucune donnée disponible pour la période sélectionnée
+        </div>
+      </div>
+    );
+  }
+
   const maxValue = Math.max(...data.values);
 
   return (
-    <div className="bg-gray-800 rounded-lg shadow-lg p-6">
-      <h3 className="text-lg font-medium text-white mb-6">{title}</h3>
+    <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
+      <h3 className="mb-6 text-lg font-medium text-white">{title}</h3>
       <div className="space-y-4">
         {data.labels.map((label, index) => (
           <div key={label}>
-            <div className="flex justify-between text-sm text-gray-400 mb-1">
-              <span>{label}</span>
-              <span>{data.values[index]}€</span>
+            <div className="flex justify-between mb-1 text-sm text-gray-400">
+              <span className="truncate max-w-[60%]">{label}</span>
+              <span>{formatCurrency(data.values[index])}</span>
             </div>
-            <div className="h-2 bg-gray-700 rounded-full">
+            <div className="h-2 overflow-hidden bg-gray-700 rounded-full">
               <div
-                className="h-full bg-blue-600 rounded-full"
+                className="h-full transition-all duration-300 bg-blue-600 rounded-full"
                 style={{
                   width: `${(data.values[index] / maxValue) * 100}%`,
                 }}

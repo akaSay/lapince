@@ -1,30 +1,26 @@
 import React from "react";
-import { Filters } from "../../types/Filters";
+import { useFilters } from "../../contexts/FilterContext";
 
-interface DashboardFiltersProps {
-  onFilterChange: (filters: Filters) => void;
-}
+const DashboardFilters: React.FC = () => {
+  const { filters, setFilters } = useFilters();
 
-const DashboardFilters: React.FC<DashboardFiltersProps> = ({
-  onFilterChange,
-}) => {
+  const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    setFilters({
+      ...filters,
+      [name]: value || undefined,
+    });
+  };
+
   return (
-    <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 mb-6">
+    <div className="flex flex-wrap gap-4">
       <select
-        className="w-full sm:w-auto bg-gray-700 text-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        onChange={(e) => onFilterChange({ category: e.target.value })}
+        name="dateRange"
+        value={filters.dateRange || ""}
+        onChange={handleFilterChange}
+        className="px-3 py-2 text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-        <option value="">Toutes les catégories</option>
-        <option value="alimentation">Alimentation</option>
-        <option value="transport">Transport</option>
-        <option value="loisirs">Loisirs</option>
-        <option value="logement">Logement</option>
-      </select>
-
-      <select
-        className="w-full sm:w-auto bg-gray-700 text-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        onChange={(e) => onFilterChange({ dateRange: e.target.value })}
-      >
+        <option value="">Toutes les périodes</option>
         <option value="this-month">Ce mois</option>
         <option value="last-month">Mois dernier</option>
         <option value="3-months">3 derniers mois</option>
@@ -32,13 +28,28 @@ const DashboardFilters: React.FC<DashboardFiltersProps> = ({
       </select>
 
       <select
-        className="w-full sm:w-auto bg-gray-700 text-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        onChange={(e) => onFilterChange({ status: e.target.value })}
+        name="status"
+        value={filters.status || ""}
+        onChange={handleFilterChange}
+        className="px-3 py-2 text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         <option value="">Tous les statuts</option>
         <option value="success">À jour</option>
         <option value="warning">Attention</option>
         <option value="danger">Dépassement</option>
+      </select>
+
+      <select
+        name="category"
+        value={filters.category || ""}
+        onChange={handleFilterChange}
+        className="px-3 py-2 text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        <option value="">Toutes les catégories</option>
+        <option value="Alimentation">Alimentation</option>
+        <option value="Transport">Transport</option>
+        <option value="Logement">Logement</option>
+        <option value="Loisirs">Loisirs</option>
       </select>
     </div>
   );

@@ -8,6 +8,7 @@ interface TransactionModalProps {
   onClose: () => void;
   onSubmit: (transaction: Omit<Transaction, "id">) => void;
   initialData?: Transaction;
+  initialCategory?: string;
 }
 
 const TransactionModal: React.FC<TransactionModalProps> = ({
@@ -15,6 +16,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
   onClose,
   onSubmit,
   initialData,
+  initialCategory,
 }) => {
   return (
     <Modal
@@ -28,6 +30,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
           onClose();
         }}
         initialData={initialData}
+        initialCategory={initialCategory}
         onCancel={onClose}
       />
     </Modal>

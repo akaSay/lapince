@@ -12,7 +12,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 }) => {
   const [formData, setFormData] = useState({
     description: initialValues?.description || "",
-    amount: initialValues?.amount || 0,
+    amount: initialValues?.amount?.toString() || "",
     category: initialValues?.category || "",
     type: initialValues?.type || "expense",
     date: initialValues?.date || new Date(),
@@ -20,7 +20,24 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    const numericAmount =
+      formData.amount === "" ? 0 : parseFloat(formData.amount);
+    onSubmit({
+      ...formData,
+      amount: numericAmount,
+    });
+  };
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Autoriser: chiffres, un seul point décimal, signe moins au début, et champ vide
+    if (value === "" || /^-?\d*\.?\d*$/.test(value)) {
+      // Si la valeur est vide ou valide, mettre à jour le state
+      setFormData((prev) => ({
+        ...prev,
+        amount: value,
+      }));
+    }
   };
 
   return (
@@ -35,7 +52,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
         />
       </div>
@@ -47,10 +64,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         <input
           type="number"
           value={formData.amount}
-          onChange={(e) =>
-            setFormData({ ...formData, amount: parseFloat(e.target.value) })
-          }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          onChange={handleAmountChange}
+          step="0.01"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
         />
       </div>
@@ -65,7 +81,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           onChange={(e) =>
             setFormData({ ...formData, category: e.target.value })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
         />
       </div>
@@ -80,7 +96,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               type: e.target.value as "income" | "expense",
             })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
           <option value="expense">Dépense</option>
           <option value="income">Revenu</option>
@@ -91,18 +107,18 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         <label className="block text-sm font-medium text-gray-700">Date</label>
         <input
           type="date"
-          value={formData.date.toISOString().split("T")[0]}
+          value={formData.date.toString().split("T")[0]}
           onChange={(e) =>
             setFormData({ ...formData, date: new Date(e.target.value) })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
         />
       </div>
 
       <button
         type="submit"
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
         {initialValues ? "Modifier" : "Ajouter"}
       </button>
