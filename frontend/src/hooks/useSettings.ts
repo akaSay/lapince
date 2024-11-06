@@ -11,6 +11,7 @@ export const useSettings = () => {
     try {
       const response = await api.get("/settings");
       setSettings(response.data);
+      setError(null);
     } catch (err) {
       setError(err as Error);
     } finally {
@@ -18,26 +19,25 @@ export const useSettings = () => {
     }
   };
 
-  const updateSettings = async (newSettings: SettingsData) => {
+  const updateSettings = async (newSettings: Partial<SettingsData>) => {
     try {
-      const response = await api.put("/settings", newSettings);
+      const response = await api.patch("/settings", newSettings);
       setSettings(response.data);
       return response.data;
     } catch (err) {
-      setError(err as Error);
       throw err;
     }
   };
 
   useEffect(() => {
     fetchSettings();
-  }, []); // Exécuté une seule fois au montage
+  }, []);
 
   return {
     settings,
     loading,
     error,
     updateSettings,
-    fetchSettings,
+    refetch: fetchSettings,
   };
 };

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface SettingsFormProps {
   settings: {
@@ -26,6 +27,8 @@ interface SettingsFormProps {
 }
 
 const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     ...settings,
     export: settings.export ?? {
@@ -57,12 +60,12 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
         <h3 className="mb-4 text-lg font-medium text-white">
-          Préférences générales
+          {t("settings.generalPreferences")}
         </h3>
         <div className="space-y-4">
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-300">
-              Thème
+              {t("settings.theme")}
             </label>
             <select
               value={formData.theme}
@@ -71,15 +74,15 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
               }
               className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="dark">Sombre</option>
-              <option value="light">Clair</option>
-              <option value="system">Système</option>
+              <option value="dark">{t("settings.themes.dark")}</option>
+              <option value="light">{t("settings.themes.light")}</option>
+              <option value="system">{t("settings.themes.system")}</option>
             </select>
           </div>
 
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-300">
-              Langue
+              {t("settings.language")}
             </label>
             <select
               value={formData.language}
@@ -88,15 +91,14 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
               }
               className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="fr">Français</option>
-              <option value="en">English</option>
-              <option value="es">Español</option>
+              <option value="fr">{t("settings.languages.fr")}</option>
+              <option value="en">{t("settings.languages.en")}</option>
             </select>
           </div>
 
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-300">
-              Devise
+              {t("settings.currency")}
             </label>
             <select
               value={formData.currency}
@@ -114,7 +116,9 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
       </div>
 
       <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
-        <h3 className="mb-4 text-lg font-medium text-white">Notifications</h3>
+        <h3 className="mb-4 text-lg font-medium text-white">
+          {t("settings.notifications")}
+        </h3>
         <div className="space-y-3">
           {Object.entries(notifications).map(([key, value]) => (
             <label key={key} className="flex items-center">
@@ -133,11 +137,11 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
                 className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded form-checkbox focus:ring-blue-500"
               />
               <span className="ml-2 text-sm text-gray-300">
-                {key === "email" && "Notifications par email"}
-                {key === "push" && "Notifications push"}
-                {key === "budget" && "Alertes de dépassement de budget"}
-                {key === "weekly" && "Résumé hebdomadaire"}
-                {key === "monthly" && "Rapport mensuel"}
+                {key === "email" && t("settings.notificationTypes.email")}
+                {key === "push" && t("settings.notificationTypes.push")}
+                {key === "budget" && t("settings.notificationTypes.budget")}
+                {key === "weekly" && t("settings.notificationTypes.weekly")}
+                {key === "monthly" && t("settings.notificationTypes.monthly")}
               </span>
             </label>
           ))}
@@ -146,7 +150,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
 
       <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
         <h3 className="mb-4 text-lg font-medium text-white">
-          Paramètres de confidentialité
+          {t("settings.privacy")}
         </h3>
         <div className="space-y-3">
           {Object.entries(privacy).map(([key, value]) => (
@@ -166,9 +170,11 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
                 className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded form-checkbox focus:ring-blue-500"
               />
               <span className="ml-2 text-sm text-gray-300">
-                {key === "showProfile" && "Afficher mon profil"}
-                {key === "showStats" && "Afficher mes statistiques"}
-                {key === "showBudget" && "Afficher mon budget"}
+                {key === "showProfile" &&
+                  t("settings.privacySettings.showProfile")}
+                {key === "showStats" && t("settings.privacySettings.showStats")}
+                {key === "showBudget" &&
+                  t("settings.privacySettings.showBudget")}
               </span>
             </label>
           ))}
@@ -180,7 +186,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
           type="submit"
           className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
         >
-          Enregistrer les modifications
+          {t("settings.save")}
         </button>
       </div>
     </form>
