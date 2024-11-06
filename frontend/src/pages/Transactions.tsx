@@ -6,8 +6,8 @@ import TransactionModal from "../components/modals/TransactionModal";
 import { useFilters } from "../contexts/FilterContext";
 import { useTransaction } from "../hooks/useTransaction";
 import { isDateInRange } from "../lib/dateUtils";
-import { Transaction } from "../types/Transaction";
 import { formatCurrency } from "../lib/utils";
+import { Transaction } from "../types/Transaction";
 
 const Transactions: React.FC = () => {
   const { filters } = useFilters();

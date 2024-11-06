@@ -15,20 +15,33 @@ import { CreateTransactionDto } from './dtos/create.transaction.dto';
 import { FilterTransactionDto } from './dtos/filter-transaction.dto';
 import { PaginationDto } from './dtos/paginatio.dto';
 import { TransactionService } from './transaction.service';
+import { NotificationEventsService } from '../modules/notifications/notification-events.service';
 
 @Controller('transactions')
 @UseGuards(JwtAuthGuard) // Protège toutes les routes
 export class TransactionController {
-  constructor(private readonly transactionService: TransactionService) {}
+  constructor(
+    private readonly transactionService: TransactionService,
+    private readonly notificationEvents: NotificationEventsService,
+  ) {}
 
   @Post()
-  create(@Request() req, @Body() createTransactionDto: CreateTransactionDto) {
-    console.log('Creating transaction:', createTransactionDto);
-    console.log('User:', req.user);
-    return this.transactionService.create(
+  async create(
+    @Request() req,
+    @Body() createTransactionDto: CreateTransactionDto,
+  ) {
+    const transaction = await this.transactionService.create(
       req.user.userId,
       createTransactionDto,
     );
+
+    // Vérifier les différentes conditions pour les notifications
+    await this.notificationEvents.checkBudgetLimit(transaction);
+    await this.notificationEvents.checkLargeTransaction(transaction);
+    await this.notificationEvents.checkRecurringExpenses(transaction);
+    await this.notificationEvents.checkMonthlySavings(req.user.userId);
+
+    return transaction;
   }
 
   @Get()

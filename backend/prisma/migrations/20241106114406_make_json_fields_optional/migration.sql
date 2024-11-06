@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Settings" ALTER COLUMN "notifications" DROP NOT NULL,
+ALTER COLUMN "export" DROP NOT NULL,
+ALTER COLUMN "privacy" DROP NOT NULL;

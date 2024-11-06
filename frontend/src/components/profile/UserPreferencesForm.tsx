@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { User } from "../../types/User";
 
-interface SettingsFormProps {
+interface UserPreferencesFormProps {
   user: User;
-  onSubmit: (settings: User["preferences"]) => void;
+  onSubmit: (preferences: User["preferences"]) => void;
 }
 
-const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSubmit }) => {
+const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
+  user,
+  onSubmit,
+}) => {
   const [preferences, setPreferences] = useState(user.preferences);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,7 +28,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSubmit }) => {
           onChange={(e) =>
             setPreferences({ ...preferences, currency: e.target.value })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
           <option value="EUR">EUR</option>
           <option value="USD">USD</option>
@@ -42,7 +45,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSubmit }) => {
           onChange={(e) =>
             setPreferences({ ...preferences, language: e.target.value })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
           <option value="fr">Français</option>
           <option value="en">English</option>
@@ -59,7 +62,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSubmit }) => {
               theme: e.target.value as "light" | "dark",
             })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
           <option value="light">Clair</option>
           <option value="dark">Sombre</option>
@@ -68,7 +71,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSubmit }) => {
 
       <button
         type="submit"
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
         Enregistrer les modifications
       </button>
@@ -76,4 +79,4 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSubmit }) => {
   );
 };
 
-export default SettingsForm;
+export default UserPreferencesForm;

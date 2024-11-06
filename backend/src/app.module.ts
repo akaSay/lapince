@@ -5,7 +5,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { BudgetModule } from './budget/budget.module';
+import { NotificationModule } from './modules/notifications/notification.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { SettingsModule } from './settings/settings.module';
 import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
@@ -17,6 +19,8 @@ import { TransactionModule } from './transaction/transaction.module';
     AuthModule,
     TransactionModule,
     BudgetModule,
+    NotificationModule,
+    SettingsModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'votre_secret_jwt',
       signOptions: { expiresIn: '1d' },

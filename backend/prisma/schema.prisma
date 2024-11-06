@@ -68,7 +68,12 @@ model Notification {
 
 model Settings {
   id            String   @id @default(uuid())
-  notifications Json     // {email: boolean, push: boolean, budget: boolean}
+  notifications Json?    // Optionnel
+  privacy       Json?    // Optionnel
+  theme         String   @default("dark")
+  language      String   @default("fr")
+  currency      String   @default("EUR")
+  export        Json?    // Optionnel
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

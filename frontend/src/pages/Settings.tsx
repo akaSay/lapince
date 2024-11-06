@@ -1,34 +1,68 @@
-import React, { useState } from "react";
+import React from "react";
 import SettingsForm from "../components/settings/SettingsForm";
+import { useSettings } from "../hooks/useSettings";
+import { SettingsData } from "../types/settings";
 
 const Settings: React.FC = () => {
-  const [settings, setSettings] = useState({
-    theme: "dark",
-    language: "fr",
-    currency: "EUR",
-    notifications: {
-      email: true,
-      push: true,
-      budget: true,
-      weekly: false,
-      monthly: true,
-    },
-    privacy: {
-      showProfile: true,
-      showStats: true,
-      showBudget: false,
-    },
-    export: {
-      format: "csv",
-      frequency: "monthly",
-    },
-  });
+  const { settings, loading, error, updateSettings } = useSettings();
 
-  const handleSettingsSubmit = (newSettings: typeof settings) => {
-    console.log("Paramètres mis à jour:", newSettings);
-    setSettings(newSettings);
-    // Implémentez la logique de sauvegarde ici
+  const handleSettingsSubmit = async (newSettings: SettingsData) => {
+    try {
+      const defaultExport = {
+        format: "csv",
+        frequency: "monthly",
+      };
+
+      const cleanedSettings = {
+        theme: newSettings.theme,
+        language: newSettings.language,
+        currency: newSettings.currency,
+        notifications: {
+          email: newSettings.notifications?.email ?? false,
+          push: newSettings.notifications?.push ?? false,
+          budget: newSettings.notifications?.budget ?? false,
+          weekly: newSettings.notifications?.weekly ?? false,
+          monthly: newSettings.notifications?.monthly ?? false,
+        },
+        privacy: {
+          showProfile: newSettings.privacy?.showProfile ?? false,
+          showStats: newSettings.privacy?.showStats ?? false,
+          showBudget: newSettings.privacy?.showBudget ?? false,
+        },
+        export: newSettings.export ?? defaultExport,
+      };
+
+      await updateSettings(cleanedSettings);
+      // TODO: Ajouter une notification de succès
+    } catch (err) {
+      console.error("Erreur lors de la mise à jour des paramètres:", err);
+      // TODO: Ajouter une notification d'erreur
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <span className="text-white">Chargement...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 text-red-500 bg-red-100 rounded-lg">
+        Une erreur est survenue lors du chargement des paramètres
+      </div>
+    );
+  }
+
+  if (!settings) {
+    return (
+      <div className="p-4 text-yellow-500 bg-yellow-100 rounded-lg">
+        Aucun paramètre trouvé
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

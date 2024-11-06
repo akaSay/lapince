@@ -1,14 +1,7 @@
 import React from "react";
-import Modal from "../common/Modal";
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: "info" | "warning" | "success" | "danger";
-  date: Date;
-  isRead: boolean;
-}
+import { formatDistance } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Notification } from "../../types/Notification";
 
 interface NotificationModalProps {
   isOpen: boolean;
@@ -27,111 +20,140 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   onMarkAllAsRead,
   onDelete,
 }) => {
+  if (!isOpen) return null;
+
   const getNotificationIcon = (type: Notification["type"]) => {
     switch (type) {
-      case "info":
-        return "info";
       case "warning":
         return "warning";
+      case "error":
+        return "error";
       case "success":
         return "check_circle";
-      case "danger":
-        return "error";
+      default:
+        return "info";
     }
   };
 
   const getNotificationColor = (type: Notification["type"]) => {
     switch (type) {
-      case "info":
-        return "text-blue-400";
       case "warning":
-        return "text-yellow-400";
+        return "text-yellow-500";
+      case "error":
+        return "text-red-500";
       case "success":
-        return "text-green-400";
-      case "danger":
-        return "text-red-400";
+        return "text-green-500";
+      default:
+        return "text-blue-500";
+    }
+  };
+
+  const formatNotificationDate = (date: string | Date | null) => {
+    if (!date) return "";
+
+    try {
+      const notifDate = typeof date === "string" ? new Date(date) : date;
+
+      // Vérifier si la date est valide
+      if (isNaN(notifDate.getTime())) {
+        console.error("Date invalide:", date);
+        return "Date invalide";
+      }
+
+      return formatDistance(notifDate, new Date(), {
+        addSuffix: true,
+        locale: fr,
+      });
+    } catch (error) {
+      console.error("Erreur de formatage de date:", error, date);
+      return "Date invalide";
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Notifications">
-      <div className="mb-4 flex justify-between items-center">
-        <span className="text-sm text-gray-400">
-          {notifications.filter((n) => !n.isRead).length} non lues
-        </span>
-        <button
-          onClick={onMarkAllAsRead}
-          className="text-sm text-blue-400 hover:text-blue-300"
-        >
-          Tout marquer comme lu
-        </button>
-      </div>
-
-      <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-        {notifications.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
-            Aucune notification
-          </div>
-        ) : (
-          notifications.map((notification) => (
-            <div
-              key={notification.id}
-              className={`p-4 rounded-lg bg-gray-700 ${
-                !notification.isRead ? "border-l-4 border-blue-500" : ""
-              }`}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="w-full max-w-md p-4 bg-gray-800 rounded-lg shadow-xl">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-white">Notifications</h2>
+          <div className="flex space-x-2">
+            {notifications.some((n) => !n.isRead) && (
+              <button
+                onClick={onMarkAllAsRead}
+                className="text-sm text-blue-400 hover:text-blue-300"
+              >
+                Tout marquer comme lu
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex items-start space-x-3">
-                  <i
-                    className={`material-icons-outlined ${getNotificationColor(
-                      notification.type
-                    )}`}
-                  >
-                    {getNotificationIcon(notification.type)}
-                  </i>
-                  <div>
-                    <h4 className="text-sm font-medium text-white">
-                      {notification.title}
-                    </h4>
-                    <p className="text-sm text-gray-400 mt-1">
-                      {notification.message}
-                    </p>
-                    <span className="text-xs text-gray-500 mt-2 block">
-                      {new Date(notification.date).toLocaleDateString("fr-FR", {
-                        day: "numeric",
-                        month: "long",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
+              <i className="material-icons-outlined">close</i>
+            </button>
+          </div>
+        </div>
+
+        <div className="overflow-y-auto max-h-96">
+          {notifications.length === 0 ? (
+            <div className="py-4 text-center text-gray-400">
+              Aucune notification
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`p-3 rounded-lg ${
+                    notification.isRead
+                      ? "bg-gray-700"
+                      : "bg-gray-700 border-l-4 border-blue-500"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start space-x-3">
+                      <i
+                        className={`material-icons-outlined ${getNotificationColor(
+                          notification.type
+                        )}`}
+                      >
+                        {getNotificationIcon(notification.type)}
+                      </i>
+                      <div>
+                        <h3 className="font-medium text-white">
+                          {notification.title}
+                        </h3>
+                        <p className="text-sm text-gray-300">
+                          {notification.message}
+                        </p>
+                        <p className="mt-1 text-xs text-gray-400">
+                          {formatNotificationDate(notification.date)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex space-x-2">
+                      {!notification.isRead && (
+                        <button
+                          onClick={() => onMarkAsRead(notification.id)}
+                          className="text-blue-400 hover:text-blue-300"
+                        >
+                          <i className="material-icons-outlined">check</i>
+                        </button>
+                      )}
+                      <button
+                        onClick={() => onDelete(notification.id)}
+                        className="text-gray-400 hover:text-red-500"
+                      >
+                        <i className="material-icons-outlined">delete</i>
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="flex space-x-2">
-                  {!notification.isRead && (
-                    <button
-                      onClick={() => onMarkAsRead(notification.id)}
-                      className="text-gray-400 hover:text-blue-400"
-                      title="Marquer comme lu"
-                    >
-                      <i className="material-icons-outlined text-sm">
-                        check_circle
-                      </i>
-                    </button>
-                  )}
-                  <button
-                    onClick={() => onDelete(notification.id)}
-                    className="text-gray-400 hover:text-red-400"
-                    title="Supprimer"
-                  >
-                    <i className="material-icons-outlined text-sm">delete</i>
-                  </button>
-                </div>
-              </div>
+              ))}
             </div>
-          ))
-        )}
+          )}
+        </div>
       </div>
-    </Modal>
+    </div>
   );
 };
 

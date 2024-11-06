@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../lib/api";
+import { useProfileContext } from "../contexts/ProfileContext";
 
 interface LoginCredentials {
   email: string;
@@ -27,6 +28,7 @@ export const useAuth = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { fetchProfile, clearProfile } = useProfileContext();
 
   const login = async (credentials: LoginCredentials) => {
     try {
@@ -41,6 +43,7 @@ export const useAuth = () => {
       }
 
       localStorage.setItem("token", access_token);
+      await fetchProfile();
       navigate("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur de connexion");
@@ -66,10 +69,10 @@ export const useAuth = () => {
       }
 
       localStorage.setItem("token", access_token);
+      await fetchProfile();
       navigate("/dashboard");
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
-        // Gestion spécifique des erreurs de l'API
         switch (err.response.status) {
           case 409:
             throw new Error("Cet email est déjà utilisé");
@@ -87,6 +90,7 @@ export const useAuth = () => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    clearProfile();
     navigate("/login");
   };
 

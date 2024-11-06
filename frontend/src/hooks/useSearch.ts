@@ -24,18 +24,24 @@ export const useSearch = (
     }
 
     const searchLower = searchTerm.toLowerCase();
+    const searchTerms = searchLower.split(" ").filter((t) => t.length > 0);
 
     // Recherche dans les transactions
-    const filteredTransactions = allTransactions.filter(
-      (transaction) =>
-        transaction.description.toLowerCase().includes(searchLower) ||
-        transaction.category.toLowerCase().includes(searchLower)
-    );
+    const filteredTransactions = allTransactions.filter((transaction) => {
+      const descriptionLower = transaction.description.toLowerCase();
+      const categoryLower = transaction.category.toLowerCase();
+
+      return searchTerms.every(
+        (term) =>
+          descriptionLower.includes(term) || categoryLower.includes(term)
+      );
+    });
 
     // Recherche dans les budgets
-    const filteredBudgets = allBudgets.filter((budget) =>
-      budget.category.toLowerCase().includes(searchLower)
-    );
+    const filteredBudgets = allBudgets.filter((budget) => {
+      const categoryLower = budget.category.toLowerCase();
+      return searchTerms.every((term) => categoryLower.includes(term));
+    });
 
     setResults({
       transactions: filteredTransactions,

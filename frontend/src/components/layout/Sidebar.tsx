@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import Avatar from "../common/Avatar";
+import { useProfileContext } from "../../contexts/ProfileContext";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
+  const { profile } = useProfileContext();
 
   const menuItems = [
     {
@@ -68,9 +70,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
           <div className="mb-6">
             <div className="flex items-center p-3 space-x-3 bg-gray-700 rounded-lg">
-              <Avatar seed="John Doe" size="md" />
+              <Avatar seed={profile?.name || "John Doe"} size="md" />
               <div>
-                <p className="text-sm font-medium">John Doe</p>
+                <p className="text-sm font-medium">
+                  {profile?.name || "Chargement..."}
+                </p>
                 <p className="text-xs text-gray-400">Premium</p>
               </div>
             </div>

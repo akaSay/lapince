@@ -26,7 +26,27 @@ interface SettingsFormProps {
 }
 
 const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
-  const [formData, setFormData] = useState(settings);
+  const [formData, setFormData] = useState({
+    ...settings,
+    export: settings.export ?? {
+      format: "csv",
+      frequency: "monthly",
+    },
+  });
+
+  const notifications = formData?.notifications ?? {
+    email: false,
+    push: false,
+    budget: false,
+    weekly: false,
+    monthly: false,
+  };
+
+  const privacy = formData?.privacy ?? {
+    showProfile: false,
+    showStats: false,
+    showBudget: false,
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,13 +55,13 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-gray-800 rounded-lg shadow-lg p-6">
-        <h3 className="text-lg font-medium text-white mb-4">
+      <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
+        <h3 className="mb-4 text-lg font-medium text-white">
           Préférences générales
         </h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block mb-1 text-sm font-medium text-gray-300">
               Thème
             </label>
             <select
@@ -49,7 +69,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
               onChange={(e) =>
                 setFormData({ ...formData, theme: e.target.value })
               }
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="dark">Sombre</option>
               <option value="light">Clair</option>
@@ -58,7 +78,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block mb-1 text-sm font-medium text-gray-300">
               Langue
             </label>
             <select
@@ -66,7 +86,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
               onChange={(e) =>
                 setFormData({ ...formData, language: e.target.value })
               }
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="fr">Français</option>
               <option value="en">English</option>
@@ -75,7 +95,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block mb-1 text-sm font-medium text-gray-300">
               Devise
             </label>
             <select
@@ -83,7 +103,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
               onChange={(e) =>
                 setFormData({ ...formData, currency: e.target.value })
               }
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="EUR">EUR (€)</option>
               <option value="USD">USD ($)</option>
@@ -93,10 +113,10 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg shadow-lg p-6">
-        <h3 className="text-lg font-medium text-white mb-4">Notifications</h3>
+      <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
+        <h3 className="mb-4 text-lg font-medium text-white">Notifications</h3>
         <div className="space-y-3">
-          {Object.entries(formData.notifications).map(([key, value]) => (
+          {Object.entries(notifications).map(([key, value]) => (
             <label key={key} className="flex items-center">
               <input
                 type="checkbox"
@@ -105,12 +125,12 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
                   setFormData({
                     ...formData,
                     notifications: {
-                      ...formData.notifications,
+                      ...notifications,
                       [key]: e.target.checked,
                     },
                   })
                 }
-                className="form-checkbox h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
+                className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded form-checkbox focus:ring-blue-500"
               />
               <span className="ml-2 text-sm text-gray-300">
                 {key === "email" && "Notifications par email"}
@@ -124,12 +144,12 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg shadow-lg p-6">
-        <h3 className="text-lg font-medium text-white mb-4">
+      <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
+        <h3 className="mb-4 text-lg font-medium text-white">
           Paramètres de confidentialité
         </h3>
         <div className="space-y-3">
-          {Object.entries(formData.privacy).map(([key, value]) => (
+          {Object.entries(privacy).map(([key, value]) => (
             <label key={key} className="flex items-center">
               <input
                 type="checkbox"
@@ -138,12 +158,12 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
                   setFormData({
                     ...formData,
                     privacy: {
-                      ...formData.privacy,
+                      ...privacy,
                       [key]: e.target.checked,
                     },
                   })
                 }
-                className="form-checkbox h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
+                className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded form-checkbox focus:ring-blue-500"
               />
               <span className="ml-2 text-sm text-gray-300">
                 {key === "showProfile" && "Afficher mon profil"}
@@ -158,7 +178,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
       <div className="flex justify-end">
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
         >
           Enregistrer les modifications
         </button>

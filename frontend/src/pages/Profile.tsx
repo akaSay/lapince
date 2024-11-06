@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import ProfileModal from "../components/modals/ProfileModal";
 import ProfileCard from "../components/profile/ProfileCard";
+import { useProfileContext } from "../contexts/ProfileContext";
 
 const Profile: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { profile, loading, error, fetchProfile, updateProfile } =
+    useProfileContext();
+
+  if (loading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur: {error}</div>;
+  if (!profile) return null;
 
   const userData = {
-    name: "John Doe",
-    email: "john.doe@example.com",
+    name: profile.name,
+    email: profile.email,
     membershipType: "Premium",
     avatar: "/avatars/avatar1.jpg",
     isEmailVerified: true,
@@ -21,7 +28,7 @@ const Profile: React.FC = () => {
     },
   };
 
-  const handleProfileSubmit = (profileData: {
+  const handleProfileSubmit = async (profileData: {
     name: string;
     email: string;
     language: string;
@@ -32,9 +39,18 @@ const Profile: React.FC = () => {
       budget: boolean;
     };
   }) => {
-    console.log("Profil mis à jour:", profileData);
-    // Implémentez la logique de sauvegarde ici
-    setIsModalOpen(false);
+    try {
+      await updateProfile({
+        name: profileData.name,
+        email: profileData.email,
+        // autres champs...
+      });
+
+      await fetchProfile();
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du profil:", error);
+    }
   };
 
   return (
