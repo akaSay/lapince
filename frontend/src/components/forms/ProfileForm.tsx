@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../hooks/useLanguage";
+
 interface ProfileFormProps {
-  onSubmit: (profileData: {
+  onSubmit: (data: {
     name: string;
     email: string;
     language: string;
@@ -32,25 +34,42 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   onCancel,
 }) => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({
-    name: initialData?.name || "",
-    email: initialData?.email || "",
-    language: initialData?.language || "fr",
-    currency: initialData?.currency || "EUR",
-    notifications: {
-      email: initialData?.notifications?.email ?? true,
-      push: initialData?.notifications?.push ?? true,
-      budget: initialData?.notifications?.budget ?? true,
-    },
-  });
+  const { changeLanguage } = useLanguage();
+  const [formData, setFormData] = React.useState(
+    initialData || {
+      name: "",
+      email: "",
+      language: "fr",
+      currency: "EUR",
+      notifications: {
+        email: false,
+        push: false,
+        budget: false,
+      },
+    }
+  );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLanguage = e.target.value;
+    const newCurrency = newLanguage === "en" ? "USD" : "EUR";
+
+    // Mettre à jour uniquement le state local
+    setFormData((prev) => ({
+      ...prev,
+      language: newLanguage,
+      currency: newCurrency,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    await onSubmit(formData);
+    // Changer la langue seulement après la validation du formulaire
+    await changeLanguage(formData.language);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-4">
         <div>
           <label className="block mb-1 text-sm font-medium text-gray-300">
@@ -78,42 +97,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
             className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-300">
-              {t("profile.form.language")}
-            </label>
-            <select
-              value={formData.language}
-              onChange={(e) =>
-                setFormData({ ...formData, language: e.target.value })
-              }
-              className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="fr">Français</option>
-              <option value="en">English</option>
-              <option value="es">Español</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-300">
-              {t("profile.form.currency")}
-            </label>
-            <select
-              value={formData.currency}
-              onChange={(e) =>
-                setFormData({ ...formData, currency: e.target.value })
-              }
-              className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="EUR">EUR (€)</option>
-              <option value="USD">USD ($)</option>
-              <option value="GBP">GBP (£)</option>
-            </select>
-          </div>
         </div>
       </div>
 
@@ -184,19 +167,49 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
         </div>
       </div>
 
-      <div className="flex justify-end pt-4 space-x-3">
+      <div className="space-y-4">
+        <div>
+          <label className="block mb-2 text-sm font-medium text-white">
+            {t("settings.language")}
+          </label>
+          <select
+            value={formData.language}
+            onChange={handleLanguageChange}
+            className="w-full p-2 text-white bg-gray-700 rounded"
+          >
+            <option value="fr">{t("settings.languages.fr")}</option>
+            <option value="en">{t("settings.languages.en")}</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block mb-2 text-sm font-medium text-white">
+            {t("settings.currency")}
+          </label>
+          <select
+            value={formData.currency}
+            disabled
+            className="w-full p-2 text-white bg-gray-700 rounded opacity-60"
+          >
+            <option value="EUR">{t("settings.currencies.EUR")}</option>
+            <option value="USD">{t("settings.currencies.USD")}</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="flex justify-end mt-4 space-x-2">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-gray-300 transition-colors hover:text-white"
+          className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
         >
-          {t("profile.form.cancel")}
+          {t("common.cancel")}
         </button>
         <button
           type="submit"
-          className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
+          className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-500"
         >
-          {t("profile.form.save")}
+          {t("common.save")}
         </button>
       </div>
     </form>

@@ -1,7 +1,8 @@
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat("fr-FR", {
+  const currency = localStorage.getItem("currency") || "EUR";
+  return new Intl.NumberFormat(currency === "EUR" ? "fr-FR" : "en-US", {
     style: "currency",
-    currency: "EUR",
+    currency: currency,
   }).format(amount);
 };
 

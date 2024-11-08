@@ -52,10 +52,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
           <i className="material-icons-outlined">settings</i>
           <span>{t("layout.profile.settings")}</span>
         </button>
-        <button className="flex items-center justify-center p-2 space-x-2 transition-colors bg-gray-700 rounded-lg hover:bg-gray-600">
-          <i className="material-icons-outlined">account_balance</i>
-          <span>{t("profile.linkedAccounts")}</span>
-        </button>
       </div>
     </div>
   );
