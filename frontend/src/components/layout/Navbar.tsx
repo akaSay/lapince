@@ -9,6 +9,7 @@ import { highlightText } from "../../lib/highlightText";
 import Avatar from "../common/Avatar";
 import NotificationModal from "../modals/NotificationModal";
 import { useAuth } from "../../hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -33,6 +34,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
   } = useNotifications();
   const { profile } = useProfileContext();
   const { logout } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -70,7 +72,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                 </div>
                 <input
                   className="w-full py-2 pl-10 pr-3 text-sm text-gray-300 bg-gray-700 border border-gray-700 rounded-md"
-                  placeholder="Rechercher..."
+                  placeholder={t("layout.search.placeholder")}
                   type="search"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -80,14 +82,14 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                     {results.transactions.length === 0 &&
                     results.budgets.length === 0 ? (
                       <div className="px-4 py-2 text-sm text-gray-400">
-                        Aucun résultat trouvé
+                        {t("layout.search.noResults")}
                       </div>
                     ) : (
                       <>
                         {results.transactions.length > 0 && (
                           <div className="border-b border-gray-600">
                             <div className="px-4 py-2 text-xs font-semibold text-gray-400">
-                              Transactions
+                              {t("layout.search.transactions")}
                             </div>
                             {results.transactions.slice(0, 3).map((t) => (
                               <Link
@@ -105,8 +107,8 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                             ))}
                             {results.transactions.length > 3 && (
                               <div className="px-4 py-2 text-xs text-gray-400">
-                                +{results.transactions.length - 3} autres
-                                transactions
+                                +{results.transactions.length - 3}{" "}
+                                {t("layout.search.moreTransactions")}
                               </div>
                             )}
                           </div>
@@ -127,7 +129,8 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                             ))}
                             {results.budgets.length > 3 && (
                               <div className="px-4 py-2 text-xs text-gray-400">
-                                +{results.budgets.length - 3} autres budgets
+                                +{results.budgets.length - 3}{" "}
+                                {t("layout.search.moreBudgets")}
                               </div>
                             )}
                           </div>
@@ -184,7 +187,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                   >
                     <div className="flex items-center space-x-2">
                       <i className="text-sm material-icons-outlined">person</i>
-                      <span>Mon profil</span>
+                      <span>{t("layout.profile.myProfile")}</span>
                     </div>
                   </Link>
                   <Link
@@ -196,7 +199,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                       <i className="text-sm material-icons-outlined">
                         settings
                       </i>
-                      <span>Paramètres</span>
+                      <span>{t("layout.profile.settings")}</span>
                     </div>
                   </Link>
                   <div className="my-1 border-t border-gray-600"></div>
@@ -209,7 +212,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                   >
                     <div className="flex items-center space-x-2">
                       <i className="text-sm material-icons-outlined">logout</i>
-                      <span>Déconnexion</span>
+                      <span>{t("layout.profile.logout")}</span>
                     </div>
                   </button>
                 </div>

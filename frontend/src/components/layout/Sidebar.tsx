@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import Avatar from "../common/Avatar";
 import { useProfileContext } from "../../contexts/ProfileContext";
+import { useTranslation } from "react-i18next";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -9,32 +10,33 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const { profile } = useProfileContext();
 
   const menuItems = [
     {
-      name: "Tableau de bord",
+      name: t("layout.sidebar.dashboard"),
       icon: "dashboard",
       path: "/dashboard",
     },
     {
-      name: "Transactions",
+      name: t("layout.sidebar.transactions"),
       icon: "receipt",
       path: "/transactions",
     },
     {
-      name: "Budget",
+      name: t("layout.sidebar.budget"),
       icon: "account_balance_wallet",
       path: "/budget",
     },
     {
-      name: "Rapports",
+      name: t("layout.sidebar.reports"),
       icon: "analytics",
       path: "/reports",
     },
     {
-      name: "Profil",
+      name: t("layout.sidebar.profile"),
       icon: "person",
       path: "/profile",
     },
@@ -58,7 +60,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
               <img src="/logo.svg" alt="Logo" className="w-8 h-8" />
-              <span className="text-xl font-bold">BudgetApp</span>
+              <span className="text-xl font-bold">
+                {t("layout.sidebar.appName")}
+              </span>
             </div>
             <button
               onClick={onClose}
@@ -73,9 +77,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <Avatar seed={profile?.name || "John Doe"} size="md" />
               <div>
                 <p className="text-sm font-medium">
-                  {profile?.name || "Chargement..."}
+                  {profile?.name || t("layout.profile.loading")}
                 </p>
-                <p className="text-xs text-gray-400">Premium</p>
+                <p className="text-xs text-gray-400">
+                  {t("layout.profile.premium")}
+                </p>
               </div>
             </div>
           </div>
@@ -105,7 +111,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
           <div className="pt-6">
             <div className="p-4 bg-gray-700 rounded-lg">
-              <p className="text-xs text-gray-400">Version 1.0.0</p>
+              <p className="text-xs text-gray-400">
+                {t("layout.sidebar.version")}
+              </p>
             </div>
           </div>
         </div>

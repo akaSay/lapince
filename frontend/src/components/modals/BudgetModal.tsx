@@ -1,7 +1,8 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import type { BudgetData } from "../../types/Budget";
 import Modal from "../common/Modal";
 import BudgetForm from "../forms/BudgetForm";
-import type { BudgetData } from "../../types/Budget";
 
 interface BudgetModalProps {
   isOpen: boolean;
@@ -16,11 +17,12 @@ const BudgetModal: React.FC<BudgetModalProps> = ({
   onSubmit,
   budget,
 }) => {
+  const { t } = useTranslation();
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={budget?.id ? "Modifier le budget" : "Nouveau budget"}
+      title={budget?.id ? t("budget.edit") : t("budget.new")}
     >
       <BudgetForm
         onSubmit={(data) => {

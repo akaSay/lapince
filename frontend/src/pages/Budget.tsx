@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import BudgetCard from "../components/dashboard/BudgetCard";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
 import ExpenseChart from "../components/dashboard/ExpenseChart";
@@ -6,12 +7,14 @@ import StatisticsCard from "../components/dashboard/StatisticsCard";
 import BudgetModal from "../components/modals/BudgetModal";
 import { useFilters } from "../contexts/FilterContext";
 import { useBudget } from "../hooks/useBudget";
+import { useStatistics } from "../hooks/useStatistics";
 import { useTransaction } from "../hooks/useTransaction";
 import { isDateInRange } from "../lib/dateUtils";
 import type { Budget, BudgetData } from "../types/Budget";
-import { useStatistics } from "../hooks/useStatistics";
 
 const Budget: React.FC = () => {
+  const { t } = useTranslation();
+
   const { budgets, loading, error, createBudget, deleteBudget, updateBudget } =
     useBudget();
   const { transactions } = useTransaction();
@@ -112,7 +115,7 @@ const Budget: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Gestion du budget</h1>
+        <h1 className="text-2xl font-bold text-white">{t("budget.title")}</h1>
         <button
           onClick={() => {
             setSelectedBudget(undefined);
@@ -120,7 +123,7 @@ const Budget: React.FC = () => {
           }}
           className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
         >
-          + Nouveau budget
+          {t("budget.new")}
         </button>
       </div>
 
@@ -147,7 +150,7 @@ const Budget: React.FC = () => {
         ) : (
           <div className="col-span-2 p-6 bg-gray-800 rounded-lg shadow-lg">
             <div className="py-4 text-center text-gray-400">
-              Aucune donnée disponible pour la période sélectionnée
+              {t("dashboard.noData")}
             </div>
           </div>
         )}

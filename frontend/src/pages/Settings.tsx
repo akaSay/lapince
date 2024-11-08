@@ -118,7 +118,7 @@ const Settings: React.FC = () => {
   return (
     <div className={`space-y-6 ${themeClass}`}>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Paramètres</h1>
+        <h1 className="text-2xl font-bold text-white">{t("settings.title")}</h1>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -147,11 +147,11 @@ const Settings: React.FC = () => {
 
           <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
             <h3 className="mb-4 text-lg font-medium text-white">
-              Gestion du compte
+              {t("settings.accountManagement")}
             </h3>
             <div className="space-y-4">
               <button className="w-full px-4 py-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700">
-                Supprimer mon compte
+                {t("settings.deleteAccount")}
               </button>
             </div>
           </div>

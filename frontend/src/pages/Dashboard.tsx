@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import BudgetCard from "../components/dashboard/BudgetCard";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
 import ExpenseChart from "../components/dashboard/ExpenseChart";
@@ -10,10 +11,11 @@ import { useBudget } from "../hooks/useBudget";
 import { useStatistics } from "../hooks/useStatistics";
 import { useTransaction } from "../hooks/useTransaction";
 import { isDateInRange } from "../lib/dateUtils";
-import { Transaction } from "../types/Transaction";
 import { formatCurrency } from "../lib/utils";
+import { Transaction } from "../types/Transaction";
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation();
   const { filters } = useFilters();
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<
@@ -49,19 +51,19 @@ const Dashboard: React.FC = () => {
 
   const dashboardStats = [
     {
-      title: "Dépenses du mois",
+      title: t("dashboard.statistics.monthlyExpenses"),
       value: formatCurrency(currentExpenses),
       icon: "trending_down",
       trend: { value: expensesTrend, isPositive: expensesTrend <= 0 },
     },
     {
-      title: "Mois précédent",
+      title: t("dashboard.statistics.previousMonth"),
       value: formatCurrency(previousExpenses),
       icon: "calendar_today",
       trend: { value: 0, isPositive: true },
     },
     {
-      title: "Tendance",
+      title: t("dashboard.statistics.trend"),
       value: `${expensesTrend > 0 ? "+" : ""}${expensesTrend.toFixed(1)}%`,
       icon: expensesTrend > 0 ? "trending_up" : "trending_down",
       trend: { value: expensesTrend, isPositive: expensesTrend <= 0 },
@@ -124,7 +126,9 @@ const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Tableau de bord</h1>
+        <h1 className="text-2xl font-bold text-white">
+          {t("dashboard.title")}
+        </h1>
         <button
           onClick={() => {
             setSelectedTransaction(undefined);
@@ -132,7 +136,7 @@ const Dashboard: React.FC = () => {
           }}
           className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
         >
-          + Nouvelle transaction
+          {t("dashboard.newTransaction")}
         </button>
       </div>
 
@@ -178,7 +182,7 @@ const Dashboard: React.FC = () => {
       ) : (
         <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
           <div className="py-4 text-center text-gray-400">
-            Aucune donnée disponible pour la période sélectionnée
+            {t("dashboard.noData")}
           </div>
         </div>
       )}

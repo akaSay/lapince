@@ -1,7 +1,8 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import type { Transaction } from "../../types/Transaction";
 import Modal from "../common/Modal";
 import TransactionForm from "../forms/TransactionForm";
-import { Transaction } from "../../types/Transaction";
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -18,11 +19,12 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
   initialData,
   initialCategory,
 }) => {
+  const { t } = useTranslation();
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={initialData ? "Modifier la transaction" : "Nouvelle transaction"}
+      title={initialData ? t("transactions.edit") : t("transactions.new")}
     >
       <TransactionForm
         onSubmit={(data) => {

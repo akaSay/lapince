@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { formatCurrency } from "../../lib/utils";
 import { Transaction } from "../../types/Transaction";
 
@@ -11,26 +12,27 @@ const ExpenseChart: React.FC<ExpenseChartProps> = ({
   transactions,
   period,
 }) => {
-  // Note: Dans un cas réel, vous utiliseriez une bibliothèque de graphiques comme Chart.js ou Recharts
+  const { t } = useTranslation();
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium">Évolution des dépenses</h3>
+    <div className="p-6 bg-white rounded-lg shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-medium">{t("reports.charts.expenses")}</h3>
         <select
-          className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           value={period}
         >
-          <option value="weekly">Hebdomadaire</option>
-          <option value="monthly">Mensuel</option>
-          <option value="yearly">Annuel</option>
+          <option value="weekly">{t("reports.expenseChart.weekly")}</option>
+          <option value="monthly">{t("reports.expenseChart.monthly")}</option>
+          <option value="yearly">{t("reports.expenseChart.yearly")}</option>
         </select>
       </div>
-      <div className="h-64 flex items-center justify-center text-gray-500">
-        Graphique à implémenter
+      <div className="flex items-center justify-center h-64 text-gray-500">
+        {t("reports.expenseChart.graph")}
       </div>
       <div className="mt-4">
         <div className="flex justify-between text-sm text-gray-500">
-          <span>Total des dépenses:</span>
+          <span>{t("reports.expenseChart.totalExpenses")}:</span>
           <span className="font-medium">
             {formatCurrency(
               transactions

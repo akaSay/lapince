@@ -1,5 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import type { BudgetData } from "../../types/Budget";
 
 interface BudgetFormProps {
@@ -13,6 +14,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
   initialData,
   onCancel,
 }) => {
+  const { t } = useTranslation();
   const { register, handleSubmit } = useForm<BudgetData>({
     defaultValues: initialData,
   });
@@ -21,7 +23,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-300">
-          Catégorie
+          {t("budget.form.category")}
         </label>
         <input
           {...register("category")}
@@ -32,7 +34,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
 
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-300">
-          Limite (€)
+          {t("budget.form.limit")} (€)
         </label>
         <input
           type="number"
@@ -44,20 +46,32 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
 
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-300">
-          Icône
+          {t("budget.form.category")}
         </label>
         <select
           {...register("icon")}
           className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="account_balance">💰 Budget</option>
-          <option value="restaurant">🍽️ Restaurant</option>
-          <option value="shopping_cart">🛒 Courses</option>
-          <option value="directions_car">🚗 Transport</option>
-          <option value="home">🏠 Logement</option>
-          <option value="sports_esports">🎮 Loisirs</option>
-          <option value="medical_services">🏥 Santé</option>
-          <option value="school">📚 Education</option>
+          <option value="account_balance">
+            {t("budget.form.icons.account_balance")}
+          </option>
+          <option value="restaurant">
+            {t("budget.form.icons.restaurant")}
+          </option>
+          <option value="shopping_cart">
+            {t("budget.form.icons.shopping_cart")}
+          </option>
+          <option value="directions_car">
+            {t("budget.form.icons.directions_car")}
+          </option>
+          <option value="home">{t("budget.form.icons.home")}</option>
+          <option value="sports_esports">
+            {t("budget.form.icons.sports_esports")}
+          </option>
+          <option value="medical_services">
+            {t("budget.form.icons.medical_services")}
+          </option>
+          <option value="school">{t("budget.form.icons.school")}</option>
         </select>
       </div>
 
@@ -67,13 +81,13 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
           onClick={onCancel}
           className="px-4 py-2 text-gray-300 transition-colors hover:text-white"
         >
-          Annuler
+          {t("common.cancel")}
         </button>
         <button
           type="submit"
           className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
         >
-          {initialData ? "Modifier" : "Ajouter"}
+          {initialData ? t("common.edit") : t("budget.new")}
         </button>
       </div>
     </form>

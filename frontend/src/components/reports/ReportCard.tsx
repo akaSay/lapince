@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { formatCurrency } from "../../lib/utils";
 
 interface ReportCardProps {
@@ -10,12 +11,14 @@ interface ReportCardProps {
 }
 
 const ReportCard: React.FC<ReportCardProps> = ({ title, data }) => {
+  const { t } = useTranslation();
+
   if (!data.labels.length || data.values.every((v) => v === 0)) {
     return (
       <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
         <h3 className="mb-6 text-lg font-medium text-white">{title}</h3>
         <div className="py-4 text-center text-gray-400">
-          Aucune donnée disponible pour la période sélectionnée
+          {t("reports.noData")}
         </div>
       </div>
     );

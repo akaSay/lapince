@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Transaction, TransactionType } from "../../types/Transaction";
 
 interface TransactionFormProps {
@@ -14,6 +15,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   initialData,
   initialCategory,
 }) => {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState<Omit<Transaction, "id">>({
     description: initialData?.description || "",
     amount: initialData?.amount || 0,
@@ -31,7 +34,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-300">
-          Description
+          {t("transactions.form.description")}
         </label>
         <input
           type="text"
@@ -47,7 +50,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block mb-1 text-sm font-medium text-gray-300">
-            Montant
+            {t("transactions.form.amount")}
           </label>
           <input
             type="number"
@@ -64,7 +67,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 
         <div>
           <label className="block mb-1 text-sm font-medium text-gray-300">
-            Type
+            {t("transactions.form.type")}
           </label>
           <select
             value={formData.type}
@@ -76,14 +79,16 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             }
             className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="expense">Dépense</option>
-            <option value="income">Revenu</option>
+            <option value="expense">{t("transactions.form.expense")}</option>
+            <option value="income">{t("transactions.form.income")}</option>
           </select>
         </div>
       </div>
 
       <div className="mb-4">
-        <label className="block mb-2 text-sm text-gray-300">Catégorie</label>
+        <label className="block mb-2 text-sm text-gray-300">
+          {t("transactions.form.category")}
+        </label>
         <select
           name="category"
           value={formData.category}
@@ -93,11 +98,11 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           className="w-full px-3 py-2 bg-gray-700 rounded-lg"
           disabled={!!initialCategory}
         >
-          <option value="">Sélectionner une catégorie</option>
-          <option value="Alimentation">Alimentation</option>
-          <option value="Transport">Transport</option>
-          <option value="Loisirs">Loisirs</option>
-          <option value="Logement">Logement</option>
+          <option value="">{t("dashboard.filters.allCategories")}</option>
+          <option value="Alimentation">{t("dashboard.filters.food")}</option>
+          <option value="Transport">{t("dashboard.filters.transport")}</option>
+          <option value="Loisirs">{t("dashboard.filters.leisure")}</option>
+          <option value="Logement">{t("dashboard.filters.housing")}</option>
         </select>
       </div>
 
@@ -107,13 +112,13 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           onClick={onCancel}
           className="px-4 py-2 text-gray-300 transition-colors hover:text-white"
         >
-          Annuler
+          {t("common.cancel")}
         </button>
         <button
           type="submit"
           className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
         >
-          {initialData ? "Modifier" : "Ajouter"}
+          {initialData ? t("common.edit") : t("transactions.new")}
         </button>
       </div>
     </form>

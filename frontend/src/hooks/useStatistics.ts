@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { formatCurrency } from "../lib/utils";
 import { Budget } from "../types/Budget";
 import { Transaction } from "../types/Transaction";
@@ -37,6 +38,8 @@ export const useStatistics = (
   hasDataForPeriod: boolean,
   dateRange?: string
 ) => {
+  const { t } = useTranslation();
+
   return useMemo(() => {
     // Vérification des données filtrées
     if (!filteredTransactions.length) {
@@ -124,31 +127,22 @@ export const useStatistics = (
 
     const commonStats = [
       {
-        title: "Dépenses de la période",
+        title: t("budget.statistics.limit"),
+        value: formatCurrency(totalBudget),
+        icon: "account_balance",
+        trend: { value: 0, isPositive: true },
+      },
+      {
+        title: t("budget.statistics.spent"),
         value: formatCurrency(currentExpenses),
         icon: "trending_down",
-        trend: {
-          value: expensesTrend,
-          isPositive: expensesTrend <= 0,
-        },
+        trend: { value: expensesTrend, isPositive: false },
       },
       {
-        title: "Revenus de la période",
-        value: formatCurrency(currentIncome),
-        icon: "trending_up",
-        trend: {
-          value: incomeTrend,
-          isPositive: incomeTrend >= 0,
-        },
-      },
-      {
-        title: "Solde",
-        value: formatCurrency(currentBalance),
-        icon: "account_balance",
-        trend: {
-          value: balanceTrend,
-          isPositive: balanceTrend >= 0,
-        },
+        title: t("budget.statistics.remaining"),
+        value: formatCurrency(budgetAvailable),
+        icon: "savings",
+        trend: { value: 0, isPositive: true },
       },
     ];
 

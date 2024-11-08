@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
 import ExpenseChart from "../components/dashboard/ExpenseChart";
 import StatisticsCard from "../components/dashboard/StatisticsCard";
@@ -12,6 +13,7 @@ import { isDateInRange } from "../lib/dateUtils";
 import { formatCurrency } from "../lib/utils";
 
 const Reports: React.FC = () => {
+  const { t } = useTranslation();
   const { filters } = useFilters();
   const { transactions } = useTransaction();
   const { budgets } = useBudget();
@@ -44,19 +46,19 @@ const Reports: React.FC = () => {
 
   const reportStats = [
     {
-      title: "Dépenses actuelles",
+      title: t("reports.currentExpenses"),
       value: formatCurrency(currentExpenses),
       icon: "trending_down",
       trend: { value: expensesTrend, isPositive: expensesTrend <= 0 },
     },
     {
-      title: "Mois précédent",
+      title: t("reports.previousMonth"),
       value: formatCurrency(previousExpenses),
       icon: "calendar_today",
       trend: { value: 0, isPositive: true },
     },
     {
-      title: "Variation mensuelle",
+      title: t("reports.monthlyVariation"),
       value: `${expensesTrend > 0 ? "+" : ""}${expensesTrend.toFixed(1)}%`,
       icon: expensesTrend > 0 ? "trending_up" : "trending_down",
       trend: { value: expensesTrend, isPositive: expensesTrend <= 0 },
@@ -86,7 +88,7 @@ const Reports: React.FC = () => {
     labels: monthlyData.labels,
     datasets: [
       {
-        label: "Dépenses mensuelles",
+        label: t("report.monthlyExpenses"),
         data: monthlyData.values,
         borderColor: "rgb(53, 162, 235)",
         backgroundColor: "rgba(53, 162, 235, 0.5)",
@@ -97,7 +99,7 @@ const Reports: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Rapports</h1>
+        <h1 className="text-2xl font-bold text-white">{t("reports.title")}</h1>
       </div>
 
       <DashboardFilters />
@@ -117,7 +119,7 @@ const Reports: React.FC = () => {
         ) : (
           <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
             <div className="py-4 text-center text-gray-400">
-              Aucune donnée disponible pour la période sélectionnée
+              {t("report.noData")}
             </div>
           </div>
         )}

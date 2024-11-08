@@ -1,15 +1,16 @@
-import React from "react";
-import { Line } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
   CategoryScale,
+  Chart as ChartJS,
+  Legend,
   LinearScale,
-  PointElement,
   LineElement,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
 } from "chart.js";
+import React from "react";
+import { Line } from "react-chartjs-2";
+import { useTranslation } from "react-i18next";
 
 ChartJS.register(
   CategoryScale,
@@ -34,6 +35,8 @@ interface TrendChartProps {
 }
 
 const TrendChart: React.FC<TrendChartProps> = ({ data }) => {
+  const { t } = useTranslation();
+
   const options = {
     responsive: true,
     plugins: {
@@ -45,7 +48,7 @@ const TrendChart: React.FC<TrendChartProps> = ({ data }) => {
       },
       title: {
         display: true,
-        text: "Évolution des dépenses",
+        text: t("report.charts.trend"),
         color: "#fff",
       },
     },

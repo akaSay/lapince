@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useFilters } from "../../contexts/FilterContext";
 
 const DashboardFilters: React.FC = () => {
   const { filters, setFilters } = useFilters();
+  const { t } = useTranslation();
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target;
@@ -20,11 +22,11 @@ const DashboardFilters: React.FC = () => {
         onChange={handleFilterChange}
         className="px-3 py-2 text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-        <option value="">Toutes les périodes</option>
-        <option value="this-month">Ce mois</option>
-        <option value="last-month">Mois dernier</option>
-        <option value="3-months">3 derniers mois</option>
-        <option value="year">Cette année</option>
+        <option value="">{t("dashboard.filters.allPeriods")}</option>
+        <option value="this-month">{t("dashboard.filters.thisMonth")}</option>
+        <option value="last-month">{t("dashboard.filters.lastMonth")}</option>
+        <option value="3-months">{t("dashboard.filters.threeMonths")}</option>
+        <option value="year">{t("dashboard.filters.thisYear")}</option>
       </select>
 
       <select
@@ -33,10 +35,10 @@ const DashboardFilters: React.FC = () => {
         onChange={handleFilterChange}
         className="px-3 py-2 text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-        <option value="">Tous les statuts</option>
-        <option value="success">À jour</option>
-        <option value="warning">Attention</option>
-        <option value="danger">Dépassement</option>
+        <option value="">{t("dashboard.filters.allStatus")}</option>
+        <option value="success">{t("dashboard.filters.upToDate")}</option>
+        <option value="warning">{t("dashboard.filters.warning")}</option>
+        <option value="danger">{t("dashboard.filters.exceeded")}</option>
       </select>
 
       <select
@@ -45,11 +47,11 @@ const DashboardFilters: React.FC = () => {
         onChange={handleFilterChange}
         className="px-3 py-2 text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-        <option value="">Toutes les catégories</option>
-        <option value="Alimentation">Alimentation</option>
-        <option value="Transport">Transport</option>
-        <option value="Logement">Logement</option>
-        <option value="Loisirs">Loisirs</option>
+        <option value="">{t("dashboard.filters.allCategories")}</option>
+        <option value="Alimentation">{t("dashboard.filters.food")}</option>
+        <option value="Transport">{t("dashboard.filters.transport")}</option>
+        <option value="Logement">{t("dashboard.filters.housing")}</option>
+        <option value="Loisirs">{t("dashboard.filters.leisure")}</option>
       </select>
     </div>
   );

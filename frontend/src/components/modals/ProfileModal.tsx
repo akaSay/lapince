@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Modal from "../common/Modal";
 import ProfileForm from "../forms/ProfileForm";
 
@@ -35,8 +36,9 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   onSubmit,
   initialData,
 }) => {
+  const { t } = useTranslation();
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Modifier le profil">
+    <Modal isOpen={isOpen} onClose={onClose} title={t("profile.editProfile")}>
       <ProfileForm
         onSubmit={(data) => {
           onSubmit(data);

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { formatCurrency } from "../../lib/utils";
 
 interface BudgetCardProps {
@@ -22,6 +23,8 @@ const BudgetCard: React.FC<BudgetCardProps> = ({
   onClick,
   variant = "default",
 }) => {
+  const { t } = useTranslation();
+
   const percentage = Math.min((spent / limit) * 100, 100);
   const remaining = limit - spent;
 
@@ -94,9 +97,9 @@ const BudgetCard: React.FC<BudgetCardProps> = ({
                 status === "danger" ? "border-red-600" : "border-gray-600"
               }`}
             >
-              {status === "success" && "À jour"}
-              {status === "warning" && "Attention"}
-              {status === "danger" && "Dépassement"}
+              {status === "success" && t("dashboard.filters.upToDate")}
+              {status === "warning" && t("dashboard.filters.warning")}
+              {status === "danger" && t("dashboard.filters.exceeded")}
             </div>
             {variant === "editable" && (
               <button
@@ -115,8 +118,12 @@ const BudgetCard: React.FC<BudgetCardProps> = ({
 
         {/* Montants */}
         <div className="flex justify-between mb-2 text-sm text-gray-400">
-          <span>Dépensé: {formatCurrency(spent)}</span>
-          <span>Limite: {formatCurrency(limit)}</span>
+          <span>
+            {t("budget.statistics.spent")}: {formatCurrency(spent)}
+          </span>
+          <span>
+            {t("budget.statistics.limit")}: {formatCurrency(limit)}
+          </span>
         </div>
 
         {/* Barre de progression */}
@@ -130,7 +137,8 @@ const BudgetCard: React.FC<BudgetCardProps> = ({
         {/* Footer */}
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-400">
-            Reste: {formatCurrency(Math.abs(remaining))}
+            {t("budget.statistics.remaining")}:{" "}
+            {formatCurrency(Math.abs(remaining))}
           </span>
           {variant === "default" && (
             <button
@@ -140,7 +148,7 @@ const BudgetCard: React.FC<BudgetCardProps> = ({
               }}
               className="px-3 py-1.5 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              + Transaction
+              {t("dashboard.quickActions.addTransaction")}
             </button>
           )}
         </div>

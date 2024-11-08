@@ -1,5 +1,6 @@
 import React from "react";
 import { formatCurrency } from "../../lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface ExpenseChartProps {
   data: Array<{
@@ -9,6 +10,8 @@ interface ExpenseChartProps {
 }
 
 const ExpenseChart: React.FC<ExpenseChartProps> = ({ data }) => {
+  const { t } = useTranslation();
+
   // Filtrer les données avec un montant > 0
   const validData = data.filter((item) => item.amount > 0);
 
@@ -17,10 +20,10 @@ const ExpenseChart: React.FC<ExpenseChartProps> = ({ data }) => {
     return (
       <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
         <h3 className="mb-6 text-lg font-medium text-white">
-          Dépenses par catégorie
+          {t("dashboard.statistics.expensesByCategory")}
         </h3>
         <div className="py-4 text-center text-gray-400">
-          Aucune donnée disponible pour la période sélectionnée
+          {t("dashboard.noData")}
         </div>
       </div>
     );
@@ -33,7 +36,7 @@ const ExpenseChart: React.FC<ExpenseChartProps> = ({ data }) => {
   return (
     <div className="p-4 bg-gray-800 rounded-lg shadow-lg sm:p-6">
       <h3 className="mb-6 text-lg font-medium text-white">
-        Dépenses par catégorie
+        {t("dashboard.statistics.expensesByCategory")}
       </h3>
       <div className="space-y-4">
         {sortedData.map((item) => (

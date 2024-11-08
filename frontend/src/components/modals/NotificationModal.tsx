@@ -1,7 +1,8 @@
 import React from "react";
 import { formatDistance } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Notification } from "../../types/Notification";
+import { useTranslation } from "react-i18next";
+import type { Notification } from "../../types/Notification";
 
 interface NotificationModalProps {
   isOpen: boolean;
@@ -20,6 +21,8 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   onMarkAllAsRead,
   onDelete,
 }) => {
+  const { t } = useTranslation();
+
   if (!isOpen) return null;
 
   const getNotificationIcon = (type: Notification["type"]) => {
@@ -74,14 +77,16 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-full max-w-md p-4 bg-gray-800 rounded-lg shadow-xl">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-white">Notifications</h2>
+          <h2 className="text-xl font-semibold text-white">
+            {t("notifications.title")}
+          </h2>
           <div className="flex space-x-2">
             {notifications.some((n) => !n.isRead) && (
               <button
                 onClick={onMarkAllAsRead}
                 className="text-sm text-blue-400 hover:text-blue-300"
               >
-                Tout marquer comme lu
+                {t("notifications.markAllAsRead")}
               </button>
             )}
             <button
@@ -96,7 +101,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         <div className="overflow-y-auto max-h-96">
           {notifications.length === 0 ? (
             <div className="py-4 text-center text-gray-400">
-              Aucune notification
+              {t("notifications.noNotifications")}
             </div>
           ) : (
             <div className="space-y-2">

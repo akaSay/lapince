@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import React, { useState } from "react";
 import ProfileModal from "../components/modals/ProfileModal";
 import ProfileCard from "../components/profile/ProfileCard";
@@ -56,12 +57,12 @@ const Profile: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Profil utilisateur</h1>
+        <h1 className="text-2xl font-bold text-white">{t("profile.title")}</h1>
         <button
           onClick={() => setIsModalOpen(true)}
           className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
         >
-          Modifier le profil
+          {t("profile.editProfile")}
         </button>
       </div>
 
@@ -71,11 +72,13 @@ const Profile: React.FC = () => {
         <div className="space-y-6">
           <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
             <h3 className="mb-4 text-lg font-medium text-white">
-              Préférences de notification
+              {t("profile.notificationPreferences")}
             </h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-gray-300">Alertes de dépassement</span>
+                <span className="text-gray-300">
+                  {t("profile.budgetAlert")}
+                </span>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
@@ -91,7 +94,7 @@ const Profile: React.FC = () => {
 
           <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
             <h3 className="mb-4 text-lg font-medium text-white">
-              Comptes liés
+              {t("profile.linkedAccounts")}
             </h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -100,11 +103,11 @@ const Profile: React.FC = () => {
                     account_balance
                   </i>
                   <span className="text-gray-300">
-                    Compte bancaire principal
+                    {t("profile.mainBankAccount")}
                   </span>
                 </div>
                 <button className="text-blue-400 hover:text-blue-300">
-                  Configurer
+                  {t("profile.configure")}
                 </button>
               </div>
               {/* Ajoutez d'autres comptes liés */}

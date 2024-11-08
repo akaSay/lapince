@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../hooks/useLanguage";
 
 interface SettingsFormProps {
   settings: {
@@ -28,6 +29,7 @@ interface SettingsFormProps {
 
 const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
   const { t } = useTranslation();
+  const { changeLanguage, supportedLanguages } = useLanguage();
 
   const [formData, setFormData] = useState({
     ...settings,
@@ -56,6 +58,15 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
     onSubmit(formData);
   };
 
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLanguage = e.target.value;
+    changeLanguage(newLanguage);
+    setFormData({
+      ...formData,
+      language: newLanguage,
+    });
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
@@ -80,19 +91,20 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSubmit }) => {
             </select>
           </div>
 
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-300">
+          <div className="mb-4">
+            <label className="block mb-2 text-sm font-medium text-gray-300">
               {t("settings.language")}
             </label>
             <select
               value={formData.language}
-              onChange={(e) =>
-                setFormData({ ...formData, language: e.target.value })
-              }
+              onChange={handleLanguageChange}
               className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="fr">{t("settings.languages.fr")}</option>
-              <option value="en">{t("settings.languages.en")}</option>
+              {supportedLanguages.map((lang) => (
+                <option key={lang} value={lang}>
+                  {t(`settings.languages.${lang}`)}
+                </option>
+              ))}
             </select>
           </div>
 

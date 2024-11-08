@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import React from "react";
 import Avatar from "../common/Avatar";
 
@@ -35,7 +36,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
 
       <div className="mb-6">
         <div className="flex justify-between mb-1 text-sm text-gray-400">
-          <span>Profil complété</span>
+          <span>{t("profile.stats.profileCompletion")}</span>
           <span>{user.completionRate}%</span>
         </div>
         <div className="h-2 bg-gray-700 rounded-full">
@@ -49,11 +50,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <button className="flex items-center justify-center p-2 space-x-2 transition-colors bg-gray-700 rounded-lg hover:bg-gray-600">
           <i className="material-icons-outlined">settings</i>
-          <span>Paramètres</span>
+          <span>{t("layout.profile.settings")}</span>
         </button>
         <button className="flex items-center justify-center p-2 space-x-2 transition-colors bg-gray-700 rounded-lg hover:bg-gray-600">
           <i className="material-icons-outlined">account_balance</i>
-          <span>Comptes liés</span>
+          <span>{t("profile.linkedAccounts")}</span>
         </button>
       </div>
     </div>

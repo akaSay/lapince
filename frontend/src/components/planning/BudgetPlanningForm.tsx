@@ -12,7 +12,7 @@ const BudgetPlanningForm: React.FC<BudgetPlanningFormProps> = ({
 }) => {
   const [formData, setFormData] = useState({
     category: initialValues?.category || "",
-    amount: initialValues?.amount || 0,
+    limit: initialValues?.limit || 0,
     period: initialValues?.period || "monthly",
     startDate: initialValues?.startDate || new Date(),
   });
@@ -34,7 +34,7 @@ const BudgetPlanningForm: React.FC<BudgetPlanningFormProps> = ({
           onChange={(e) =>
             setFormData({ ...formData, category: e.target.value })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
         />
       </div>
@@ -45,11 +45,11 @@ const BudgetPlanningForm: React.FC<BudgetPlanningFormProps> = ({
         </label>
         <input
           type="number"
-          value={formData.amount}
+          value={formData.limit}
           onChange={(e) =>
-            setFormData({ ...formData, amount: parseFloat(e.target.value) })
+            setFormData({ ...formData, limit: parseFloat(e.target.value) })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
         />
       </div>
@@ -66,7 +66,7 @@ const BudgetPlanningForm: React.FC<BudgetPlanningFormProps> = ({
               period: e.target.value as "monthly" | "yearly",
             })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
           <option value="monthly">Mensuel</option>
           <option value="yearly">Annuel</option>
@@ -83,14 +83,14 @@ const BudgetPlanningForm: React.FC<BudgetPlanningFormProps> = ({
           onChange={(e) =>
             setFormData({ ...formData, startDate: new Date(e.target.value) })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
         />
       </div>
 
       <button
         type="submit"
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
         {initialValues ? "Modifier le budget" : "Créer un budget"}
       </button>

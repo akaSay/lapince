@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { formatCurrency, formatDate } from "../../lib/utils";
 import { Transaction } from "../../types/Transaction";
@@ -16,6 +17,8 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
   onDelete,
   variant = "default",
 }) => {
+  const { t } = useTranslation();
+
   const displayedTransactions =
     variant === "compact" ? transactions.slice(0, 5) : transactions;
 
@@ -23,23 +26,21 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
     <div className="bg-gray-800 rounded-lg shadow-lg">
       <div className="flex items-center justify-between px-4 py-5 border-b border-gray-700 sm:px-6">
         <h3 className="text-lg font-medium text-white">
-          Transactions récentes
+          {t("dashboard.recentTransactions")}
         </h3>
         {variant === "compact" && transactions.length > 5 && (
           <Link
             to="/transactions"
             className="text-sm text-blue-400 hover:text-blue-300"
           >
-            Voir tout
+            {t("common.viewAll")}
           </Link>
         )}
       </div>
       <div className={variant === "compact" ? "" : "overflow-x-auto"}>
         {displayedTransactions.length === 0 ? (
           <div className="p-4 text-center text-gray-400 sm:p-8">
-            <p>
-              Pas encore de transactions - ajoutez votre première transaction !
-            </p>
+            <p>{t("dashboard.noData")}</p>
           </div>
         ) : (
           <ul className="divide-y divide-gray-700">

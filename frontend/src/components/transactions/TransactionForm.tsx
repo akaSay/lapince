@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Transaction } from "../../types/Transaction";
 
 interface TransactionFormProps {
@@ -10,6 +11,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   onSubmit,
   initialValues,
 }) => {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     description: initialValues?.description || "",
     amount: initialValues?.amount?.toString() || "",
@@ -44,7 +47,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Description
+          {t("transactions.description")}
         </label>
         <input
           type="text"
@@ -59,7 +62,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Montant
+          {t("transactions.amount")}
         </label>
         <input
           type="number"
@@ -73,7 +76,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Catégorie
+          {t("transactions.category")}
         </label>
         <input
           type="text"
@@ -87,7 +90,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Type</label>
+        <label className="block text-sm font-medium text-gray-700">
+          {t("transactions.type")}
+        </label>
         <select
           value={formData.type}
           onChange={(e) =>
@@ -98,13 +103,15 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           }
           className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
-          <option value="expense">Dépense</option>
-          <option value="income">Revenu</option>
+          <option value="expense">{t("transactions.expense")}</option>
+          <option value="income">{t("transactions.income")}</option>
         </select>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Date</label>
+        <label className="block text-sm font-medium text-gray-700">
+          {t("transactions.date")}
+        </label>
         <input
           type="date"
           value={formData.date.toString().split("T")[0]}
@@ -120,7 +127,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         type="submit"
         className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
-        {initialValues ? "Modifier" : "Ajouter"}
+        {initialValues ? t("transactions.edit") : t("transactions.new")}
       </button>
     </form>
   );

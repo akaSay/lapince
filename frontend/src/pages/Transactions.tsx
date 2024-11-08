@@ -8,8 +8,10 @@ import { useTransaction } from "../hooks/useTransaction";
 import { isDateInRange } from "../lib/dateUtils";
 import { formatCurrency } from "../lib/utils";
 import { Transaction } from "../types/Transaction";
+import { useTranslation } from "react-i18next";
 
 const Transactions: React.FC = () => {
+  const { t } = useTranslation();
   const { filters } = useFilters();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<
@@ -45,13 +47,11 @@ const Transactions: React.FC = () => {
   };
 
   const handleDelete = async (transaction: Transaction) => {
-    if (
-      window.confirm("Êtes-vous sûr de vouloir supprimer cette transaction ?")
-    ) {
+    if (window.confirm(t("transactions.confirmDelete"))) {
       try {
         await deleteTransaction(transaction.id);
       } catch (error) {
-        console.error("Erreur lors de la suppression:", error);
+        console.error(t("common.error"), error);
       }
     }
   };
@@ -90,7 +90,7 @@ const Transactions: React.FC = () => {
 
   const statistics = [
     {
-      title: "Dépenses du mois",
+      title: t("transactions.statistics.monthlyExpenses"),
       value: formatCurrency(
         filteredTransactions.length > 0 ? currentMonthExpenses : 0
       ),
@@ -98,7 +98,7 @@ const Transactions: React.FC = () => {
       trend: { value: 0, isPositive: true },
     },
     {
-      title: "Total des revenus",
+      title: t("transactions.statistics.totalIncome"),
       value: formatCurrency(
         filteredTransactions.length > 0 ? currentMonthIncome : 0
       ),
@@ -106,7 +106,7 @@ const Transactions: React.FC = () => {
       trend: { value: 0, isPositive: true },
     },
     {
-      title: "Solde",
+      title: t("transactions.statistics.balance"),
       value: formatCurrency(
         filteredTransactions.length > 0 ? currentBalance : 0
       ),
@@ -118,7 +118,9 @@ const Transactions: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Transactions</h1>
+        <h1 className="text-2xl font-bold text-white">
+          {t("transactions.title")}
+        </h1>
         <button
           onClick={() => {
             setSelectedTransaction(undefined);
@@ -126,7 +128,7 @@ const Transactions: React.FC = () => {
           }}
           className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
         >
-          + Nouvelle transaction
+          {t("transactions.new")}
         </button>
       </div>
 
@@ -138,18 +140,16 @@ const Transactions: React.FC = () => {
         ))}
       </div>
 
-      {filteredTransactions.length > 0 ? (
+      {filteredTransactions.length === 0 ? (
+        <div className="p-6 text-center text-gray-400 bg-gray-800 rounded-lg">
+          {t("transactions.noTransactions")}
+        </div>
+      ) : (
         <TransactionsList
           transactions={filteredTransactions}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
-      ) : (
-        <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
-          <div className="py-4 text-center text-gray-400">
-            Aucune donnée disponible pour la période sélectionnée
-          </div>
-        </div>
       )}
 
       <TransactionModal
