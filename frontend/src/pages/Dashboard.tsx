@@ -13,6 +13,10 @@ import { useTransaction } from "../hooks/useTransaction";
 import { isDateInRange } from "../lib/dateUtils";
 import { formatCurrency } from "../lib/utils";
 import { Transaction } from "../types/Transaction";
+import TransactionSkeleton from "../components/skeletons/TransactionSkeleton";
+import BudgetSkeleton from "../components/skeletons/BudgetSkeleton";
+import StatisticsSkeleton from "../components/skeletons/StatisticsSkeleton";
+import ChartSkeleton from "../components/skeletons/ChartSkeleton";
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -22,8 +26,17 @@ const Dashboard: React.FC = () => {
     Transaction | undefined
   >();
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const { budgets, deleteBudget, fetchBudgets } = useBudget();
-  const { transactions, createTransaction } = useTransaction();
+  const {
+    budgets,
+    deleteBudget,
+    fetchBudgets,
+    loading: budgetsLoading,
+  } = useBudget();
+  const {
+    transactions,
+    createTransaction,
+    loading: transactionsLoading,
+  } = useTransaction();
 
   const filteredTransactions = transactions.filter((transaction) => {
     if (!isDateInRange(transaction.date, filters.dateRange)) {
@@ -128,6 +141,25 @@ const Dashboard: React.FC = () => {
       } catch (error) {}
     }
   };
+
+  if (budgetsLoading || transactionsLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-white">
+            {t("dashboard.title")}
+          </h1>
+        </div>
+        <DashboardFilters />
+        <StatisticsSkeleton />
+        <BudgetSkeleton />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <ChartSkeleton />
+          <TransactionSkeleton />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

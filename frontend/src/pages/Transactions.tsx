@@ -1,14 +1,16 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
 import StatisticsCard from "../components/dashboard/StatisticsCard";
 import TransactionsList from "../components/dashboard/TransactionsList";
 import TransactionModal from "../components/modals/TransactionModal";
+import StatisticsSkeleton from "../components/skeletons/StatisticsSkeleton";
+import TransactionSkeleton from "../components/skeletons/TransactionSkeleton";
 import { useFilters } from "../contexts/FilterContext";
 import { useTransaction } from "../hooks/useTransaction";
 import { isDateInRange } from "../lib/dateUtils";
 import { formatCurrency } from "../lib/utils";
 import { Transaction } from "../types/Transaction";
-import { useTranslation } from "react-i18next";
 
 const Transactions: React.FC = () => {
   const { t } = useTranslation();
@@ -23,6 +25,7 @@ const Transactions: React.FC = () => {
     createTransaction,
     updateTransaction,
     deleteTransaction,
+    loading,
   } = useTransaction();
 
   const handleTransactionSubmit = async (
@@ -114,6 +117,21 @@ const Transactions: React.FC = () => {
       trend: { value: 0, isPositive: true },
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-white">
+            {t("transactions.title")}
+          </h1>
+        </div>
+        <DashboardFilters />
+        <StatisticsSkeleton />
+        <TransactionSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

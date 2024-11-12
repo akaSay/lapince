@@ -12,6 +12,7 @@ import { useTransaction } from "../hooks/useTransaction";
 import { useToast } from "../hooks/useToast";
 import { isDateInRange } from "../lib/dateUtils";
 import type { Budget, BudgetData } from "../types/Budget";
+import BudgetSkeleton from "../components/skeletons/BudgetSkeleton";
 
 const Budget: React.FC = () => {
   const { t } = useTranslation();
@@ -85,7 +86,17 @@ const Budget: React.FC = () => {
     showError("errors.default");
   };
 
-  if (loading) return <div className="text-white">{t("common.loading")}</div>;
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-white">{t("budget.title")}</h1>
+        </div>
+        <DashboardFilters />
+        <BudgetSkeleton />
+      </div>
+    );
+  }
   if (error)
     return (
       <div className="text-white">
