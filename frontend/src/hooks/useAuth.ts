@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../lib/api";
 import { useProfileContext } from "../contexts/ProfileContext";
+import { useTranslation } from "react-i18next";
 
 interface LoginCredentials {
   rememberMe: any;
@@ -30,6 +31,7 @@ export const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { fetchProfile, clearProfile } = useProfileContext();
+  const { t } = useTranslation();
 
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -133,6 +135,25 @@ export const useAuth = () => {
     navigate("/login");
   };
 
+  const requestPasswordReset = async (email: string) => {
+    try {
+      await api.post("/auth/forgot-password", { email });
+    } catch (err) {
+      throw new Error(t("errors.resetPassword"));
+    }
+  };
+
+  const resetPassword = async (token: string, newPassword: string) => {
+    try {
+      await api.post("/auth/reset-password", {
+        token,
+        password: newPassword,
+      });
+    } catch (err) {
+      throw new Error(t("errors.resetPassword"));
+    }
+  };
+
   return {
     login,
     register,
@@ -142,5 +163,7 @@ export const useAuth = () => {
     isAuthenticated,
     getToken,
     initAuth,
+    requestPasswordReset,
+    resetPassword,
   };
 };

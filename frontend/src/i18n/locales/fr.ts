@@ -8,6 +8,10 @@ export default {
     edit: "Modifier",
     noData: "Aucune donnée disponible",
     viewAll: "Voir tout",
+    email: "Adresse email",
+    password: "Mot de passe",
+    newPassword: "Nouveau mot de passe",
+    confirmPassword: "Confirmer le mot de passe",
   },
   dashboard: {
     title: "Tableau de bord",
@@ -317,7 +321,13 @@ export default {
       maxLength: "Ne doit pas dépasser {{max}} caractères",
       invalidEmail: "Adresse email invalide",
       passwordMismatch: "Les mots de passe ne correspondent pas",
+      passwordStrength:
+        "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre",
     },
+    resetPassword: "Erreur lors de la réinitialisation du mot de passe",
+    passwordsDoNotMatch: "Les mots de passe ne correspondent pas",
+    invalidResetToken: "Le lien de réinitialisation est invalide ou a expiré",
+    emailNotFound: "Aucun compte n'est associé à cette adresse email",
   },
   success: {
     budget: {
@@ -337,5 +347,18 @@ export default {
       transactions: "Transactions exportées avec succès",
       budgets: "Budgets exportés avec succès",
     },
+    passwordReset: "Votre mot de passe a été réinitialisé avec succès",
+    resetLinkSent: "Un email de réinitialisation a été envoyé",
+  },
+  auth: {
+    forgotPassword: "Mot de passe oublié",
+    resetPassword: "Réinitialiser le mot de passe",
+    sendResetLink: "Envoyer le lien de réinitialisation",
+    resetEmailSent:
+      "Un email a été envoyé avec les instructions pour réinitialiser votre mot de passe",
+    newPassword: "Nouveau mot de passe",
+    confirmPassword: "Confirmer le mot de passe",
+    backToLogin: "Retour à la connexion",
+    resetSuccess: "Votre mot de passe a été réinitialisé avec succès",
   },
 };

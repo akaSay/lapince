@@ -15,6 +15,8 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 const App: React.FC = () => {
   return (
@@ -55,6 +57,11 @@ const App: React.FC = () => {
                     </Layout>
                   </PrivateRoute>
                 }
+              />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="/reset-password/:resetToken"
+                element={<ResetPassword />}
               />
             </Routes>
             <ToastContainer
