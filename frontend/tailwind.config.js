@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
   theme: {
@@ -18,6 +18,24 @@ export default {
           800: "#1f2937",
           900: "#111827",
         },
+      },
+      keyframes: {
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        pulse: {
+          "0%, 100%": { opacity: 1 },
+          "50%": { opacity: 0.5 },
+        },
+      },
+      animation: {
+        shimmer: "shimmer 1.5s infinite linear",
+        pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
+      backgroundImage: {
+        "shimmer-gradient":
+          "linear-gradient(90deg, transparent 0%, #374151 50%, transparent 100%)",
       },
     },
   },

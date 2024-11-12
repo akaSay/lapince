@@ -48,7 +48,7 @@
 - [x] Pagination fonctionne
 - [x] Filtres par date
 - [x] Filtres par catégorie
-- [ ] Recherche
+- [x] Recherche
 
 ## 📊 Budgets
 
@@ -95,7 +95,7 @@
 #### Mobile (< 640px)
 
 - [x] Menu burger fonctionne
-- [ ] Tableaux adaptés
+- [x] Tableaux adaptés
 - [x] Formulaires lisibles
 
 #### Tablette (768px - 1024px)
@@ -146,7 +146,7 @@
 ### Chargement
 
 - [x] Temps de chargement initial < 3s
-- [ ] Skeleton loader pendant chargement
+- [x] Skeleton loader pendant chargement
 - [x] Pas de flash de contenu
 
 ### Actions
@@ -166,10 +166,10 @@
 
 ## Bugs trouvés
 
-1.Fonction recherche non fonctionnelle
+1.Fonction recherche non fonctionnelle (terminer)
 
 ## Améliorations suggérées
 
-1.Ameliorer les messages d'erreur
-2.Adapter le responsive en format mobile 375 x 812 px (iPhone X, 11, 12, 13, etc.)
-3.Ajouter un loader pendant le chargement
+1.Ameliorer les messages d'erreur (terminer)
+2.Adapter le responsive en format mobile 375 x 812 px (iPhone X, 11, 12, 13, etc.) (terminer)
+3.Ajouter un loader pendant le chargement (terminer)

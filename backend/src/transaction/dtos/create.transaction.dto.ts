@@ -9,6 +9,7 @@ import {
 export enum TransactionType {
   INCOME = 'income',
   EXPENSE = 'expense',
+  ALL = 'all',
 }
 
 export class CreateTransactionDto {
