@@ -25,8 +25,9 @@ const BudgetCard: React.FC<BudgetCardProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const percentage = Math.min((spent / limit) * 100, 100);
-  const remaining = limit - spent;
+  const percentage = (spent / limit) * 100;
+  const remaining = spent >= limit ? 0 : limit - spent;
+  const overSpent = spent > limit ? spent - limit : 0;
 
   const getStatus = () => {
     if (percentage >= 100) return "danger";
@@ -117,13 +118,15 @@ const BudgetCard: React.FC<BudgetCardProps> = ({
         </div>
 
         {/* Montants */}
-        <div className="flex justify-between mb-2 text-sm text-gray-400">
-          <span>
-            {t("budget.statistics.spent")}: {formatCurrency(spent)}
-          </span>
-          <span>
-            {t("budget.statistics.limit")}: {formatCurrency(limit)}
-          </span>
+        <div className="flex justify-between text-sm text-gray-400">
+          <span>{formatCurrency(spent)}</span>
+          {percentage > 100 ? (
+            <span className="text-red-400">
+              Dépassé de {formatCurrency(overSpent)}
+            </span>
+          ) : (
+            <span>Reste {formatCurrency(remaining)}</span>
+          )}
         </div>
 
         {/* Barre de progression */}
