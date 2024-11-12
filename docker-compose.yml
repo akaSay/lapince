@@ -26,6 +26,10 @@ services:
       - DATABASE_URL=postgresql://user:password@db:5432/gestion
       - JWT_SECRET=votre_secret_jwt_super_securise
       - NODE_ENV=development
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=suppappbudget@gmail.com
+      - SMTP_PASS=gssk dwqv yqvu megt
     depends_on:
       - db
 

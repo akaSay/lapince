@@ -20,6 +20,8 @@ model User {
   currency      String    @default("EUR")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  resetToken        String?   @unique
+  resetTokenExpiry  DateTime?
 
   transactions  Transaction[]
   budgets       Budget[]

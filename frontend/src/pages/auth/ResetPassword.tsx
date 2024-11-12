@@ -42,7 +42,7 @@ const ResetPassword: React.FC = () => {
           alignItems: "center",
         }}
       >
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" sx={{ color: "white" }}>
           {t("auth.resetPassword")}
         </Typography>
 
@@ -59,6 +59,16 @@ const ResetPassword: React.FC = () => {
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, password: e.target.value }))
             }
+            sx={{
+              "& label": { color: "gray" },
+              "& label.Mui-focused": { color: "primary.main" },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": { borderColor: "gray" },
+                "&:hover fieldset": { borderColor: "white" },
+                "&.Mui-focused fieldset": { borderColor: "primary.main" },
+                "& input": { color: "white" },
+              },
+            }}
           />
           <TextField
             margin="normal"
@@ -77,6 +87,17 @@ const ResetPassword: React.FC = () => {
             }
             error={!!error}
             helperText={error}
+            sx={{
+              "& label": { color: "gray" },
+              "& label.Mui-focused": { color: "primary.main" },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": { borderColor: "gray" },
+                "&:hover fieldset": { borderColor: "white" },
+                "&.Mui-focused fieldset": { borderColor: "primary.main" },
+                "& input": { color: "white" },
+              },
+              "& .MuiFormHelperText-root": { color: "error.main" },
+            }}
           />
           <Button
             type="submit"
