@@ -71,10 +71,18 @@ const BudgetCard: React.FC<BudgetCardProps> = ({
         ${
           variant === "editable"
             ? "cursor-pointer hover:bg-gray-700 hover:shadow-xl hover:scale-[1.02] group"
+            : variant === "default"
+            ? "cursor-pointer hover:bg-gray-700"
             : ""
         }
       `}
-      onClick={variant === "editable" ? onClick : undefined}
+      onClick={
+        variant === "editable"
+          ? onClick
+          : variant === "default"
+          ? onClick
+          : undefined
+      }
     >
       <div className="flex flex-col space-y-4">
         {/* Header avec titre et actions */}

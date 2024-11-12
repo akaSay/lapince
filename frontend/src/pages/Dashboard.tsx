@@ -6,6 +6,10 @@ import ExpenseChart from "../components/dashboard/ExpenseChart";
 import StatisticsCard from "../components/dashboard/StatisticsCard";
 import TransactionsList from "../components/dashboard/TransactionsList";
 import TransactionModal from "../components/modals/TransactionModal";
+import BudgetSkeleton from "../components/skeletons/BudgetSkeleton";
+import ChartSkeleton from "../components/skeletons/ChartSkeleton";
+import StatisticsSkeleton from "../components/skeletons/StatisticsSkeleton";
+import TransactionSkeleton from "../components/skeletons/TransactionSkeleton";
 import { useFilters } from "../contexts/FilterContext";
 import { useBudget } from "../hooks/useBudget";
 import { useStatistics } from "../hooks/useStatistics";
@@ -13,10 +17,7 @@ import { useTransaction } from "../hooks/useTransaction";
 import { isDateInRange } from "../lib/dateUtils";
 import { formatCurrency } from "../lib/utils";
 import { Transaction } from "../types/Transaction";
-import TransactionSkeleton from "../components/skeletons/TransactionSkeleton";
-import BudgetSkeleton from "../components/skeletons/BudgetSkeleton";
-import StatisticsSkeleton from "../components/skeletons/StatisticsSkeleton";
-import ChartSkeleton from "../components/skeletons/ChartSkeleton";
+import Modal from "../components/common/Modal";
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -26,6 +27,12 @@ const Dashboard: React.FC = () => {
     Transaction | undefined
   >();
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [isBudgetDetailsModalOpen, setIsBudgetDetailsModalOpen] =
+    useState(false);
+  const [selectedBudgetTransactions, setSelectedBudgetTransactions] = useState<
+    Transaction[]
+  >([]);
+  const [selectedBudgetName, setSelectedBudgetName] = useState("");
   const {
     budgets,
     deleteBudget,
@@ -142,6 +149,15 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleBudgetClick = (category: string) => {
+    const budgetTransactions = filteredTransactions.filter(
+      (t) => t.category === category
+    );
+    setSelectedBudgetTransactions(budgetTransactions);
+    setSelectedBudgetName(category);
+    setIsBudgetDetailsModalOpen(true);
+  };
+
   if (budgetsLoading || transactionsLoading) {
     return (
       <div className="space-y-6">
@@ -195,6 +211,7 @@ const Dashboard: React.FC = () => {
                 {...budget}
                 onDelete={() => handleDeleteBudget(budget.id)}
                 onAddTransaction={handleAddTransaction}
+                onClick={() => handleBudgetClick(budget.category)}
                 variant="default"
               />
             ))}
@@ -236,6 +253,17 @@ const Dashboard: React.FC = () => {
         initialData={selectedTransaction}
         initialCategory={selectedCategory}
       />
+
+      <Modal
+        isOpen={isBudgetDetailsModalOpen}
+        onClose={() => setIsBudgetDetailsModalOpen(false)}
+        title={`Transactions - ${selectedBudgetName}`}
+      >
+        <TransactionsList
+          transactions={selectedBudgetTransactions}
+          variant="compact"
+        />
+      </Modal>
     </div>
   );
 };
