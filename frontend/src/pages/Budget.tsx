@@ -9,11 +9,13 @@ import { useFilters } from "../contexts/FilterContext";
 import { useBudget } from "../hooks/useBudget";
 import { useStatistics } from "../hooks/useStatistics";
 import { useTransaction } from "../hooks/useTransaction";
+import { useToast } from "../hooks/useToast";
 import { isDateInRange } from "../lib/dateUtils";
 import type { Budget, BudgetData } from "../types/Budget";
 
 const Budget: React.FC = () => {
   const { t } = useTranslation();
+  const { error: showError } = useToast();
 
   const { budgets, loading, error, createBudget, deleteBudget, updateBudget } =
     useBudget();
@@ -55,7 +57,7 @@ const Budget: React.FC = () => {
       setIsModalOpen(false);
       setSelectedBudget(undefined);
     } catch (err) {
-      console.error("Erreur lors de l'opération sur le budget:", err);
+      // L'erreur sera gérée dans le hook useBudget
     }
   };
 
@@ -70,21 +72,26 @@ const Budget: React.FC = () => {
   };
 
   const handleDeleteBudget = async (id: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce budget ?")) {
+    if (window.confirm(t("budget.confirmDelete"))) {
       try {
         await deleteBudget(id);
       } catch (err) {
-        console.error("Erreur lors de la suppression:", err);
+        // L'erreur sera gérée dans le hook useBudget
       }
     }
   };
 
-  const handleAddTransaction = (category: string) => {
-    console.log("Ajouter une transaction pour:", category);
+  const handleAddTransaction = () => {
+    showError("errors.default");
   };
 
-  if (loading) return <div className="text-white">Chargement...</div>;
-  if (error) return <div className="text-white">Erreur: {error}</div>;
+  if (loading) return <div className="text-white">{t("common.loading")}</div>;
+  if (error)
+    return (
+      <div className="text-white">
+        {t("common.error")}: {error}
+      </div>
+    );
 
   // Préparation des données
   const budgetArray = Array.isArray(budgets) ? budgets : [];

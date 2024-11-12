@@ -1,12 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html", // Changé de "./frontend/index.html"
-    "./src/**/*.{js,ts,jsx,tsx}", // Changé de "./frontend/src/**/*.{js,ts,jsx,tsx}"
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
   theme: {
     extend: {
+      screens: {
+        xs: { min: "375px", max: "639px" },
+        iphone: { min: "375px", max: "812px" },
+      },
       colors: {
         primary: {
           50: "#f0f9ff",

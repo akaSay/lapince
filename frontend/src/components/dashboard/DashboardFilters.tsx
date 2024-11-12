@@ -15,12 +15,12 @@ const DashboardFilters: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="grid w-full grid-cols-3 gap-2">
       <select
         name="dateRange"
         value={filters.dateRange || ""}
         onChange={handleFilterChange}
-        className="px-3 py-2 text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full px-2 py-2 text-sm text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         <option value="">{t("dashboard.filters.allPeriods")}</option>
         <option value="this-month">{t("dashboard.filters.thisMonth")}</option>
@@ -33,7 +33,7 @@ const DashboardFilters: React.FC = () => {
         name="status"
         value={filters.status || ""}
         onChange={handleFilterChange}
-        className="px-3 py-2 text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full px-2 py-2 text-sm text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         <option value="">{t("dashboard.filters.allStatus")}</option>
         <option value="success">{t("dashboard.filters.upToDate")}</option>
@@ -45,7 +45,7 @@ const DashboardFilters: React.FC = () => {
         name="category"
         value={filters.category || ""}
         onChange={handleFilterChange}
-        className="px-3 py-2 text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full px-2 py-2 text-sm text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         <option value="">{t("dashboard.filters.allCategories")}</option>
         <option value="Alimentation">{t("dashboard.filters.food")}</option>

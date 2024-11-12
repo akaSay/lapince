@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import api from "../lib/api";
 import { Budget } from "../types/Budget";
+import { useToast } from "./useToast";
 
 interface UseBudgetReturn {
   budgets: Budget[];
   loading: boolean;
   error: string | null;
-  createBudget: (budgetData: Omit<Budget, "id" | "spent">) => Promise<void>;
+  createBudget: (budgetData: Omit<Budget, "id" | "spent">) => Promise<Budget>;
   updateBudget: (
     id: string,
     budgetData: Omit<Budget, "id" | "spent">
-  ) => Promise<void>;
+  ) => Promise<Budget>;
   deleteBudget: (id: string) => Promise<void>;
   fetchBudgets: () => Promise<void>;
 }
@@ -19,6 +20,7 @@ export const useBudget = (): UseBudgetReturn => {
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { success, error: showError } = useToast();
 
   const fetchBudgets = async () => {
     try {
@@ -26,7 +28,8 @@ export const useBudget = (): UseBudgetReturn => {
       const response = await api.get<Budget[]>("/budgets");
       setBudgets(response.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur est survenue");
+      setError("errors.budget.fetch");
+      showError("errors.budget.fetch");
     } finally {
       setLoading(false);
     }
@@ -34,12 +37,12 @@ export const useBudget = (): UseBudgetReturn => {
 
   const createBudget = async (budgetData: Omit<Budget, "id" | "spent">) => {
     try {
-      await api.post("/budgets", budgetData);
-      await fetchBudgets();
+      const response = await api.post("/budgets", budgetData);
+      setBudgets((prev) => [...prev, response.data]);
+      success("success.budget.create");
+      return response.data;
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Erreur lors de la création"
-      );
+      showError("errors.budget.create");
       throw err;
     }
   };
@@ -49,12 +52,14 @@ export const useBudget = (): UseBudgetReturn => {
     budgetData: Omit<Budget, "id" | "spent">
   ) => {
     try {
-      await api.put(`/budgets/${id}`, budgetData);
-      await fetchBudgets();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Erreur lors de la mise à jour"
+      const response = await api.put(`/budgets/${id}`, budgetData);
+      setBudgets((prev) =>
+        prev.map((budget) => (budget.id === id ? response.data : budget))
       );
+      success("success.budget.update");
+      return response.data;
+    } catch (err) {
+      showError("errors.budget.update");
       throw err;
     }
   };
@@ -62,11 +67,10 @@ export const useBudget = (): UseBudgetReturn => {
   const deleteBudget = async (id: string) => {
     try {
       await api.delete(`/budgets/${id}`);
-      await fetchBudgets();
+      setBudgets((prev) => prev.filter((budget) => budget.id !== id));
+      success("success.budget.delete");
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Erreur lors de la suppression"
-      );
+      showError("errors.budget.delete");
       throw err;
     }
   };

@@ -113,14 +113,20 @@ const Dashboard: React.FC = () => {
       await createTransaction(transactionData);
       setIsTransactionModalOpen(false);
       await fetchBudgets();
-    } catch (error) {
-      console.error("Erreur lors de la création de la transaction:", error);
-    }
+    } catch (error) {}
   };
 
   const handleAddTransaction = (category: string) => {
     setSelectedCategory(category);
     setIsTransactionModalOpen(true);
+  };
+
+  const handleDeleteBudget = async (id: string) => {
+    if (window.confirm(t("budget.confirmDelete"))) {
+      try {
+        await deleteBudget(id);
+      } catch (error) {}
+    }
   };
 
   return (
@@ -155,7 +161,7 @@ const Dashboard: React.FC = () => {
               <BudgetCard
                 key={budget.id}
                 {...budget}
-                onDelete={() => deleteBudget(budget.id)}
+                onDelete={() => handleDeleteBudget(budget.id)}
                 onAddTransaction={handleAddTransaction}
                 variant="default"
               />

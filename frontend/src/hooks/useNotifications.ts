@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { Notification } from "../types/Notification";
 import api from "../lib/api";
+import { useToast } from "../hooks/useToast";
 
 export const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { error: showError } = useToast();
 
   const fetchNotifications = async () => {
     try {
@@ -16,8 +17,7 @@ export const useNotifications = () => {
       setNotifications(notifs);
       setUnreadCount(notifs.filter((n: Notification) => !n.isRead).length);
     } catch (err) {
-      setError("Erreur lors de la récupération des notifications");
-      console.error(err);
+      showError("errors.notifications.fetch");
     } finally {
       setLoading(false);
     }
@@ -31,7 +31,7 @@ export const useNotifications = () => {
       );
       setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (err) {
-      console.error("Erreur lors du marquage comme lu:", err);
+      showError("errors.notifications.update");
     }
   };
 
@@ -41,7 +41,7 @@ export const useNotifications = () => {
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0);
     } catch (err) {
-      console.error("Erreur lors du marquage de tout comme lu:", err);
+      showError("errors.notifications.update");
     }
   };
 
@@ -54,7 +54,7 @@ export const useNotifications = () => {
         return filtered;
       });
     } catch (err) {
-      console.error("Erreur lors de la suppression:", err);
+      showError("errors.notifications.delete");
     }
   };
 
@@ -69,7 +69,6 @@ export const useNotifications = () => {
     notifications,
     unreadCount,
     loading,
-    error,
     markAsRead,
     markAllAsRead,
     deleteNotification,

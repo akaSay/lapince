@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Budget } from "../types/Budget";
 import { Transaction } from "../types/Transaction";
+import { removeAccents } from "../lib/utils";
 
 interface SearchResults {
   transactions: Transaction[];
@@ -23,24 +24,31 @@ export const useSearch = (
       return;
     }
 
-    const searchLower = searchTerm.toLowerCase();
-    const searchTerms = searchLower.split(" ").filter((t) => t.length > 0);
+    const searchNormalized = removeAccents(searchTerm.toLowerCase().trim());
+    const searchTerms = searchNormalized.split(" ").filter((t) => t.length > 0);
 
-    // Recherche dans les transactions
+    // Recherche dans les transactions avec gestion des accents
     const filteredTransactions = allTransactions.filter((transaction) => {
-      const descriptionLower = transaction.description.toLowerCase();
-      const categoryLower = transaction.category.toLowerCase();
+      const descriptionNormalized = removeAccents(
+        transaction.description.toLowerCase()
+      );
+      const categoryNormalized = removeAccents(
+        transaction.category.toLowerCase()
+      );
+      const amountString = transaction.amount.toString();
 
-      return searchTerms.every(
+      return searchTerms.some(
         (term) =>
-          descriptionLower.includes(term) || categoryLower.includes(term)
+          descriptionNormalized.includes(term) ||
+          categoryNormalized.includes(term) ||
+          amountString.includes(term)
       );
     });
 
-    // Recherche dans les budgets
+    // Recherche dans les budgets avec gestion des accents
     const filteredBudgets = allBudgets.filter((budget) => {
-      const categoryLower = budget.category.toLowerCase();
-      return searchTerms.every((term) => categoryLower.includes(term));
+      const categoryNormalized = removeAccents(budget.category.toLowerCase());
+      return searchTerms.some((term) => categoryNormalized.includes(term));
     });
 
     setResults({

@@ -1,6 +1,7 @@
 import { t } from "i18next";
 import React from "react";
 import Avatar from "../common/Avatar";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileCardProps {
   user: {
@@ -14,6 +15,8 @@ interface ProfileCardProps {
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
       <div className="flex items-center mb-6 space-x-4">
@@ -48,7 +51,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <button className="flex items-center justify-center p-2 space-x-2 transition-colors bg-gray-700 rounded-lg hover:bg-gray-600">
+        <button
+          onClick={() => navigate("/settings")}
+          className="flex items-center justify-center p-2 space-x-2 transition-colors bg-gray-700 rounded-lg hover:bg-gray-600"
+        >
           <i className="material-icons-outlined">settings</i>
           <span>{t("layout.profile.settings")}</span>
         </button>

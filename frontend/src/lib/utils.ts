@@ -13,3 +13,7 @@ export const formatDate = (date: Date): string => {
     year: "numeric",
   }).format(date);
 };
+
+export const removeAccents = (str: string): string => {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+};

@@ -6,11 +6,13 @@ import { exportService } from "../services/exportService";
 import SettingsForm from "../components/settings/SettingsForm";
 import { useSettings } from "../hooks/useSettings";
 import { SettingsData } from "../types/settings";
+import { useToast } from "../hooks/useToast";
 
 const Settings: React.FC = () => {
   const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const { settings, loading, error, updateSettings } = useSettings();
+  const { success, error: showError } = useToast();
 
   const handleSettingsSubmit = async (newSettings: SettingsData) => {
     try {
@@ -65,26 +67,27 @@ const Settings: React.FC = () => {
         await notificationService.subscribeToNotifications();
       }
 
-      // TODO: Ajouter une notification de succès
+      success("success.settings.update");
     } catch (err) {
-      console.error("Erreur lors de la mise à jour des paramètres:", err);
-      // TODO: Ajouter une notification d'erreur
+      showError("errors.settings.update");
     }
   };
 
   const handleExportTransactions = async () => {
     try {
       await exportService.exportTransactions(settings?.export.format || "csv");
+      success("success.export.transactions");
     } catch (error) {
-      console.error("Erreur lors de l'exportation des transactions:", error);
+      showError("errors.export.transactions");
     }
   };
 
   const handleExportBudgets = async () => {
     try {
       await exportService.exportBudgets(settings?.export.format || "csv");
+      success("success.export.budgets");
     } catch (error) {
-      console.error("Erreur lors de l'exportation des budgets:", error);
+      showError("errors.export.budgets");
     }
   };
 
@@ -94,23 +97,25 @@ const Settings: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-4">
-        <span className="text-white">Chargement...</span>
+        <span className="text-white">{t("common.loading")}</span>
       </div>
     );
   }
 
   if (error) {
+    showError("errors.settings.load");
     return (
       <div className="p-4 text-red-500 bg-red-100 rounded-lg">
-        Une erreur est survenue lors du chargement des paramètres
+        {t("errors.settings.load")}
       </div>
     );
   }
 
   if (!settings) {
+    showError("errors.settings.notFound");
     return (
       <div className="p-4 text-yellow-500 bg-yellow-100 rounded-lg">
-        Aucun paramètre trouvé
+        {t("errors.settings.notFound")}
       </div>
     );
   }

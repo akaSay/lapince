@@ -289,4 +289,53 @@ export default {
       monthlySavingsDetail: "Vous avez économisé {{amount}}€ ce mois-ci !",
     },
   },
+  errors: {
+    budget: {
+      create:
+        "Impossible de créer le budget. Veuillez vérifier les informations saisies.",
+      update: "La mise à jour du budget a échoué. Veuillez réessayer.",
+      delete: "La suppression du budget n'a pas pu être effectuée.",
+      fetch: "Impossible de charger les budgets. Vérifiez votre connexion.",
+    },
+    transaction: {
+      create:
+        "La création de la transaction a échoué. Vérifiez les données saisies.",
+      update: "Impossible de mettre à jour la transaction. Veuillez réessayer.",
+      delete: "La suppression de la transaction n'a pas pu être effectuée.",
+    },
+    settings: {
+      update: "La mise à jour des paramètres a échoué. Veuillez réessayer.",
+    },
+    default:
+      "Une erreur inattendue est survenue. Veuillez réessayer ultérieurement.",
+    network:
+      "La connexion au serveur a échoué. Vérifiez votre connexion internet.",
+    validation: {
+      required: "Ce champ est obligatoire",
+      invalidFormat: "Format invalide",
+      minLength: "Doit contenir au moins {{min}} caractères",
+      maxLength: "Ne doit pas dépasser {{max}} caractères",
+      invalidEmail: "Adresse email invalide",
+      passwordMismatch: "Les mots de passe ne correspondent pas",
+    },
+  },
+  success: {
+    budget: {
+      create: "Budget créé avec succès",
+      update: "Budget mis à jour avec succès",
+      delete: "Budget supprimé avec succès",
+    },
+    transaction: {
+      create: "Transaction créée avec succès",
+      update: "Transaction mise à jour avec succès",
+      delete: "Transaction supprimée avec succès",
+    },
+    settings: {
+      update: "Paramètres mis à jour avec succès",
+    },
+    export: {
+      transactions: "Transactions exportées avec succès",
+      budgets: "Budgets exportés avec succès",
+    },
+  },
 };

@@ -37,7 +37,7 @@ const Transactions: React.FC = () => {
       setIsModalOpen(false);
       setSelectedTransaction(undefined);
     } catch (error) {
-      console.error("Erreur lors de la gestion de la transaction:", error);
+      // L'erreur est déjà gérée dans le hook
     }
   };
 
@@ -51,7 +51,7 @@ const Transactions: React.FC = () => {
       try {
         await deleteTransaction(transaction.id);
       } catch (error) {
-        console.error(t("common.error"), error);
+        // L'erreur est déjà gérée dans le hook
       }
     }
   };

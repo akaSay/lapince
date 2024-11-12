@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import api from "../lib/api";
 import { Transaction } from "../types/Transaction";
+import { useToast } from "./useToast";
 
 export const useTransaction = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const { success, error: showError } = useToast();
 
   const fetchTransactions = async () => {
     try {
@@ -11,7 +13,7 @@ export const useTransaction = () => {
       const transactionsData = response.data.data || [];
       setTransactions(transactionsData);
     } catch (error) {
-      console.error("Erreur lors de la récupération des transactions:", error);
+      showError("errors.transaction.fetch");
       setTransactions([]);
     }
   };
@@ -21,9 +23,10 @@ export const useTransaction = () => {
       const response = await api.post("/transactions", data);
       const newTransaction = response.data;
       await fetchTransactions();
+      success("success.transaction.create");
       return newTransaction;
     } catch (error) {
-      console.error("Erreur lors de la création de la transaction:", error);
+      showError("errors.transaction.create");
       throw error;
     }
   };
@@ -35,9 +38,10 @@ export const useTransaction = () => {
       setTransactions((prev) =>
         prev.map((t) => (t.id === id ? updatedTransaction : t))
       );
+      success("success.transaction.update");
       return updatedTransaction;
     } catch (error) {
-      console.error("Erreur lors de la mise à jour de la transaction:", error);
+      showError("errors.transaction.update");
       throw error;
     }
   };
@@ -46,8 +50,9 @@ export const useTransaction = () => {
     try {
       await api.delete(`/transactions/${id}`);
       setTransactions((prev) => prev.filter((t) => t.id !== id));
+      success("success.transaction.delete");
     } catch (error) {
-      console.error("Erreur lors de la suppression de la transaction:", error);
+      showError("errors.transaction.delete");
       throw error;
     }
   };
