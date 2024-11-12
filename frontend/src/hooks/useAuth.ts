@@ -5,6 +5,7 @@ import api from "../lib/api";
 import { useProfileContext } from "../contexts/ProfileContext";
 
 interface LoginCredentials {
+  rememberMe: any;
   email: string;
   password: string;
 }
@@ -30,19 +31,56 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const { fetchProfile, clearProfile } = useProfileContext();
 
-  const login = async (credentials: LoginCredentials) => {
+  const getToken = () => {
+    return localStorage.getItem("token") || sessionStorage.getItem("token");
+  };
+
+  const isAuthenticated = () => {
+    const token = getToken();
+    return !!token;
+  };
+
+  const initAuth = async () => {
+    const token = getToken();
+    if (token) {
+      try {
+        await fetchProfile();
+        return true;
+      } catch (error) {
+        logout();
+        return false;
+      }
+    }
+    return false;
+  };
+
+  const login = async (
+    credentials: LoginCredentials & { rememberMe?: boolean }
+  ) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await api.post<AuthResponse>("/auth/login", credentials);
+      const { rememberMe, ...loginCredentials } = credentials;
+
+      const response = await api.post<AuthResponse>(
+        "/auth/login",
+        loginCredentials
+      );
       const { access_token } = response.data;
 
       if (!access_token) {
         throw new Error("Token non reçu du serveur");
       }
 
-      localStorage.setItem("token", access_token);
+      if (rememberMe) {
+        localStorage.setItem("token", access_token);
+        sessionStorage.removeItem("token");
+      } else {
+        sessionStorage.setItem("token", access_token);
+        localStorage.removeItem("token");
+      }
+
       await fetchProfile();
       navigate("/dashboard");
     } catch (err) {
@@ -90,9 +128,19 @@ export const useAuth = () => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     clearProfile();
     navigate("/login");
   };
 
-  return { login, register, logout, error, loading };
+  return {
+    login,
+    register,
+    logout,
+    error,
+    loading,
+    isAuthenticated,
+    getToken,
+    initAuth,
+  };
 };

@@ -54,6 +54,7 @@ const Login: React.FC = () => {
       await login({
         email: formData.email,
         password: formData.password,
+        rememberMe: formData.rememberMe,
       });
     } catch (err) {
       console.error("Erreur de connexion:", err);
