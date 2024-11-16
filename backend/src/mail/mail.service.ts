@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
 import * as fs from 'fs';
+import * as nodemailer from 'nodemailer';
 import * as path from 'path';
 
 @Injectable()
@@ -10,7 +10,6 @@ export class MailService {
 
   constructor() {
     try {
-      // Utilisez path.resolve pour obtenir le chemin absolu
       const logoPath = path.resolve(__dirname, '..', 'assets', 'logo.svg');
       this.logger.log(`Tentative de lecture du logo à partir de : ${logoPath}`);
 

@@ -4,6 +4,7 @@ import { formatCurrency } from "../../lib/utils";
 
 interface BudgetCardProps {
   category: string;
+  description?: string;
   icon: string;
   spent?: number;
   limit: number;
@@ -92,7 +93,9 @@ const BudgetCard: React.FC<BudgetCardProps> = ({
               <i className="text-white material-icons-outlined">{icon}</i>
             </div>
             <div className="flex items-center space-x-2">
-              <h3 className="text-lg font-medium text-white">{category}</h3>
+              <h3 className="text-lg font-medium text-white">
+                {t(`categories.expense.${category}`)}
+              </h3>
               {variant === "editable" && (
                 <i className="hidden text-gray-400 transition-colors material-icons-outlined group-hover:inline-block">
                   edit
@@ -167,5 +170,4 @@ const BudgetCard: React.FC<BudgetCardProps> = ({
     </div>
   );
 };
-
 export default BudgetCard;

@@ -18,6 +18,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({
   budget,
 }) => {
   const { t } = useTranslation();
+
   return (
     <Modal
       isOpen={isOpen}

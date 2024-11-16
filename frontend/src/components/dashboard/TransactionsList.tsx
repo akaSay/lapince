@@ -63,9 +63,11 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                         {transaction.description}
                       </p>
                       <div className="flex flex-col space-y-1 sm:flex-row sm:space-y-0 sm:space-x-4">
-                        <p className="text-sm text-gray-400">
-                          {transaction.category}
-                        </p>
+                        <div className="text-sm text-gray-400">
+                          {t(
+                            `categories.${transaction.type}.${transaction.category}`
+                          )}
+                        </div>
                         <p className="text-xs text-gray-400 sm:hidden">
                           {formatDate(new Date(transaction.date))}
                         </p>

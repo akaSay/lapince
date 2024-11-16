@@ -8,6 +8,7 @@ export default {
     edit: "Edit",
     noData: "No data available",
     viewAll: "View all",
+    success: "Success",
   },
   dashboard: {
     title: "Dashboard",
@@ -59,11 +60,12 @@ export default {
       description: "Description",
       amount: "Amount",
       category: "Category",
-      type: "Type",
+      type: "Transaction type",
       income: "Income",
       expense: "Expense",
       save: "Save",
       cancel: "Cancel",
+      selectCategory: "Select a category",
     },
     filters: {
       search: "Search transaction",
@@ -90,20 +92,9 @@ export default {
     confirmDelete: "Are you sure you want to delete this budget?",
     form: {
       category: "Category",
-      limit: "Monthly limit",
-      currency: "Currency",
-      save: "Save",
-      cancel: "Cancel",
-      icons: {
-        account_balance: "💰 Budget",
-        restaurant: "🍽️ Restaurant",
-        shopping_cart: "🛒 Shopping",
-        directions_car: "🚗 Transport",
-        home: "🏠 Housing",
-        sports_esports: "🎮 Leisure",
-        medical_services: "🏥 Health",
-        school: "📚 Education",
-      },
+      selectCategory: "Select a category",
+      limit: "Budget limit",
+      create: "Create budget",
     },
     status: {
       upToDate: "Up to date",
@@ -222,29 +213,37 @@ export default {
     title: "Profile",
     editProfile: "Edit Profile",
     notificationPreferences: "Notification Preferences",
-    budgetAlert: "Budget Alert",
+    budgetAlert: "Budget Alerts",
     linkedAccounts: "Linked Accounts",
     mainBankAccount: "Main Bank Account",
     configure: "Configure",
     form: {
-      name: "Full name",
-      email: "Email address",
+      firstName: "First Name",
+      lastName: "Last Name",
+      email: "Email Address",
       language: "Language",
       currency: "Currency",
       save: "Save",
       cancel: "Cancel",
     },
     stats: {
-      profileCompletion: "Profile completion",
-      memberSince: "Member since",
-      totalTransactions: "Total transactions",
-      activeBudgets: "Active budgets",
+      profileCompletion: "Profile Completion",
+      memberSince: "Member Since",
+      totalTransactions: "Total Transactions",
+      activeBudgets: "Active Budgets",
     },
     notifications: {
       title: "Notifications",
-      email: "Email notifications",
-      push: "Push notifications",
-      budget: "Budget alerts",
+      email: "Email Notifications",
+      push: "Push Notifications",
+      budget: "Budget Alerts",
+      updateSuccess: "Profile updated successfully",
+      updateError: "Error updating profile",
+    },
+    linkedAccount: {
+      title: "Linked Accounts",
+      mainBank: "Main Bank Account",
+      configure: "Configure",
     },
   },
   notifications: {
@@ -282,6 +281,83 @@ export default {
         'You have made several similar payments for "{{description}}"',
       monthlySavings: "Congratulations!",
       monthlySavingsDetail: "You have saved {{amount}}€ this month!",
+    },
+  },
+  categories: {
+    groups: {
+      essential: "Essential Expenses",
+      transport: "Transportation",
+      foodAndDrinks: "Food & Drinks",
+      leisureAndCulture: "Leisure & Culture",
+      education: "Education",
+      shopping: "Shopping",
+      wellness: "Wellness",
+      services: "Services & Subscriptions",
+      finances: "Finances",
+      income: "Income",
+    },
+    expense: {
+      // Essential expenses
+      housing: "🏠 Housing",
+      utilities: "💡 Bills & Utilities",
+      groceries: "🛒 Groceries",
+      healthcare: "🏥 Healthcare",
+      insurance: "🛡️ Insurance",
+
+      // Transportation
+      transport: "🚗 Transport",
+      fuel: "⛽ Fuel",
+      parking: "🅿️ Parking",
+      publicTransport: "🚇 Public Transport",
+      maintenance: "🔧 Vehicle Maintenance",
+
+      // Food & Drinks
+      food: "🍽️ Food",
+      restaurants: "🍳 Restaurants",
+      coffee: "☕ Coffee & Snacks",
+      bars: "🍺 Bars & Nightlife",
+
+      // Leisure & Culture
+      leisure: "🎮 Leisure",
+      entertainment: "🎬 Entertainment",
+      sports: "⚽ Sports",
+      travel: "✈️ Travel",
+      culture: "🎭 Culture & Shows",
+
+      // Education
+      education: "📚 Education",
+      training: "🎓 Training",
+      books: "📖 Books",
+
+      // Shopping
+      shopping: "🛍️ Shopping",
+      clothing: "👕 Clothing",
+      electronics: "📱 Electronics",
+      gifts: "🎁 Gifts",
+
+      // Wellness
+      wellness: "🧘 Wellness",
+      beauty: "💅 Beauty",
+      fitness: "💪 Fitness",
+
+      // Services & Subscriptions
+      subscriptions: "📱 Subscriptions",
+      internet: "🌐 Internet & Phone",
+      streaming: "📺 Streaming",
+      software: "💻 Software",
+
+      // Finances
+      savings: "💰 Savings",
+      investments: "📈 Investments",
+      taxes: "📋 Taxes",
+      fees: "🏦 Bank Fees",
+    },
+    income: {
+      salary: "💼 Salary",
+      freelance: "🔨 Freelance",
+      rental: "🏘️ Rental Income",
+      interests: "💸 Interests",
+      other: "📌 Other",
     },
   },
 };

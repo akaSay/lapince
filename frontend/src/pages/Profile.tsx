@@ -3,71 +3,77 @@ import React, { useState } from "react";
 import ProfileModal from "../components/modals/ProfileModal";
 import ProfileCard from "../components/profile/ProfileCard";
 import { useProfileContext } from "../contexts/ProfileContext";
+import { useToast } from "../hooks/useToast";
+import { ProfileUpdateData } from "../types/User";
 
 const Profile: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { profile, loading, error, fetchProfile, updateProfile } =
     useProfileContext();
+  const { success, error: showError } = useToast();
 
   if (loading) return <div>Chargement...</div>;
   if (error) return <div>Erreur: {error}</div>;
   if (!profile) return null;
 
+  const [firstName = "", lastName = ""] = profile.name?.split(" ") || ["", ""];
+
   const userData = {
-    name: profile.name,
+    firstName,
+    lastName,
     email: profile.email,
-    membershipType: "Premium",
-    avatar: "/avatars/avatar1.jpg",
-    isEmailVerified: true,
-    completionRate: 85,
-    language: "fr",
-    currency: "EUR",
-    notifications: {
-      email: true,
-      push: true,
-      budget: true,
-    },
   };
 
   const handleProfileSubmit = async (profileData: {
-    name: string;
+    firstName: string;
+    lastName?: string;
     email: string;
-    language: string;
-    currency: string;
-    notifications: {
-      email: boolean;
-      push: boolean;
-      budget: boolean;
-    };
   }) => {
-    try {
-      await updateProfile({
-        name: profileData.name,
-        email: profileData.email,
-        // autres champs...
-      });
+    if (!profileData.firstName.trim()) {
+      showError(t("profile.notifications.firstNameRequired"));
+      return;
+    }
 
+    if (!profileData.email.trim()) {
+      showError(t("profile.notifications.emailRequired"));
+      return;
+    }
+
+    try {
+      const fullName = profileData.lastName?.trim()
+        ? `${profileData.firstName.trim()} ${profileData.lastName.trim()}`
+        : profileData.firstName.trim();
+
+      const updateData: ProfileUpdateData = {
+        name: fullName,
+        email: profileData.email.trim(),
+      };
+
+      await updateProfile(updateData);
       await fetchProfile();
       setIsModalOpen(false);
+      success(t("profile.notifications.updateSuccess"));
     } catch (error) {
       console.error("Erreur lors de la mise à jour du profil:", error);
+      showError(t("profile.notifications.updateError"));
     }
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">{t("profile.title")}</h1>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
-        >
-          {t("profile.editProfile")}
-        </button>
-      </div>
+      <h1 className="text-2xl font-bold text-white">{t("profile.title")}</h1>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <ProfileCard user={userData} />
+        <ProfileCard
+          user={{
+            name: profile.name || "",
+            email: profile.email || "",
+            membershipType: "Premium",
+            avatar: "/avatars/avatar1.jpg",
+            isEmailVerified: profile.verificationStatus?.email || false,
+          }}
+          onEdit={() => setIsModalOpen(true)}
+        />
 
         <div className="space-y-6">
           <div className="p-6 bg-gray-800 rounded-lg shadow-lg">

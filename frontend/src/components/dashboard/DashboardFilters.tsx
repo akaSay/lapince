@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useFilters } from "../../contexts/FilterContext";
+import { CATEGORY_GROUPS } from "../../lib/categories";
 
 const DashboardFilters: React.FC = () => {
   const { filters, setFilters } = useFilters();
@@ -48,10 +49,19 @@ const DashboardFilters: React.FC = () => {
         className="w-full px-2 py-2 text-sm text-white bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         <option value="">{t("dashboard.filters.allCategories")}</option>
-        <option value="Alimentation">{t("dashboard.filters.food")}</option>
-        <option value="Transport">{t("dashboard.filters.transport")}</option>
-        <option value="Logement">{t("dashboard.filters.housing")}</option>
-        <option value="Loisirs">{t("dashboard.filters.leisure")}</option>
+        {Object.entries(CATEGORY_GROUPS).map(([groupKey, group]) => (
+          <optgroup key={groupKey} label={group.name}>
+            {group.categories.map((category) => (
+              <option key={category} value={category}>
+                {t(
+                  `categories.${
+                    groupKey === "income" ? "income" : "expense"
+                  }.${category}`
+                )}
+              </option>
+            ))}
+          </optgroup>
+        ))}
       </select>
     </div>
   );

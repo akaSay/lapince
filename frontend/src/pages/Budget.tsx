@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import AddCard from "../components/common/AddCard";
 import BudgetCard from "../components/dashboard/BudgetCard";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
 import ExpenseChart from "../components/dashboard/ExpenseChart";
 import StatisticsCard from "../components/dashboard/StatisticsCard";
 import BudgetModal from "../components/modals/BudgetModal";
+import BudgetSkeleton from "../components/skeletons/BudgetSkeleton";
 import { useFilters } from "../contexts/FilterContext";
 import { useBudget } from "../hooks/useBudget";
 import { useStatistics } from "../hooks/useStatistics";
-import { useTransaction } from "../hooks/useTransaction";
 import { useToast } from "../hooks/useToast";
+import { useTransaction } from "../hooks/useTransaction";
 import { isDateInRange } from "../lib/dateUtils";
 import type { Budget, BudgetData } from "../types/Budget";
-import BudgetSkeleton from "../components/skeletons/BudgetSkeleton";
+import { formatCurrency } from "../lib/utils";
 
 const Budget: React.FC = () => {
   const { t } = useTranslation();
@@ -28,21 +30,78 @@ const Budget: React.FC = () => {
   >();
 
   // Filtrer les transactions
-  const filteredTransactions = transactions.filter((transaction) =>
-    isDateInRange(transaction.date, filters.dateRange)
-  );
+  const filteredTransactions = transactions.filter((transaction) => {
+    if (!isDateInRange(transaction.date, filters.dateRange)) {
+      return false;
+    }
+    if (
+      filters.category &&
+      transaction.category.toLowerCase() !== filters.category.toLowerCase()
+    ) {
+      return false;
+    }
+    return true;
+  });
 
   const hasDataForPeriod =
     filteredTransactions.length > 0 || !filters.dateRange;
 
-  // Utiliser useStatistics
-  const { commonStats } = useStatistics(
-    transactions,
-    budgets,
+  // Préparation des données avec les budgets filtrés
+  const budgetArray = Array.isArray(budgets) ? budgets : [];
+
+  const filteredBudgets = budgetArray
+    .map((budget) => {
+      const spent = filteredTransactions
+        .filter((t) => t.category === budget.category && t.type === "expense")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      return {
+        ...budget,
+        spent,
+        shouldShow: spent > 0 || !filters.dateRange,
+      };
+    })
+    .filter(
+      (budget) =>
+        !filters.category ||
+        budget.category.toLowerCase() === filters.category.toLowerCase()
+    );
+
+  // Utiliser filteredBudgets pour les statistiques
+  const { currentExpenses, previousExpenses, expensesTrend } = useStatistics(
+    filteredTransactions,
+    filteredBudgets,
     filteredTransactions,
     hasDataForPeriod,
     filters.dateRange
   );
+
+  // Calculer le budget total à partir des budgets filtrés
+  const totalBudget = filteredBudgets.reduce(
+    (sum, budget) => sum + budget.limit,
+    0
+  );
+
+  const budgetStats = [
+    {
+      title: t("budget.statistics.monthlyExpenses"),
+      value: formatCurrency(currentExpenses),
+      icon: "trending_down",
+      trend: { value: expensesTrend, isPositive: expensesTrend <= 0 },
+    },
+    {
+      title: t("budget.statistics.previousMonth"),
+      value: formatCurrency(previousExpenses),
+      icon: "calendar_today",
+      trend: { value: 0, isPositive: true },
+    },
+    {
+      title: t("budget.statistics.totalBudget"),
+      value: formatCurrency(totalBudget), // Utiliser le budget total filtré
+      icon: "account_balance",
+      trend: { value: 0, isPositive: true },
+    },
+  ];
 
   // Handlers
   const handleCreateBudget = async (budgetData: BudgetData) => {
@@ -104,27 +163,6 @@ const Budget: React.FC = () => {
       </div>
     );
 
-  // Préparation des données
-  const budgetArray = Array.isArray(budgets) ? budgets : [];
-
-  const filteredBudgets = budgetArray
-    .map((budget) => {
-      const spent = filteredTransactions
-        .filter((t) => t.category === budget.category && t.type === "expense")
-        .reduce((sum, t) => sum + t.amount, 0);
-
-      return {
-        ...budget,
-        spent,
-        shouldShow: spent > 0 || !filters.dateRange,
-      };
-    })
-    .filter(
-      (budget) =>
-        !filters.category ||
-        budget.category.toLowerCase() === filters.category.toLowerCase()
-    );
-
   const expenseData = filteredBudgets.map((budget) => ({
     category: budget.category,
     amount: budget.spent || 0,
@@ -148,23 +186,32 @@ const Budget: React.FC = () => {
       <DashboardFilters />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {commonStats.map((stat) => (
+        {budgetStats.map((stat) => (
           <StatisticsCard key={stat.title} {...stat} />
         ))}
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {hasDataForPeriod ? (
-          filteredBudgets.map((budget) => (
-            <BudgetCard
-              key={budget.id}
-              {...budget}
-              onDelete={() => handleDeleteBudget(budget.id)}
-              onAddTransaction={handleAddTransaction}
-              onClick={() => handleBudgetClick(budget)}
-              variant="editable"
+          <>
+            {filteredBudgets.map((budget) => (
+              <BudgetCard
+                key={budget.id}
+                {...budget}
+                onDelete={() => handleDeleteBudget(budget.id)}
+                onAddTransaction={handleAddTransaction}
+                onClick={() => handleBudgetClick(budget)}
+                variant="editable"
+              />
+            ))}
+            <AddCard
+              onClick={() => {
+                setSelectedBudget(undefined);
+                setIsModalOpen(true);
+              }}
+              label={t("budget.new")}
             />
-          ))
+          </>
         ) : (
           <div className="col-span-2 p-6 bg-gray-800 rounded-lg shadow-lg">
             <div className="py-4 text-center text-gray-400">

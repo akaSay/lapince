@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Transaction, TransactionType } from "../../types/Transaction";
+import { CATEGORY_GROUPS } from "../../lib/categories";
 
 interface TransactionFormProps {
   onSubmit: (data: Omit<Transaction, "id">) => void;
@@ -98,11 +99,32 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           className="w-full px-3 py-2 bg-gray-700 rounded-lg"
           disabled={!!initialCategory}
         >
-          <option value="">{t("dashboard.filters.allCategories")}</option>
-          <option value="Alimentation">{t("dashboard.filters.food")}</option>
-          <option value="Transport">{t("dashboard.filters.transport")}</option>
-          <option value="Loisirs">{t("dashboard.filters.leisure")}</option>
-          <option value="Logement">{t("dashboard.filters.housing")}</option>
+          <option value="">{t("transactions.form.selectCategory")}</option>
+          {formData.type === "expense" ? (
+            Object.entries(CATEGORY_GROUPS).map(
+              ([groupKey, group]) =>
+                groupKey !== "income" && (
+                  <optgroup
+                    key={groupKey}
+                    label={t(`categories.groups.${groupKey}`)}
+                  >
+                    {group.categories.map((category) => (
+                      <option key={category} value={category}>
+                        {t(`categories.expense.${category}`)}
+                      </option>
+                    ))}
+                  </optgroup>
+                )
+            )
+          ) : (
+            <optgroup label={t("categories.groups.income")}>
+              {CATEGORY_GROUPS.income.categories.map((category) => (
+                <option key={category} value={category}>
+                  {t(`categories.income.${category}`)}
+                </option>
+              ))}
+            </optgroup>
+          )}
         </select>
       </div>
 

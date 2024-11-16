@@ -43,7 +43,7 @@ const ExpenseChart: React.FC<ExpenseChartProps> = ({ data }) => {
           <div key={item.category} className="w-full">
             <div className="flex justify-between mb-1.5">
               <span className="text-sm text-gray-400 truncate max-w-[60%]">
-                {item.category}
+                {t(`categories.expense.${item.category}`)}
               </span>
               <span className="text-sm text-gray-400">
                 {formatCurrency(item.amount)}

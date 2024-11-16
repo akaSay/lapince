@@ -98,7 +98,16 @@ const Transactions: React.FC = () => {
         filteredTransactions.length > 0 ? currentMonthExpenses : 0
       ),
       icon: "trending_down",
-      trend: { value: 0, isPositive: true },
+      trend: {
+        value:
+          lastMonthExpenses === 0
+            ? currentMonthExpenses > 0
+              ? 100
+              : 0
+            : ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses) *
+              100,
+        isPositive: currentMonthExpenses <= lastMonthExpenses,
+      },
     },
     {
       title: t("transactions.statistics.totalIncome"),
@@ -106,7 +115,15 @@ const Transactions: React.FC = () => {
         filteredTransactions.length > 0 ? currentMonthIncome : 0
       ),
       icon: "trending_up",
-      trend: { value: 0, isPositive: true },
+      trend: {
+        value:
+          lastMonthIncome === 0
+            ? currentMonthIncome > 0
+              ? 100
+              : 0
+            : ((currentMonthIncome - lastMonthIncome) / lastMonthIncome) * 100,
+        isPositive: currentMonthIncome >= lastMonthIncome,
+      },
     },
     {
       title: t("transactions.statistics.balance"),
@@ -114,7 +131,15 @@ const Transactions: React.FC = () => {
         filteredTransactions.length > 0 ? currentBalance : 0
       ),
       icon: "account_balance",
-      trend: { value: 0, isPositive: true },
+      trend: {
+        value:
+          lastBalance === 0
+            ? currentBalance > 0
+              ? 100
+              : 0
+            : ((currentBalance - lastBalance) / Math.abs(lastBalance)) * 100,
+        isPositive: currentBalance >= lastBalance,
+      },
     },
   ];
 

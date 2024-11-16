@@ -11,7 +11,12 @@ const FilterContext = createContext<FilterContextType | undefined>(undefined);
 export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [filters, setFilters] = useState<Filters>({});
+  const [filters, setFilters] = useState<Filters>({
+    dateRange: undefined,
+    category: undefined,
+    status: undefined,
+    searchQuery: "",
+  });
 
   return (
     <FilterContext.Provider value={{ filters, setFilters }}>

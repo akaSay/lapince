@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import AddCard from "../components/common/AddCard";
+import Modal from "../components/common/Modal";
 import BudgetCard from "../components/dashboard/BudgetCard";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
 import ExpenseChart from "../components/dashboard/ExpenseChart";
@@ -17,7 +19,6 @@ import { useTransaction } from "../hooks/useTransaction";
 import { isDateInRange } from "../lib/dateUtils";
 import { formatCurrency } from "../lib/utils";
 import { Transaction } from "../types/Transaction";
-import Modal from "../components/common/Modal";
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -215,6 +216,13 @@ const Dashboard: React.FC = () => {
                 variant="default"
               />
             ))}
+            <AddCard
+              onClick={() => {
+                setSelectedTransaction(undefined);
+                setIsTransactionModalOpen(true);
+              }}
+              label={t("dashboard.newTransaction")}
+            />
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

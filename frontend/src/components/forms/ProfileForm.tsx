@@ -1,71 +1,31 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useLanguage } from "../../hooks/useLanguage";
 
 interface ProfileFormProps {
   onSubmit: (data: {
-    name: string;
+    firstName: string;
+    lastName?: string;
     email: string;
-    language: string;
-    currency: string;
-    notifications: {
-      email: boolean;
-      push: boolean;
-      budget: boolean;
-    };
   }) => void;
-  initialData?: {
-    name: string;
+  initialData: {
+    firstName: string;
+    lastName?: string;
     email: string;
-    language: string;
-    currency: string;
-    notifications: {
-      email: boolean;
-      push: boolean;
-      budget: boolean;
-    };
   };
   onCancel: () => void;
 }
 
-const ProfileForm: React.FC<ProfileFormProps> = ({
+export const ProfileForm: React.FC<ProfileFormProps> = ({
   onSubmit,
   initialData,
   onCancel,
 }) => {
   const { t } = useTranslation();
-  const { changeLanguage } = useLanguage();
-  const [formData, setFormData] = React.useState(
-    initialData || {
-      name: "",
-      email: "",
-      language: "fr",
-      currency: "EUR",
-      notifications: {
-        email: false,
-        push: false,
-        budget: false,
-      },
-    }
-  );
-
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newLanguage = e.target.value;
-    const newCurrency = newLanguage === "en" ? "USD" : "EUR";
-
-    // Mettre à jour uniquement le state local
-    setFormData((prev) => ({
-      ...prev,
-      language: newLanguage,
-      currency: newCurrency,
-    }));
-  };
+  const [formData, setFormData] = React.useState(initialData);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(formData);
-    // Changer la langue seulement après la validation du formulaire
-    await changeLanguage(formData.language);
+    onSubmit(formData);
   };
 
   return (
@@ -73,14 +33,30 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
       <div className="space-y-4">
         <div>
           <label className="block mb-1 text-sm font-medium text-gray-300">
-            {t("profile.form.name")}
+            {t("profile.form.firstName")}
           </label>
           <input
             type="text"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={formData.firstName}
+            onChange={(e) =>
+              setFormData({ ...formData, firstName: e.target.value })
+            }
+            className="w-full p-2 text-white bg-gray-700 rounded"
             required
+          />
+        </div>
+
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-300">
+            {t("profile.form.lastName")}
+          </label>
+          <input
+            type="text"
+            value={formData.lastName}
+            onChange={(e) =>
+              setFormData({ ...formData, lastName: e.target.value })
+            }
+            className="w-full p-2 text-white bg-gray-700 rounded"
           />
         </div>
 
@@ -94,106 +70,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
-            className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 text-white bg-gray-700 rounded"
             required
           />
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <h4 className="text-sm font-medium text-gray-300">
-          {t("profile.notificationPreferences")}
-        </h4>
-        <div className="space-y-2">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.notifications.email}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  notifications: {
-                    ...formData.notifications,
-                    email: e.target.checked,
-                  },
-                })
-              }
-              className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded form-checkbox focus:ring-blue-500"
-            />
-            <span className="ml-2 text-sm text-gray-300">
-              {t("profile.notifications.email")}
-            </span>
-          </label>
-
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.notifications.push}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  notifications: {
-                    ...formData.notifications,
-                    push: e.target.checked,
-                  },
-                })
-              }
-              className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded form-checkbox focus:ring-blue-500"
-            />
-            <span className="ml-2 text-sm text-gray-300">
-              {t("profile.notifications.push")}
-            </span>
-          </label>
-
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.notifications.budget}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  notifications: {
-                    ...formData.notifications,
-                    budget: e.target.checked,
-                  },
-                })
-              }
-              className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded form-checkbox focus:ring-blue-500"
-            />
-            <span className="ml-2 text-sm text-gray-300">
-              {t("profile.notifications.budget")}
-            </span>
-          </label>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <div>
-          <label className="block mb-2 text-sm font-medium text-white">
-            {t("settings.language")}
-          </label>
-          <select
-            value={formData.language}
-            onChange={handleLanguageChange}
-            className="w-full p-2 text-white bg-gray-700 rounded"
-          >
-            <option value="fr">{t("settings.languages.fr")}</option>
-            <option value="en">{t("settings.languages.en")}</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block mb-2 text-sm font-medium text-white">
-            {t("settings.currency")}
-          </label>
-          <select
-            value={formData.currency}
-            disabled
-            className="w-full p-2 text-white bg-gray-700 rounded opacity-60"
-          >
-            <option value="EUR">{t("settings.currencies.EUR")}</option>
-            <option value="USD">{t("settings.currencies.USD")}</option>
-          </select>
         </div>
       </div>
 
@@ -215,5 +94,3 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     </form>
   );
 };
-
-export default ProfileForm;
