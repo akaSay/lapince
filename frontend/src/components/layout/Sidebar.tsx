@@ -1,8 +1,8 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import Avatar from "../common/Avatar";
-import { useProfileContext } from "../../contexts/ProfileContext";
 import { useTranslation } from "react-i18next";
+import { Link, useLocation } from "react-router-dom";
+import { useProfileContext } from "../../contexts/ProfileContext";
+import Avatar from "../common/Avatar";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -58,12 +58,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       >
         <div className="flex flex-col h-full p-4">
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
-              <img src="/logo.svg" alt="Logo" className="w-8 h-8" />
+            <Link
+              to="/dashboard"
+              className="flex items-center space-x-1 transition-opacity"
+            >
+              <img src="/LogoPince.png" alt="Logo" className="w-16 h-16 mt-3" />
               <span className="text-xl font-bold">
                 {t("layout.sidebar.appName")}
               </span>
-            </div>
+            </Link>
             <button
               onClick={onClose}
               className="p-2 text-gray-400 hover:text-white lg:hidden"

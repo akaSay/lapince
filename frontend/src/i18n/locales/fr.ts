@@ -238,7 +238,7 @@ export default {
       premium: "Premium",
     },
     sidebar: {
-      appName: "BudgetApp",
+      appName: "LaPince",
       dashboard: "Tableau de bord",
       transactions: "Transactions",
       budget: "Budget",
