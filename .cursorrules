@@ -22,7 +22,7 @@ You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, 
 **Syntax and Formatting**
 
 - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
-- Use declarative JSX.
+- Use declarative TSX.
 
 **UI and Styling**
 
@@ -50,7 +50,7 @@ You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, 
 - Use only for Web API access in small components.
 - Avoid for data fetching or state management.
 
-**Follow Next.js docs for Data Fetching, Rendering, and Routing.**
+**Follow Nest.js docs for Data Fetching, Rendering, and Routing.**
 
 **React component syntaxe**
 

@@ -173,3 +173,7 @@
 1.Ameliorer les messages d'erreur (terminer)
 2.Adapter le responsive en format mobile 375 x 812 px (iPhone X, 11, 12, 13, etc.) (terminer)
 3.Ajouter un loader pendant le chargement (terminer)
+4.Search Catégorie en francais et en anglais (terminer)
+5.Exporter les données en en PDF
+6.Suppression du compte
+7.Page de Présentation de l'application

@@ -140,20 +140,30 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                           <div className="px-4 py-2 text-xs font-semibold text-gray-400">
                             {t("layout.search.transactions")}
                           </div>
-                          {results.transactions.slice(0, 3).map((t) => (
-                            <Link
-                              key={t.id}
-                              to="/transactions"
-                              className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
-                            >
-                              <div>
-                                {highlightText(t.description, searchTerm)}
-                              </div>
-                              <div className="text-xs text-gray-400">
-                                {highlightText(t.category, searchTerm)}
-                              </div>
-                            </Link>
-                          ))}
+                          {results.transactions
+                            .slice(0, 3)
+                            .map((transaction) => (
+                              <Link
+                                key={transaction.id}
+                                to="/transactions"
+                                className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
+                              >
+                                <div>
+                                  {highlightText(
+                                    transaction.description,
+                                    searchTerm
+                                  )}
+                                </div>
+                                <div className="text-xs text-gray-400">
+                                  {highlightText(
+                                    t(
+                                      `categories.${transaction.type}.${transaction.category}`
+                                    ),
+                                    searchTerm
+                                  )}
+                                </div>
+                              </Link>
+                            ))}
                           {results.transactions.length > 3 && (
                             <div className="px-4 py-2 text-xs text-gray-400">
                               +{results.transactions.length - 3}{" "}
@@ -173,7 +183,10 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                               to="/budget"
                               className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
                             >
-                              {highlightText(b.category, searchTerm)}
+                              {highlightText(
+                                t(`categories.expense.${b.category}`),
+                                searchTerm
+                              )}
                             </Link>
                           ))}
                           {results.budgets.length > 3 && (
@@ -223,20 +236,30 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                             <div className="px-4 py-2 text-xs font-semibold text-gray-400">
                               {t("layout.search.transactions")}
                             </div>
-                            {results.transactions.slice(0, 3).map((t) => (
-                              <Link
-                                key={t.id}
-                                to="/transactions"
-                                className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
-                              >
-                                <div>
-                                  {highlightText(t.description, searchTerm)}
-                                </div>
-                                <div className="text-xs text-gray-400">
-                                  {highlightText(t.category, searchTerm)}
-                                </div>
-                              </Link>
-                            ))}
+                            {results.transactions
+                              .slice(0, 3)
+                              .map((transaction) => (
+                                <Link
+                                  key={transaction.id}
+                                  to="/transactions"
+                                  className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
+                                >
+                                  <div>
+                                    {highlightText(
+                                      transaction.description,
+                                      searchTerm
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-gray-400">
+                                    {highlightText(
+                                      t(
+                                        `categories.${transaction.type}.${transaction.category}`
+                                      ),
+                                      searchTerm
+                                    )}
+                                  </div>
+                                </Link>
+                              ))}
                             {results.transactions.length > 3 && (
                               <div className="px-4 py-2 text-xs text-gray-400">
                                 +{results.transactions.length - 3}{" "}
@@ -256,7 +279,10 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                                 to="/budget"
                                 className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
                               >
-                                {highlightText(b.category, searchTerm)}
+                                {highlightText(
+                                  t(`categories.expense.${b.category}`),
+                                  searchTerm
+                                )}
                               </Link>
                             ))}
                             {results.budgets.length > 3 && (
