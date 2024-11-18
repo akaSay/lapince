@@ -102,6 +102,9 @@ export default {
       exceeded: "Exceeded",
     },
     statistics: {
+      monthlyExpenses: "Monthly Expenses",
+      previousMonth: "Previous Month",
+      totalBudget: "Total Budget",
       spent: "Spent",
       remaining: "Remaining",
       limit: "Limit",

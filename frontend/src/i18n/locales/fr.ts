@@ -220,6 +220,9 @@ export default {
     exportBudgets: "Exporter les budgets",
     accountManagement: "Gestion du compte",
     deleteAccount: "Supprimer mon compte",
+    exportFormat: "Format d'export",
+    confirmDelete:
+      "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.",
   },
   layout: {
     search: {
@@ -365,6 +368,9 @@ export default {
     passwordsDoNotMatch: "Les mots de passe ne correspondent pas",
     invalidResetToken: "Le lien de réinitialisation est invalide ou a expiré",
     emailNotFound: "Aucun compte n'est associé à cette adresse email",
+    account: {
+      delete: "Une erreur est survenue lors de la suppression du compte",
+    },
   },
   success: {
     budget: {
@@ -386,6 +392,9 @@ export default {
     },
     passwordReset: "Votre mot de passe a été réinitialisé avec succès",
     resetLinkSent: "Un email de réinitialisation a été envoyé",
+    account: {
+      deleted: "Votre compte a été supprimé avec succès",
+    },
   },
   auth: {
     forgotPassword: "Mot de passe oublié",

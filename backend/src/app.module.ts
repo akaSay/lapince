@@ -5,10 +5,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { BudgetModule } from './budget/budget.module';
+import { ExportController } from './export/export.controller';
 import { NotificationModule } from './modules/notifications/notification.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SettingsModule } from './settings/settings.module';
 import { TransactionModule } from './transaction/transaction.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -21,12 +23,13 @@ import { TransactionModule } from './transaction/transaction.module';
     BudgetModule,
     NotificationModule,
     SettingsModule,
+    UserModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'votre_secret_jwt',
       signOptions: { expiresIn: '1d' },
     }),
   ],
-  controllers: [AppController],
+  controllers: [AppController, ExportController],
   providers: [AppService],
 })
 export class AppModule {}

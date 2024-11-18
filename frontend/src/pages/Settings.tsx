@@ -7,6 +7,7 @@ import SettingsForm from "../components/settings/SettingsForm";
 import { useSettings } from "../hooks/useSettings";
 import { SettingsData } from "../types/settings";
 import { useToast } from "../hooks/useToast";
+import api from "../lib/api";
 
 const Settings: React.FC = () => {
   const { t } = useTranslation();
@@ -91,6 +92,19 @@ const Settings: React.FC = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (window.confirm(t("settings.confirmDelete"))) {
+      try {
+        await api.delete("/users/me");
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+        success("success.account.deleted");
+      } catch (error) {
+        showError("errors.account.delete");
+      }
+    }
+  };
+
   // Ajout d'une classe conditionnelle basée sur le thème
   const themeClass = theme === "dark" ? "bg-gray-900" : "bg-gray-100";
 
@@ -135,18 +149,37 @@ const Settings: React.FC = () => {
               {t("settings.exportData")}
             </h3>
             <div className="space-y-4">
-              <button
-                onClick={handleExportTransactions}
-                className="w-full px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
-              >
-                {t("settings.exportTransactions")}
-              </button>
-              <button
-                onClick={handleExportBudgets}
-                className="w-full px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
-              >
-                {t("settings.exportBudgets")}
-              </button>
+              <div>
+                <label className="block mb-2 text-sm text-gray-400">
+                  {t("settings.exportFormat")}
+                </label>
+                <select
+                  value={settings?.export.format || "csv"}
+                  onChange={(e) =>
+                    updateSettings({
+                      ...settings,
+                      export: { ...settings.export, format: e.target.value },
+                    })
+                  }
+                  className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="csv">CSV</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-4">
+                <button
+                  onClick={handleExportTransactions}
+                  className="w-full px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
+                >
+                  {t("settings.exportTransactions")}
+                </button>
+                <button
+                  onClick={handleExportBudgets}
+                  className="w-full px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
+                >
+                  {t("settings.exportBudgets")}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -155,7 +188,10 @@ const Settings: React.FC = () => {
               {t("settings.accountManagement")}
             </h3>
             <div className="space-y-4">
-              <button className="w-full px-4 py-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700">
+              <button
+                onClick={handleDeleteAccount}
+                className="w-full px-4 py-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700"
+              >
                 {t("settings.deleteAccount")}
               </button>
             </div>
