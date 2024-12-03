@@ -2,28 +2,11 @@ import {
   Apple as AppleIcon,
   Facebook as FacebookIcon,
   Google as GoogleIcon,
-  Lock as LockIcon,
 } from "@mui/icons-material";
-import {
-  Alert,
-  Box,
-  Button,
-  Checkbox,
-  Container,
-  Divider,
-  FormControlLabel,
-  IconButton,
-  Link,
-  Paper,
-  TextField,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 
-const Login: React.FC = () => {
-  const theme = useTheme();
+export const Login = () => {
   const { login, error: authError, loading } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
@@ -63,123 +46,122 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            p: 4,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            backgroundColor: theme.palette.background.paper,
-            borderRadius: 2,
-            width: "100%",
-          }}
-        >
-          <LockIcon
-            sx={{ fontSize: 40, color: theme.palette.primary.main, mb: 2 }}
-          />
-          <Typography component="h1" variant="h5" gutterBottom>
-            Connexion
-          </Typography>
+    <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="w-full max-w-md">
+        {/* Logo ou Titre */}
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 text-3xl font-bold text-white">LaPince</h1>
+          <p className="text-gray-400">Gérez votre budget simplement</p>
+        </div>
 
+        {/* Carte principale */}
+        <div className="p-6 space-y-6 bg-gray-800 border border-gray-700 shadow-xl rounded-2xl">
+          <h2 className="text-2xl font-semibold text-center text-white">
+            Connexion
+          </h2>
+
+          {/* Message d'erreur */}
           {(error || authError) && (
-            <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+            <div className="p-4 text-sm text-red-500 border rounded-lg bg-red-500/10 border-red-500/50">
               {error || authError}
-            </Alert>
+            </div>
           )}
 
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ mt: 1, width: "100%" }}
-          >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Adresse email"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={formData.email}
-              onChange={handleChange}
-              error={!!error}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Mot de passe"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={formData.password}
-              onChange={handleChange}
-              error={!!error}
-            />
+          {/* Formulaire */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300">
+                Adresse email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-3 text-white placeholder-gray-400 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="vous@exemple.com"
+              />
+            </div>
 
-            <FormControlLabel
-              control={
-                <Checkbox
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300">
+                Mot de passe
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full px-4 py-3 text-white placeholder-gray-400 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="••••••••"
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
                   name="rememberMe"
-                  color="primary"
                   checked={formData.rememberMe}
                   onChange={handleChange}
+                  className="w-4 h-4 text-blue-500 border-gray-600 rounded focus:ring-blue-500 focus:ring-offset-gray-800"
                 />
-              }
-              label="Se souvenir de moi"
-            />
+                <span className="text-sm text-gray-300">
+                  Se souvenir de moi
+                </span>
+              </label>
+              <a
+                href="/forgot-password"
+                className="text-sm text-blue-400 hover:text-blue-300"
+              >
+                Mot de passe oublié ?
+              </a>
+            </div>
 
-            <Button
+            <button
               type="submit"
-              fullWidth
-              variant="contained"
               disabled={loading}
-              sx={{ mt: 3, mb: 2 }}
+              className="w-full px-4 py-3 font-medium text-white transition-colors duration-200 bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Connexion..." : "Se connecter"}
-            </Button>
+            </button>
+          </form>
 
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}
-            >
-              <Link href="/forgot-password" variant="body2">
-                Mot de passe oublié ?
-              </Link>
-              <Link href="/register" variant="body2">
-                {"Pas de compte ? S'inscrire"}
-              </Link>
-            </Box>
+          {/* Séparateur */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-600"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 text-gray-400 bg-gray-800">
+                Ou continuer avec
+              </span>
+            </div>
+          </div>
 
-            <Divider sx={{ my: 2 }}>ou</Divider>
+          {/* Boutons sociaux */}
+          <div className="grid grid-cols-3 gap-4">
+            <button className="flex items-center justify-center p-3 transition-colors duration-200 bg-gray-700 rounded-lg hover:bg-gray-600">
+              <GoogleIcon className="text-white" />
+            </button>
+            <button className="flex items-center justify-center p-3 transition-colors duration-200 bg-gray-700 rounded-lg hover:bg-gray-600">
+              <FacebookIcon className="text-white" />
+            </button>
+            <button className="flex items-center justify-center p-3 transition-colors duration-200 bg-gray-700 rounded-lg hover:bg-gray-600">
+              <AppleIcon className="text-white" />
+            </button>
+          </div>
+        </div>
 
-            <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-              <IconButton sx={{ color: "#DB4437" }}>
-                <GoogleIcon />
-              </IconButton>
-              <IconButton sx={{ color: "#4267B2" }}>
-                <FacebookIcon />
-              </IconButton>
-              <IconButton sx={{ color: "#000000" }}>
-                <AppleIcon />
-              </IconButton>
-            </Box>
-          </Box>
-        </Paper>
-      </Box>
-    </Container>
+        {/* Lien d'inscription */}
+        <p className="mt-6 text-center text-gray-400">
+          Pas encore de compte ?{" "}
+          <a href="/register" className="text-blue-400 hover:text-blue-300">
+            S'inscrire
+          </a>
+        </p>
+      </div>
+    </div>
   );
 };
 

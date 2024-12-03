@@ -24,7 +24,7 @@ export class BudgetService {
     const transactions = await this.prisma.transaction.findMany({
       where: {
         userId,
-        type: 'expense', // On ne prend que les dépenses
+        type: 'expense',
       },
     });
 
