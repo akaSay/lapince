@@ -13,8 +13,8 @@ import { useStatistics } from "../hooks/useStatistics";
 import { useToast } from "../hooks/useToast";
 import { useTransaction } from "../hooks/useTransaction";
 import { isDateInRange } from "../lib/dateUtils";
-import type { Budget, BudgetData } from "../types/Budget";
 import { formatCurrency } from "../lib/utils";
+import type { Budget, BudgetData } from "../types/Budget";
 
 const Budget: React.FC = () => {
   const { t } = useTranslation();

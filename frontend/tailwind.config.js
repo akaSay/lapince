@@ -28,10 +28,30 @@ module.exports = {
           "0%, 100%": { opacity: 1 },
           "50%": { opacity: 0.5 },
         },
+        "fade-in": {
+          from: { opacity: 0 },
+          to: { opacity: 1 },
+        },
+        "fade-out": {
+          from: { opacity: 1 },
+          to: { opacity: 0 },
+        },
+        "zoom-in": {
+          from: { transform: "scale(0.95)" },
+          to: { transform: "scale(1)" },
+        },
+        "zoom-out": {
+          from: { transform: "scale(1)" },
+          to: { transform: "scale(0.95)" },
+        },
       },
       animation: {
         shimmer: "shimmer 1.5s infinite linear",
         pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "fade-in": "fade-in 200ms ease-out",
+        "fade-out": "fade-out 200ms ease-out",
+        "zoom-in": "zoom-in 200ms ease-out",
+        "zoom-out": "zoom-out 200ms ease-out",
       },
       backgroundImage: {
         "shimmer-gradient":

@@ -1,6 +1,9 @@
 import React from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import PrivateRoute from "./components/auth/PrivateRoute";
+import { LandingPage } from "./components/landing/LandingPage";
 import Layout from "./components/layout/Layout";
 import { FilterProvider } from "./contexts/FilterContext";
 import { ProfileProvider } from "./contexts/ProfileContext";
@@ -11,11 +14,9 @@ import Profile from "./pages/Profile";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Transactions from "./pages/Transactions";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 
 const App: React.FC = () => {
@@ -26,6 +27,7 @@ const App: React.FC = () => {
           <BrowserRouter>
             <Routes>
               {/* Routes publiques */}
+              <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
 
@@ -36,10 +38,6 @@ const App: React.FC = () => {
                   <PrivateRoute>
                     <Layout>
                       <Routes>
-                        <Route
-                          path="/"
-                          element={<Navigate to="/dashboard" replace />}
-                        />
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route
                           path="/transactions"

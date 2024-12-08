@@ -176,4 +176,8 @@
 4.Search Catégorie en francais et en anglais (terminer)
 5.Exporter les données en en CSV (terminer)
 6.Suppression du compte (terminer)
-7.Page de Présentation de l'application
+7.Page de Présentation de l'application (terminer)
+8.Formulaire Formik et yup a l'inscription et connexion (terminer)
+9.Cookie consent
+10.Cookie token back
+11.Ajouter objectif d'épargne
