@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { Budget } from "../types/Budget";
+import { useEffect, useState } from "react";
 import api from "../lib/api";
+import { Budget } from "../types/Budget";
 import { useToast } from "./useToast";
 
 export interface UseBudgetReturn {

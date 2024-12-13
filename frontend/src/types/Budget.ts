@@ -8,4 +8,5 @@ export interface Budget extends BudgetData {
   status: string;
   id: string;
   spent?: number;
+  month: string;
 }

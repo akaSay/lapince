@@ -19,11 +19,11 @@ import type { Budget, BudgetData } from "../types/Budget";
 const Budget: React.FC = () => {
   const { t } = useTranslation();
   const { error: showError } = useToast();
+  const { filters } = useFilters();
 
   const { budgets, loading, error, createBudget, deleteBudget, updateBudget } =
     useBudget();
   const { transactions } = useTransaction();
-  const { filters } = useFilters();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBudget, setSelectedBudget] = useState<
     (BudgetData & { id?: string }) | undefined
@@ -43,63 +43,81 @@ const Budget: React.FC = () => {
     return true;
   });
 
-  const hasDataForPeriod =
-    filteredTransactions.length > 0 || !filters.dateRange;
+  const hasDataForPeriod = true;
 
-  // Préparation des données avec les budgets filtrés
-  const budgetArray = Array.isArray(budgets) ? budgets : [];
-
-  const filteredBudgets = budgetArray
-    .map((budget) => {
-      const spent = filteredTransactions
-        .filter((t) => t.category === budget.category && t.type === "expense")
-        .reduce((sum, t) => sum + t.amount, 0);
-
-      return {
-        ...budget,
-        spent,
-        shouldShow: spent > 0 || !filters.dateRange,
-      };
-    })
-    .filter(
-      (budget) =>
-        !filters.category ||
-        budget.category.toLowerCase() === filters.category.toLowerCase()
-    );
-
-  // Utiliser filteredBudgets pour les statistiques
-  const { currentExpenses, previousExpenses, expensesTrend } = useStatistics(
-    filteredTransactions,
-    filteredBudgets,
+  const { currentExpenses, expensesTrend } = useStatistics(
+    transactions,
+    budgets,
     filteredTransactions,
     hasDataForPeriod,
     filters.dateRange
   );
 
-  // Calculer le budget total à partir des budgets filtrés
-  const totalBudget = filteredBudgets.reduce(
+  // Ajouter le filtrage des budgets
+  const currentMonth = filters?.dateRange?.startsWith("month-")
+    ? filters.dateRange
+    : `month-${new Date().getFullYear()}-${String(
+        new Date().getMonth() + 1
+      ).padStart(2, "0")}`;
+
+  const filteredBudgets = (Array.isArray(budgets) ? budgets : [])
+    .map((budget) => {
+      const budgetMonth = budget.month || currentMonth;
+
+      const spent = filteredTransactions
+        .filter(
+          (t) =>
+            t.category === budget.category &&
+            t.type === "expense" &&
+            budgetMonth === currentMonth
+        )
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      return {
+        ...budget,
+        month: budgetMonth,
+        spent,
+        shouldShow: true,
+      };
+    })
+    .filter(
+      (budget) =>
+        budget.month === currentMonth &&
+        (!filters.category ||
+          budget.category.toLowerCase() === filters.category.toLowerCase())
+    );
+
+  // Calculer le total et le restant une seule fois
+  const totalLimit = filteredBudgets.reduce(
     (sum, budget) => sum + budget.limit,
     0
   );
+  const remainingBudget = totalLimit - currentExpenses;
 
   const budgetStats = [
     {
-      title: t("budget.statistics.monthlyExpenses"),
-      value: formatCurrency(currentExpenses),
-      icon: "trending_down",
-      trend: { value: expensesTrend, isPositive: expensesTrend <= 0 },
-    },
-    {
-      title: t("budget.statistics.previousMonth"),
-      value: formatCurrency(previousExpenses),
-      icon: "calendar_today",
-      trend: { value: 0, isPositive: true },
-    },
-    {
-      title: t("budget.statistics.totalBudget"),
-      value: formatCurrency(totalBudget), // Utiliser le budget total filtré
+      title: t("budget.statistics.limit"),
+      value: formatCurrency(totalLimit),
       icon: "account_balance",
       trend: { value: 0, isPositive: true },
+    },
+    {
+      title: t("budget.statistics.spent"),
+      value: formatCurrency(currentExpenses),
+      icon: "trending_down",
+      trend: {
+        value: Number(expensesTrend.toFixed(1)),
+        isPositive: expensesTrend <= 0,
+      },
+    },
+    {
+      title: t("budget.statistics.remaining"),
+      value: formatCurrency(remainingBudget),
+      icon: "savings",
+      trend: {
+        value: 0,
+        isPositive: remainingBudget >= 0,
+      },
     },
   ];
 

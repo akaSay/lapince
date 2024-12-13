@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Transaction, TransactionType } from "../../types/Transaction";
 import { CATEGORY_GROUPS } from "../../lib/categories";
+import { Transaction, TransactionType } from "../../types/Transaction";
 
 interface TransactionFormProps {
   onSubmit: (data: Omit<Transaction, "id">) => void;
@@ -55,9 +55,12 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           </label>
           <input
             type="number"
-            value={formData.amount}
+            value={formData.amount || ""}
             onChange={(e) =>
-              setFormData({ ...formData, amount: parseFloat(e.target.value) })
+              setFormData({
+                ...formData,
+                amount: parseFloat(e.target.value) || 0,
+              })
             }
             className="w-full px-3 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
@@ -146,5 +149,4 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     </form>
   );
 };
-
 export default TransactionForm;

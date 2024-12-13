@@ -41,6 +41,7 @@ export default {
       totalIncome: "Total income",
       totalExpenses: "Total expenses",
       expensesByCategory: "Expenses by category",
+      balance: "Balance",
     },
     quickActions: {
       addTransaction: "Add transaction",

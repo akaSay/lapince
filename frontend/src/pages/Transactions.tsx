@@ -8,9 +8,11 @@ import StatisticsSkeleton from "../components/skeletons/StatisticsSkeleton";
 import TransactionSkeleton from "../components/skeletons/TransactionSkeleton";
 import { useFilters } from "../contexts/FilterContext";
 import { useTransaction } from "../hooks/useTransaction";
+import { useBudget } from "../hooks/useBudget";
 import { isDateInRange } from "../lib/dateUtils";
 import { formatCurrency } from "../lib/utils";
 import { Transaction } from "../types/Transaction";
+import { useStatistics } from "../hooks/useStatistics";
 
 const Transactions: React.FC = () => {
   const { t } = useTranslation();
@@ -27,6 +29,8 @@ const Transactions: React.FC = () => {
     deleteTransaction,
     loading,
   } = useTransaction();
+
+  const { budgets } = useBudget();
 
   const handleTransactionSubmit = async (
     transactionData: Omit<Transaction, "id">
@@ -74,71 +78,51 @@ const Transactions: React.FC = () => {
     return true;
   });
 
-  const getFilteredAmount = (
-    type: "expense" | "income",
-    dateRange?: string
-  ) => {
-    return transactions
-      .filter((t) => t.type === type && isDateInRange(t.date, dateRange))
-      .reduce((acc, t) => acc + t.amount, 0);
-  };
+  const hasDataForPeriod =
+    filteredTransactions.length > 0 || !filters.dateRange;
 
-  const currentMonthExpenses = getFilteredAmount("expense", "this-month");
-  const lastMonthExpenses = getFilteredAmount("expense", "last-month");
-  const currentMonthIncome = getFilteredAmount("income", "this-month");
-  const lastMonthIncome = getFilteredAmount("income", "last-month");
+  const {
+    currentExpenses,
+    currentIncome,
+    expensesTrend,
+    incomeTrend,
+    balanceTrend,
+  } = useStatistics(
+    transactions,
+    budgets,
+    filteredTransactions,
+    hasDataForPeriod,
+    filters.dateRange
+  );
 
-  const currentBalance = currentMonthIncome - currentMonthExpenses;
-  const lastBalance = lastMonthIncome - lastMonthExpenses;
+  const balance = currentIncome - currentExpenses;
 
   const statistics = [
     {
       title: t("transactions.statistics.monthlyExpenses"),
-      value: formatCurrency(
-        filteredTransactions.length > 0 ? currentMonthExpenses : 0
-      ),
+      value: formatCurrency(currentExpenses),
       icon: "trending_down",
       trend: {
-        value:
-          lastMonthExpenses === 0
-            ? currentMonthExpenses > 0
-              ? 100
-              : 0
-            : ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses) *
-              100,
-        isPositive: currentMonthExpenses <= lastMonthExpenses,
+        value: Number(expensesTrend.toFixed(1)),
+        isPositive: expensesTrend <= 0,
       },
     },
     {
       title: t("transactions.statistics.totalIncome"),
-      value: formatCurrency(
-        filteredTransactions.length > 0 ? currentMonthIncome : 0
-      ),
+      value: formatCurrency(currentIncome),
       icon: "trending_up",
       trend: {
-        value:
-          lastMonthIncome === 0
-            ? currentMonthIncome > 0
-              ? 100
-              : 0
-            : ((currentMonthIncome - lastMonthIncome) / lastMonthIncome) * 100,
-        isPositive: currentMonthIncome >= lastMonthIncome,
+        value: Number(incomeTrend.toFixed(1)),
+        isPositive: incomeTrend >= 0,
       },
     },
     {
       title: t("transactions.statistics.balance"),
-      value: formatCurrency(
-        filteredTransactions.length > 0 ? currentBalance : 0
-      ),
+      value: formatCurrency(balance),
       icon: "account_balance",
       trend: {
-        value:
-          lastBalance === 0
-            ? currentBalance > 0
-              ? 100
-              : 0
-            : ((currentBalance - lastBalance) / Math.abs(lastBalance)) * 100,
-        isPositive: currentBalance >= lastBalance,
+        value: Number(balanceTrend.toFixed(1)),
+        isPositive: balanceTrend >= 0,
       },
     },
   ];

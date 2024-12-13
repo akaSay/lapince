@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AddCard from "../components/common/AddCard";
 import Modal from "../components/common/Modal";
 import BudgetCard from "../components/dashboard/BudgetCard";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
+import { DashboardStats } from "../components/dashboard/DashboardStats";
 import ExpenseChart from "../components/dashboard/ExpenseChart";
 import StatisticsCard from "../components/dashboard/StatisticsCard";
 import TransactionsList from "../components/dashboard/TransactionsList";
@@ -16,9 +17,17 @@ import { useFilters } from "../contexts/FilterContext";
 import { useBudget } from "../hooks/useBudget";
 import { useStatistics } from "../hooks/useStatistics";
 import { useTransaction } from "../hooks/useTransaction";
+import api from "../lib/api";
 import { isDateInRange } from "../lib/dateUtils";
 import { formatCurrency } from "../lib/utils";
 import { Transaction } from "../types/Transaction";
+
+// Définir le type pour l'objectif d'épargne
+type SavingsGoal = {
+  current: number;
+  target: number;
+  month: string;
+};
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -44,7 +53,39 @@ const Dashboard: React.FC = () => {
     transactions,
     createTransaction,
     loading: transactionsLoading,
+    deleteTransaction,
+    updateTransaction,
   } = useTransaction();
+
+  // Déplacer currentMonth en haut pour qu'il soit accessible partout
+  const currentMonth = filters?.dateRange?.startsWith("month-")
+    ? filters.dateRange
+    : `month-${new Date().getFullYear()}-${String(
+        new Date().getMonth() + 1
+      ).padStart(2, "0")}`;
+
+  const [savingsGoal, setSavingsGoal] = useState<SavingsGoal>({
+    current: 0,
+    target: 1000,
+    month: currentMonth,
+  });
+
+  // Charger l'objectif d'épargne depuis l'API
+  useEffect(() => {
+    const fetchSavingsGoal = async () => {
+      try {
+        const response = await api.get(`/savings-goals/${currentMonth}`);
+        setSavingsGoal(response.data);
+      } catch (error) {
+        console.error(
+          "Erreur lors du chargement de l'objectif d'épargne:",
+          error
+        );
+      }
+    };
+
+    fetchSavingsGoal();
+  }, [currentMonth]);
 
   const filteredTransactions = transactions.filter((transaction) => {
     if (!isDateInRange(transaction.date, filters.dateRange)) {
@@ -59,10 +100,15 @@ const Dashboard: React.FC = () => {
     return true;
   });
 
-  const hasDataForPeriod =
-    filteredTransactions.length > 0 || !filters.dateRange;
+  const hasDataForPeriod = true;
 
-  const { currentExpenses, previousExpenses, expensesTrend } = useStatistics(
+  const {
+    currentExpenses,
+    previousExpenses,
+    currentBalance,
+    expensesTrend,
+    balanceTrend,
+  } = useStatistics(
     transactions,
     budgets,
     filteredTransactions,
@@ -75,57 +121,60 @@ const Dashboard: React.FC = () => {
       title: t("dashboard.statistics.monthlyExpenses"),
       value: formatCurrency(currentExpenses),
       icon: "trending_down",
-      trend: { value: expensesTrend, isPositive: expensesTrend <= 0 },
+      trend: {
+        value: Number(expensesTrend.toFixed(1)),
+        isPositive: expensesTrend <= 0,
+      },
     },
     {
       title: t("dashboard.statistics.previousMonth"),
       value: formatCurrency(previousExpenses),
       icon: "calendar_today",
-      trend: { value: 0, isPositive: true },
+      trend: {
+        value: 0,
+        isPositive: true,
+      },
     },
     {
-      title: t("dashboard.statistics.trend"),
-      value: `${expensesTrend > 0 ? "+" : ""}${expensesTrend.toFixed(1)}%`,
-      icon: expensesTrend > 0 ? "trending_up" : "trending_down",
-      trend: { value: expensesTrend, isPositive: expensesTrend <= 0 },
+      title: t("dashboard.statistics.currentBalance"),
+      value: formatCurrency(currentBalance),
+      icon: "account_balance",
+      trend: {
+        value: Number(balanceTrend.toFixed(1)),
+        isPositive: balanceTrend >= 0,
+      },
     },
   ];
 
-  const budgetsWithFilteredSpent = budgets.map((budget) => {
-    const filteredSpent = filteredTransactions
-      .filter((t) => t.category === budget.category && t.type === "expense")
-      .reduce((sum, t) => sum + t.amount, 0);
+  const budgetArray = Array.isArray(budgets) ? budgets : [];
 
-    return {
-      ...budget,
-      spent: filteredSpent,
-      shouldShow: filteredSpent > 0 || !filters.dateRange,
-    };
-  });
+  const filteredBudgets = budgetArray
+    .map((budget) => {
+      const budgetMonth = budget.month || filters.dateRange;
 
-  const filteredBudgets = budgetsWithFilteredSpent.filter((budget) => {
-    if (!budget.shouldShow) return false;
-    if (
-      filters.category &&
-      budget.category.toLowerCase() !== filters.category.toLowerCase()
-    ) {
-      return false;
-    }
-    if (filters.status) {
-      const percentage = (budget.spent / budget.limit) * 100;
-      switch (filters.status) {
-        case "success":
-          return percentage < 75;
-        case "warning":
-          return percentage >= 75 && percentage < 100;
-        case "danger":
-          return percentage >= 100;
-        default:
-          return true;
-      }
-    }
-    return true;
-  });
+      const spent = filteredTransactions
+        .filter(
+          (t) =>
+            t.category === budget.category &&
+            t.type === "expense" &&
+            budgetMonth === filters.dateRange
+        )
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      return {
+        ...budget,
+        month: budgetMonth,
+        spent,
+        shouldShow: budgetMonth === filters.dateRange,
+      };
+    })
+    .filter(
+      (budget) =>
+        budget.month === filters.dateRange &&
+        budget.shouldShow &&
+        (!filters.category ||
+          budget.category.toLowerCase() === filters.category.toLowerCase())
+    );
 
   const handleTransactionSubmit = async (
     transactionData: Omit<Transaction, "id">
@@ -158,6 +207,100 @@ const Dashboard: React.FC = () => {
     setSelectedBudgetName(category);
     setIsBudgetDetailsModalOpen(true);
   };
+
+  const handleUpdateSavingsGoal = async (newTarget: number) => {
+    try {
+      const response = await api.patch(`/savings-goals/${savingsGoal.month}`, {
+        target: newTarget,
+      });
+      setSavingsGoal(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de l'objectif:", error);
+    }
+  };
+
+  const handleUpdateCurrentSavings = async (newAmount: number) => {
+    const savingsTransaction = {
+      amount: newAmount,
+      type: "expense",
+      category: "savings",
+      description: "Épargne",
+      date: new Date(),
+    };
+
+    try {
+      await createTransaction(savingsTransaction as Omit<Transaction, "id">);
+      const response = await api.patch(`/savings-goals/${currentMonth}`, {
+        current: savingsGoal.current + newAmount,
+      });
+      setSavingsGoal(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de l'épargne:", error);
+    }
+  };
+
+  const handleTransactionUpdate = async (transaction: Transaction) => {
+    try {
+      // Si c'est une transaction d'épargne, mettre à jour l'objectif d'épargne
+      if (transaction.category === "savings") {
+        const oldTransaction = transactions.find(
+          (t) => t.id === transaction.id
+        );
+        const difference = transaction.amount - (oldTransaction?.amount || 0);
+
+        // Appel API au lieu du localStorage
+        try {
+          const response = await api.patch(`/savings-goals/${currentMonth}`, {
+            current: savingsGoal.current + difference,
+          });
+          setSavingsGoal(response.data);
+        } catch (error) {
+          console.error("Erreur lors de la mise à jour de l'épargne:", error);
+        }
+      }
+
+      // Extraire les données nécessaires pour la mise à jour
+      const { id, ...transactionData } = transaction;
+      await updateTransaction(id, transactionData);
+      setIsTransactionModalOpen(false);
+      await fetchBudgets();
+    } catch (error) {}
+  };
+
+  const handleTransactionDelete = async (transaction: Transaction) => {
+    if (window.confirm(t("transactions.confirmDelete"))) {
+      try {
+        // Si c'est une transaction d'épargne, mettre à jour l'objectif d'épargne
+        if (transaction.category === "savings") {
+          // Appel API au lieu du localStorage
+          try {
+            const response = await api.patch(`/savings-goals/${currentMonth}`, {
+              current: savingsGoal.current - transaction.amount,
+            });
+            setSavingsGoal(response.data);
+          } catch (error) {
+            console.error("Erreur lors de la mise à jour de l'épargne:", error);
+          }
+        }
+
+        await deleteTransaction(transaction.id);
+      } catch (error) {}
+    }
+  };
+
+  const totalBudget = budgets.reduce(
+    (total, budget) => total + budget.limit,
+    0
+  );
+  const remainingBudget = totalBudget - currentExpenses;
+
+  const totalSavings = transactions
+    .filter((t) => {
+      if (t.category !== "savings") return false;
+
+      return isDateInRange(t.date, filters.dateRange);
+    })
+    .reduce((sum, t) => sum + t.amount, 0);
 
   if (budgetsLoading || transactionsLoading) {
     return (
@@ -197,6 +340,23 @@ const Dashboard: React.FC = () => {
 
       <DashboardFilters />
 
+      <DashboardStats
+        savingsGoal={{
+          current: savingsGoal.current,
+          target: savingsGoal.target,
+        }}
+        monthlyBudget={{
+          total: totalBudget,
+          remaining: remainingBudget,
+        }}
+        savings={{
+          amount: totalSavings,
+          progress: (savingsGoal.current / savingsGoal.target) * 100,
+        }}
+        onUpdateSavingsGoal={handleUpdateSavingsGoal}
+        onUpdateCurrentSavings={handleUpdateCurrentSavings}
+      />
+
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {dashboardStats.map((stat) => (
           <StatisticsCard key={stat.title} {...stat} />
@@ -234,10 +394,8 @@ const Dashboard: React.FC = () => {
             />
             <TransactionsList
               transactions={filteredTransactions}
-              onEdit={(transaction) => {
-                setSelectedTransaction(transaction);
-                setIsTransactionModalOpen(true);
-              }}
+              onEdit={handleTransactionUpdate}
+              onDelete={handleTransactionDelete}
               variant="compact"
             />
           </div>

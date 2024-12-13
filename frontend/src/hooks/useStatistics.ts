@@ -1,38 +1,32 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { formatCurrency } from "../lib/utils";
 import { Budget } from "../types/Budget";
 import { Transaction } from "../types/Transaction";
 
-const calculateTrendPercentage = (
+const calculateTrend = (
   current: number,
-  previous: number
-): number => {
-  // Si les deux valeurs sont identiques, pas de changement
-  if (current === previous) return 0;
-
-  // Si la valeur précédente est 0, on utilise la différence absolue
+  previous: number,
+  type: "expenses" | "income" | "balance"
+) => {
   if (previous === 0) {
-    return current > 0 ? current : -current;
+    if (type === "expenses") {
+      // Pour les dépenses, augmentation = négatif
+      return current > 0 ? -100 : 0;
+    } else if (type === "income") {
+      // Pour les revenus, augmentation = positif
+      return current > 0 ? 100 : 0;
+    } else {
+      // Pour le solde, dépend si positif ou négatif
+      return current > 0 ? 100 : current < 0 ? -100 : 0;
+    }
   }
 
-  // Calcul normal de la tendance
-  return Number((((current - previous) / Math.abs(previous)) * 100).toFixed(2));
-};
-
-const getPreviousPeriodDates = (
-  currentStartDate: Date,
-  currentEndDate: Date
-): { start: Date; end: Date } => {
-  const periodLength = currentEndDate.getTime() - currentStartDate.getTime();
-  return {
-    start: new Date(currentStartDate.getTime() - periodLength),
-    end: new Date(currentStartDate),
-  };
+  const trend = ((current - previous) / Math.abs(previous)) * 100;
+  return Number(trend.toFixed(1)); // Limiter à 1 décimale
 };
 
 export const useStatistics = (
-  transactions: Transaction[],
+  allTransactions: Transaction[],
   budgets: Budget[],
   filteredTransactions: Transaction[],
   hasDataForPeriod: boolean,
@@ -41,113 +35,74 @@ export const useStatistics = (
   const { t } = useTranslation();
 
   return useMemo(() => {
-    // Vérification des données filtrées
-    if (!filteredTransactions.length) {
-      return {
-        commonStats: [],
-        currentExpenses: 0,
-        previousExpenses: 0,
-        currentIncome: 0,
-        previousIncome: 0,
-        currentBalance: 0,
-        previousBalance: 0,
-        expensesTrend: 0,
-        incomeTrend: 0,
-        balanceTrend: 0,
-        totalBudget: 0,
-        budgetAvailable: 0,
-        budgetUsagePercentage: 0,
-      };
-    }
-
-    // Tri des transactions par date
-    const sortedTransactions = [...filteredTransactions].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-
-    // Calcul des dépenses et revenus pour la période actuelle
-    const currentExpenses = sortedTransactions
+    // Calculer les dépenses et revenus à partir des transactions filtrées
+    const currentExpenses = filteredTransactions
       .filter((t) => t.type === "expense")
       .reduce((sum, t) => sum + t.amount, 0);
 
-    const currentIncome = sortedTransactions
+    const currentIncome = filteredTransactions
       .filter((t) => t.type === "income")
       .reduce((sum, t) => sum + t.amount, 0);
 
-    // Détermination des dates de la période actuelle
-    const currentStartDate = new Date(sortedTransactions[0].date);
-    const currentEndDate = new Date(
-      sortedTransactions[sortedTransactions.length - 1].date
-    );
+    // Obtenir le mois précédent
+    const getPreviousMonth = () => {
+      if (!dateRange?.startsWith("month-")) return null;
+      const [, year, month] = dateRange.split("-").map(Number);
+      const prevDate = new Date(year, month - 2);
+      return `month-${prevDate.getFullYear()}-${String(
+        prevDate.getMonth() + 1
+      ).padStart(2, "0")}`;
+    };
 
-    // Calcul de la période précédente
-    const { start: previousPeriodStartDate, end: previousPeriodEndDate } =
-      getPreviousPeriodDates(currentStartDate, currentEndDate);
+    // Calculer les transactions du mois précédent
+    const previousMonth = getPreviousMonth();
+    const previousMonthTransactions = previousMonth
+      ? allTransactions.filter((t) => {
+          const [, year, month] = previousMonth.split("-").map(Number);
+          const date = new Date(t.date);
+          return date.getFullYear() === year && date.getMonth() === month - 1;
+        })
+      : [];
 
-    // Filtrage des transactions de la période précédente
-    const previousPeriodTransactions = transactions.filter((t) => {
-      const transactionDate = new Date(t.date);
-      return (
-        transactionDate >= previousPeriodStartDate &&
-        transactionDate < previousPeriodEndDate
-      );
-    });
-
-    // Calcul des montants de la période précédente
-    const previousExpenses = previousPeriodTransactions
+    const previousExpenses = previousMonthTransactions
       .filter((t) => t.type === "expense")
       .reduce((sum, t) => sum + t.amount, 0);
 
-    const previousIncome = previousPeriodTransactions
+    const previousIncome = previousMonthTransactions
       .filter((t) => t.type === "income")
       .reduce((sum, t) => sum + t.amount, 0);
 
-    // Calcul des soldes
+    // Calculer les soldes
     const currentBalance = currentIncome - currentExpenses;
     const previousBalance = previousIncome - previousExpenses;
 
-    // Calcul des tendances
-    const expensesTrend = calculateTrendPercentage(
+    // Calculer les tendances avec la nouvelle fonction
+    const expensesTrend = calculateTrend(
       currentExpenses,
-      previousExpenses
+      previousExpenses,
+      "expenses"
     );
-    const incomeTrend = calculateTrendPercentage(currentIncome, previousIncome);
-    const balanceTrend = calculateTrendPercentage(
+    const incomeTrend = calculateTrend(currentIncome, previousIncome, "income");
+    const balanceTrend = calculateTrend(
       currentBalance,
-      previousBalance
+      previousBalance,
+      "balance"
     );
 
-    // Calcul du budget
-    const totalBudget = budgets.reduce((sum, b) => sum + b.limit, 0);
-    const budgetAvailable = totalBudget - currentExpenses;
-    const budgetUsagePercentage =
-      totalBudget > 0
-        ? Number(((currentExpenses / totalBudget) * 100).toFixed(2))
-        : 0;
+    // Calculer le budget total et disponible
+    const currentMonth = dateRange?.startsWith("month-")
+      ? dateRange
+      : `month-${new Date().getFullYear()}-${String(
+          new Date().getMonth() + 1
+        ).padStart(2, "0")}`;
 
-    const commonStats = [
-      {
-        title: t("budget.statistics.limit"),
-        value: formatCurrency(totalBudget),
-        icon: "account_balance",
-        trend: { value: 0, isPositive: true },
-      },
-      {
-        title: t("budget.statistics.spent"),
-        value: formatCurrency(currentExpenses),
-        icon: "trending_down",
-        trend: { value: expensesTrend, isPositive: false },
-      },
-      {
-        title: t("budget.statistics.remaining"),
-        value: formatCurrency(budgetAvailable),
-        icon: "savings",
-        trend: { value: 0, isPositive: true },
-      },
-    ];
+    const totalBudget = budgets
+      .filter((b) => b.month === currentMonth)
+      .reduce((sum, b) => sum + b.limit, 0);
+
+    const budgetAvailable = totalBudget - currentExpenses;
 
     return {
-      commonStats,
       currentExpenses,
       previousExpenses,
       currentIncome,
@@ -159,13 +114,13 @@ export const useStatistics = (
       balanceTrend,
       totalBudget,
       budgetAvailable,
-      budgetUsagePercentage,
     };
   }, [
-    transactions,
+    allTransactions,
     budgets,
     filteredTransactions,
     hasDataForPeriod,
     dateRange,
+    t,
   ]);
 };

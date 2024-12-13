@@ -76,7 +76,7 @@ export default {
       other: "📌 Autres",
     },
     statistics: {
-      monthlyExpenses: "Dépenses mensuelles",
+      monthlyExpenses: "Dépenses du mois",
       previousMonth: "Mois précédent",
       trend: "Tendance",
       currentBalance: "Solde actuel",

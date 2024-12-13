@@ -8,6 +8,7 @@ import { BudgetModule } from './budget/budget.module';
 import { ExportController } from './export/export.controller';
 import { NotificationModule } from './modules/notifications/notification.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { SavingsModule } from './savings/savings.module';
 import { SettingsModule } from './settings/settings.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { UserModule } from './user/user.module';
@@ -28,6 +29,7 @@ import { UserModule } from './user/user.module';
       secret: process.env.JWT_SECRET || 'votre_secret_jwt',
       signOptions: { expiresIn: '1d' },
     }),
+    SavingsModule,
   ],
   controllers: [AppController, ExportController],
   providers: [AppService],

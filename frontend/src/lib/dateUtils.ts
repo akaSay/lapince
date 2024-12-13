@@ -1,40 +1,30 @@
 // Créons un fichier utilitaire pour la gestion des dates
-export const isDateInRange = (date: Date | string, dateRange?: string) => {
-  const checkDate = new Date(date);
+export const isDateInRange = (date: Date | string, range?: string): boolean => {
+  if (!range) return true;
+
+  const targetDate = new Date(date);
   const today = new Date();
 
-  if (!dateRange) return true;
+  // Pour les filtres de mois spécifiques (format: month-YYYY-MM)
+  if (range.startsWith("month-")) {
+    const [, year, month] = range.split("-");
+    return (
+      targetDate.getFullYear() === parseInt(year) &&
+      targetDate.getMonth() === parseInt(month) - 1
+    );
+  }
 
-  switch (dateRange) {
-    case "this-month": {
-      const firstDayOfMonth = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1
-      );
-      return checkDate >= firstDayOfMonth && checkDate <= today;
-    }
-    case "last-month": {
-      const firstDayLastMonth = new Date(
-        today.getFullYear(),
-        today.getMonth() - 1,
-        1
-      );
-      const lastDayLastMonth = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        0
-      );
-      return checkDate >= firstDayLastMonth && checkDate <= lastDayLastMonth;
-    }
+  // Pour les autres périodes
+  switch (range) {
     case "3-months": {
-      const threeMonthsAgo = new Date(today);
+      const threeMonthsAgo = new Date();
       threeMonthsAgo.setMonth(today.getMonth() - 3);
-      return checkDate >= threeMonthsAgo && checkDate <= today;
+      return targetDate >= threeMonthsAgo && targetDate <= today;
     }
     case "year": {
-      const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-      return checkDate >= firstDayOfYear && checkDate <= today;
+      const startOfYear = new Date(today.getFullYear(), 0, 1);
+      const endOfYear = new Date(today.getFullYear(), 11, 31);
+      return targetDate >= startOfYear && targetDate <= endOfYear;
     }
     default:
       return true;

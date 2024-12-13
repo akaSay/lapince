@@ -1,6 +1,5 @@
-export interface Filters {
+export type Filters = {
+  dateRange?: string;
   category?: string;
-  dateRange?: "this-month" | "last-month" | "3-months" | "year";
-  status?: "success" | "warning" | "danger";
-  searchQuery?: string;
-}
+  status?: string;
+};
