@@ -13,6 +13,7 @@ import {
   Sparkles,
   Users,
   Wallet,
+  Wifi,
 } from "lucide-react";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -516,7 +517,7 @@ export const LandingPage = () => {
               </motion.p>
             </div>
 
-            <div className="max-w-3xl mx-auto">
+            <div className="max-w-3xl mx-auto space-y-6">
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 className="p-6 border rounded-xl bg-[#1E2536]/50 backdrop-blur-sm border-blue-500/20"
@@ -535,6 +536,29 @@ export const LandingPage = () => {
                       Bientôt, profitez de conseils personnalisés basés sur vos
                       habitudes de dépenses pour optimiser votre budget et
                       atteindre vos objectifs financiers plus rapidement.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="p-6 border rounded-xl bg-[#1E2536]/50 backdrop-blur-sm border-blue-500/20"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-500/10">
+                      <Wifi className="w-6 h-6 text-blue-400" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="mb-2 text-xl font-semibold text-white">
+                      Mode Hors Ligne
+                    </h3>
+                    <p className="text-gray-400">
+                      Prochainement, accédez à vos données et gérez votre budget
+                      même sans connexion internet. Synchronisation automatique
+                      dès que vous êtes en ligne.
                     </p>
                   </div>
                 </div>

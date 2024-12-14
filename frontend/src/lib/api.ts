@@ -1,41 +1,63 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const api = axios.create({
   baseURL: "http://localhost:3001/api",
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
-  const token =
-    localStorage.getItem("token") || sessionStorage.getItem("token");
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+const subscribeTokenRefresh = (cb: (token: string) => void) => {
+  refreshSubscribers.push(cb);
+};
 
-  return config;
-});
+const onRefreshed = (token: string) => {
+  refreshSubscribers.map((cb) => cb(token));
+  refreshSubscribers = [];
+};
 
 api.interceptors.response.use(
-  (response) => {
-    console.log("Réponse API réussie:", {
-      url: response.config.url,
-      status: response.status,
-      data: response.data,
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config;
+
+    if (originalRequest?.url === "/auth/login") {
+      return Promise.reject(error);
+    }
+
+    if (
+      !error.response ||
+      error.response.status !== 401 ||
+      originalRequest?.url === "/auth/refresh" ||
+      !originalRequest
+    ) {
+      return Promise.reject(error);
+    }
+
+    if (!isRefreshing) {
+      isRefreshing = true;
+
+      try {
+        const { data } = await api.post("/auth/refresh");
+        isRefreshing = false;
+        onRefreshed(data.access_token);
+        return api(originalRequest);
+      } catch (refreshError) {
+        isRefreshing = false;
+        window.dispatchEvent(new CustomEvent("auth:expired"));
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return new Promise((resolve) => {
+      subscribeTokenRefresh(() => {
+        resolve(api(originalRequest));
+      });
     });
-    return response;
-  },
-  (error) => {
-    console.error("Erreur API:", {
-      url: error.config?.url,
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message,
-    });
-    throw error;
   }
 );
 

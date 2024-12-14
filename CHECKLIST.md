@@ -178,6 +178,6 @@
 6.Suppression du compte (terminer)
 7.Page de Présentation de l'application (terminer)
 8.Formulaire Formik et yup a l'inscription et connexion (terminer)
-9.Cookie consent
-10.Cookie token back
-11.Ajouter objectif d'épargne
+9.Cookie consent (terminer)
+10.Cookie token back (terminer)
+11.Ajouter objectif d'épargne (terminer)

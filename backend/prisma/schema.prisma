@@ -22,6 +22,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   resetToken        String?   @unique
   resetTokenExpiry  DateTime?
+  refreshToken    String?
 
   transactions  Transaction[]
   budgets       Budget[]

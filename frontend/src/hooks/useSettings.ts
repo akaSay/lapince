@@ -1,13 +1,20 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import api from "../lib/api";
 import { SettingsData } from "../types/settings";
+import { useAuth } from "./useAuth";
 
 export const useSettings = () => {
   const [settings, setSettings] = useState<SettingsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const { isAuthenticated } = useAuth();
 
   const fetchSettings = async () => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await api.get("/settings");
       setSettings(response.data);
@@ -31,7 +38,7 @@ export const useSettings = () => {
 
   useEffect(() => {
     fetchSettings();
-  }, []);
+  }, [isAuthenticated]);
 
   return {
     settings,

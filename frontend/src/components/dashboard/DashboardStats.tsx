@@ -65,21 +65,21 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
   return (
     <div className="grid gap-4">
       {/* Objectif d'épargne */}
-      <div className="p-6 border rounded-lg bg-[#1A1F2E] border-blue-500/20">
-        <div className="flex items-center justify-between mb-4">
+      <div className="p-4 border rounded-lg sm:p-6 bg-[#1A1F2E] border-blue-500/20">
+        <div className="flex flex-col gap-4 mb-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <Target className="w-6 h-6 text-blue-500" />
             <h2 className="text-lg font-semibold text-white">
               Objectif d'épargne
             </h2>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <Dialog open={isEditingSavings} onOpenChange={setIsEditingSavings}>
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="px-4 text-sm border-gray-700 h-9 hover:bg-gray-700"
+                  className="w-full px-4 text-sm border-gray-700 h-9 hover:bg-gray-700 sm:w-auto"
                 >
                   <PencilIcon className="w-4 h-4 mr-3" />
                   Modifier épargne
@@ -119,7 +119,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="px-4 text-sm border-gray-700 h-9 hover:bg-gray-700"
+                  className="w-full px-4 text-sm border-gray-700 h-9 hover:bg-gray-700 sm:w-auto"
                 >
                   <PencilIcon className="w-4 h-4 mr-3" />
                   Modifier objectif
@@ -156,7 +156,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
             </Dialog>
           </div>
         </div>
-        <div className="mb-2 text-lg text-right">
+        <div className="mb-2 text-base text-right sm:text-lg">
           <span className="text-blue-500">{savingsGoal.current}€</span>
           <span className="text-gray-400"> / {savingsGoal.target}€</span>
         </div>
@@ -167,12 +167,12 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         {/* Budget mensuel */}
-        <div className="p-6 border rounded-lg bg-[#1A1F2E] border-blue-500/20">
+        <div className="p-4 border rounded-lg sm:p-6 bg-[#1A1F2E] border-blue-500/20">
           <h3 className="text-sm font-medium text-gray-400">Budget mensuel</h3>
           <div className="mt-2">
-            <p className="text-3xl font-semibold text-blue-500">
+            <p className="text-2xl font-semibold text-blue-500 sm:text-3xl">
               {monthlyBudget.total}€
             </p>
             <p className="text-sm text-gray-400">
@@ -182,10 +182,10 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
         </div>
 
         {/* Économies */}
-        <div className="p-6 border rounded-lg bg-[#1A1F2E] border-blue-500/20">
+        <div className="p-4 border rounded-lg sm:p-6 bg-[#1A1F2E] border-blue-500/20">
           <h3 className="text-sm font-medium text-gray-400">Économies</h3>
           <div className="mt-2">
-            <p className="text-3xl font-semibold text-green-500">
+            <p className="text-2xl font-semibold text-green-500 sm:text-3xl">
               +{savings.amount}€
             </p>
             <p className="text-sm text-gray-400">vs mois dernier</p>

@@ -1,7 +1,7 @@
-import React from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import { LandingPage } from "./components/landing/LandingPage";
 import Layout from "./components/layout/Layout";
@@ -25,6 +25,7 @@ const App: React.FC = () => {
       <FilterProvider>
         <ProfileProvider>
           <BrowserRouter>
+            <GoogleAnalytics />
             <Routes>
               {/* Routes publiques */}
               <Route path="/" element={<LandingPage />} />

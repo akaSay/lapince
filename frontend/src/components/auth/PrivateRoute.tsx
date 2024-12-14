@@ -1,27 +1,30 @@
+import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { useState, useEffect } from "react";
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-  const { getToken, initAuth } = useAuth();
+  const { initAuth } = useAuth();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {
     const validateAuth = async () => {
-      if (getToken()) {
+      try {
         const isAuthenticated = await initAuth();
         setIsValid(isAuthenticated);
+      } catch (error) {
+        setIsValid(false);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     validateAuth();
   }, []);
 
   if (isLoading) {
-    return <div>Chargement...</div>; // Ou votre composant de loading
+    return <div>Chargement...</div>;
   }
 
   if (!isValid) {
@@ -30,5 +33,4 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 
   return <>{children}</>;
 };
-
 export default PrivateRoute;

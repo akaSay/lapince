@@ -6,7 +6,6 @@ import { useProfileContext } from "../contexts/ProfileContext";
 import api from "../lib/api";
 
 interface LoginCredentials {
-  rememberMe: any;
   email: string;
   password: string;
 }
@@ -18,12 +17,7 @@ interface RegisterCredentials {
 }
 
 interface AuthResponse {
-  access_token: string;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-  };
+  message: string;
 }
 
 export const useAuth = () => {
@@ -33,61 +27,42 @@ export const useAuth = () => {
   const { fetchProfile, clearProfile } = useProfileContext();
   const { t } = useTranslation();
 
-  const getToken = () => {
-    return localStorage.getItem("token") || sessionStorage.getItem("token");
-  };
-
-  const isAuthenticated = () => {
-    const token = getToken();
-    return !!token;
+  const isAuthenticated = async () => {
+    try {
+      await api.get("/auth/profile");
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const initAuth = async () => {
-    const token = getToken();
-    if (token) {
-      try {
-        await fetchProfile();
-        return true;
-      } catch (error) {
-        logout();
-        return false;
-      }
+    try {
+      await fetchProfile();
+      return true;
+    } catch (error) {
+      logout();
+      return false;
     }
-    return false;
   };
 
-  const login = async (
-    credentials: LoginCredentials & { rememberMe?: boolean }
-  ) => {
+  const login = async (credentials: LoginCredentials) => {
     try {
       setLoading(true);
       setError(null);
 
-      const { rememberMe, ...loginCredentials } = credentials;
-
-      const response = await api.post<AuthResponse>(
-        "/auth/login",
-        loginCredentials
-      );
-      const { access_token } = response.data;
-
-      if (!access_token) {
-        throw new Error("Token non reçu du serveur");
-      }
-
-      if (rememberMe) {
-        localStorage.setItem("token", access_token);
-        sessionStorage.removeItem("token");
-      } else {
-        sessionStorage.setItem("token", access_token);
-        localStorage.removeItem("token");
-      }
-
+      await api.post<AuthResponse>("/auth/login", credentials);
       await fetchProfile();
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur de connexion");
-      throw err;
+      if (axios.isAxiosError(err)) {
+        const errorData = err.response?.data;
+        if (errorData && typeof errorData === "object") {
+          setError(errorData.message);
+        } else {
+          setError("Une erreur est survenue lors de la connexion");
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -102,13 +77,11 @@ export const useAuth = () => {
         "/auth/register",
         credentials
       );
-      const { access_token } = response.data;
 
-      if (!access_token) {
-        throw new Error("Token non reçu du serveur");
+      if (response.data.message !== "Registration successful") {
+        throw new Error("Échec de l'inscription");
       }
 
-      localStorage.setItem("token", access_token);
       await fetchProfile();
       navigate("/dashboard");
     } catch (err) {
@@ -128,11 +101,14 @@ export const useAuth = () => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    sessionStorage.removeItem("token");
-    clearProfile();
-    navigate("/login");
+  const logout = async () => {
+    try {
+      await api.post("/auth/logout");
+      clearProfile();
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion:", error);
+    }
   };
 
   const requestPasswordReset = async (email: string) => {
@@ -161,7 +137,6 @@ export const useAuth = () => {
     error,
     loading,
     isAuthenticated,
-    getToken,
     initAuth,
     requestPasswordReset,
     resetPassword,

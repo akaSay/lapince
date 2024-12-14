@@ -171,6 +171,8 @@ export default {
       trend: "Tendance",
       comparison: "Comparaison",
     },
+    monthlyExpenses: "Dépenses mensuelles",
+    trendLine: "Ligne de tendance",
     expenseChart: {
       title: "Graphique des dépenses",
       weekly: "Hebdomadaire",

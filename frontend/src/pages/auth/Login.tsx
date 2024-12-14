@@ -1,14 +1,14 @@
-import { Formik, Form, Field } from "formik";
+import { Field, Form, Formik } from "formik";
+import { Link } from "react-router-dom";
+import { AuthLayout } from "../../components/auth/AuthLayout";
+import { SocialLogin } from "../../components/auth/SocialLogin";
 import { useAuth } from "../../hooks/useAuth";
 import { loginSchema } from "../../schemas/auth";
 import { LoginFormValues } from "../../types/auth";
-import { AuthLayout } from "../../components/auth/AuthLayout";
-import { SocialLogin } from "../../components/auth/SocialLogin";
 
 const initialValues: LoginFormValues = {
   email: "",
   password: "",
-  rememberMe: false,
 };
 
 export const Login = () => {
@@ -67,23 +67,13 @@ export const Login = () => {
               )}
             </div>
 
-            <div className="flex items-center justify-between">
-              <label className="flex items-center space-x-2">
-                <Field
-                  type="checkbox"
-                  name="rememberMe"
-                  className="w-4 h-4 text-blue-500 border-gray-600 rounded focus:ring-blue-500 focus:ring-offset-gray-800"
-                />
-                <span className="text-sm text-gray-300">
-                  Se souvenir de moi
-                </span>
-              </label>
-              <a
-                href="/forgot-password"
+            <div className="flex justify-end">
+              <Link
+                to="/forgot-password"
                 className="text-sm text-blue-400 hover:text-blue-300"
               >
                 Mot de passe oublié ?
-              </a>
+              </Link>
             </div>
 
             <button
@@ -101,12 +91,11 @@ export const Login = () => {
 
       <p className="mt-6 text-center text-gray-400">
         Pas encore de compte ?{" "}
-        <a href="/register" className="text-blue-400 hover:text-blue-300">
+        <Link to="/register" className="text-blue-400 hover:text-blue-300">
           S'inscrire
-        </a>
+        </Link>
       </p>
     </AuthLayout>
   );
 };
-
 export default Login;
