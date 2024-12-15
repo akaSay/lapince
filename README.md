@@ -1,50 +1,92 @@
-# React + TypeScript + Vite
+# LaPince - Application de Gestion de Budget
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application web permettant de gérer son budget personnel avec des fonctionnalités avancées de suivi des dépenses et d'épargne.
 
-Currently, two official plugins are available:
+## Fonctionnalités
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+✅ Gestion des transactions
 
-## Expanding the ESLint configuration
+- Ajout, modification et suppression de transactions
+- Catégorisation des dépenses
+- Filtrage et recherche avancée
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+✅ Suivi budgétaire
 
-- Configure the top-level `parserOptions` property like this:
+- Définition de budgets par catégorie
+- Alertes de dépassement
+- Visualisation des dépenses
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+✅ Objectifs d'épargne
+
+- Définition d'objectifs mensuels
+- Suivi de la progression
+- Notifications d'atteinte d'objectifs
+
+✅ Fonctionnalités avancées
+
+- Export des données en CSV
+- Support multilingue (FR/EN)
+- Mode sombre/clair
+- Interface responsive
+
+## Technologies utilisées
+
+### Frontend
+
+- React + Vite
+- TypeScript
+- Tailwind CSS
+- Radix UI
+- i18next pour l'internationalisation
+
+### Backend
+
+- NestJS
+- PostgreSQL
+- Prisma ORM
+- JWT pour l'authentification
+
+## Installation
+
+1. Cloner le repository
+
+```bash
+git clone https://github.com/akaSay/lapince.git
+cd lapince
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+2. Installation des dépendances
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+```bash
+# Frontend
+cd frontend
+npm install
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+# Backend
+cd ../backend
+npm install
 ```
+
+3. Configuration
+
+- Copier `.env.example` vers `.env` dans le dossier backend
+- Configurer les variables d'environnement
+
+4. Démarrage avec Docker
+
+```bash
+docker-compose up
+```
+
+L'application sera disponible sur :
+
+- Frontend : http://localhost:5173
+- Backend : http://localhost:3001
+
+## Auteur
+
+[Solliez Quentin]
+
+## Droits
+
+© 2024 Solliez Quentin - Tous droits réservés
