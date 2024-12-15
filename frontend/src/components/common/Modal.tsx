@@ -4,7 +4,7 @@ import React, { Fragment } from "react";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title: React.ReactNode;
+  title?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -38,19 +38,20 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-md overflow-hidden bg-gray-800 rounded-lg shadow-xl">
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
-                    <Dialog.Title className="text-lg font-medium text-white">
-                      {title}
-                    </Dialog.Title>
-                    <button
-                      onClick={onClose}
-                      className="text-gray-400 hover:text-white"
-                      aria-label="Fermer"
-                    >
-                      <i className="material-icons-outlined">close</i>
-                    </button>
-                  </div>
-
+                  {title && (
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+                      <Dialog.Title className="text-lg font-medium text-white">
+                        {title}
+                      </Dialog.Title>
+                      <button
+                        onClick={onClose}
+                        className="text-gray-400 hover:text-white"
+                        aria-label="Fermer"
+                      >
+                        <i className="material-icons-outlined">close</i>
+                      </button>
+                    </div>
+                  )}
                   <div className="px-4 py-4">{children}</div>
                 </Dialog.Panel>
               </Transition.Child>
@@ -61,5 +62,4 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
     </Transition>
   );
 };
-
 export default Modal;

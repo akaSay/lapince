@@ -13,6 +13,14 @@
 
 body {
   @apply text-gray-100 bg-gray-900;
+  position: relative;
+  min-height: 100vh;
+}
+
+#root {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
 }
 
 .btn-primary {

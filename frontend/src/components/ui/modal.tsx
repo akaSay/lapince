@@ -26,7 +26,7 @@ export const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
+          <div className="flex items-center justify-center min-h-full p-4 text-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -37,11 +37,11 @@ export const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-[#1A1F2E] p-6 text-left align-middle shadow-xl transition-all">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-end mb-4">
                   {title && (
                     <Dialog.Title
                       as="h3"
-                      className="text-xl font-semibold text-white"
+                      className="flex-1 text-xl font-semibold text-white"
                     >
                       {title}
                     </Dialog.Title>

@@ -204,7 +204,7 @@ const Dashboard: React.FC = () => {
       (t) => t.category === category
     );
     setSelectedBudgetTransactions(budgetTransactions);
-    setSelectedBudgetName(category);
+    setSelectedBudgetName(t(`dashboard.filters.${category}`));
     setIsBudgetDetailsModalOpen(true);
   };
 
@@ -370,7 +370,7 @@ const Dashboard: React.FC = () => {
               <BudgetCard
                 key={budget.id}
                 {...budget}
-                onDelete={() => handleDeleteBudget(budget.id)}
+                onDelete={() => handleDeleteBudget(budget.id!)}
                 onAddTransaction={handleAddTransaction}
                 onClick={() => handleBudgetClick(budget.category)}
                 variant="default"

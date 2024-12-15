@@ -216,7 +216,7 @@ const Budget: React.FC = () => {
               <BudgetCard
                 key={budget.id}
                 {...budget}
-                onDelete={() => handleDeleteBudget(budget.id)}
+                onDelete={() => handleDeleteBudget(budget.id!)}
                 onAddTransaction={handleAddTransaction}
                 onClick={() => handleBudgetClick(budget)}
                 variant="editable"

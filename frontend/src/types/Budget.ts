@@ -5,8 +5,10 @@ export interface BudgetData {
 }
 
 export interface Budget extends BudgetData {
-  status: string;
-  id: string;
+  id?: string;
   spent?: number;
+  period: string;
+  startDate: Date;
   month: string;
+  status: string;
 }

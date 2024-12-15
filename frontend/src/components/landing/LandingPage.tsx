@@ -17,7 +17,9 @@ import {
 } from "lucide-react";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import LogoPince from "../../assets/LogoPince.png";
+import LogoPinceSmall from "../../assets/optimized/LogoPince-200.webp";
+import LogoPinceMedium from "../../assets/optimized/LogoPince-400.webp";
+import LogoPinceLarge from "../../assets/optimized/LogoPince-600.webp";
 import { CookieConsent } from "../cookie/CookieConsent";
 import { PrivacyPolicy } from "../legal/PrivacyPolicy";
 import { TermsOfService } from "../legal/TermsOfService";
@@ -97,15 +99,22 @@ export const LandingPage = () => {
                 transition={{ duration: 0.8, type: "spring" }}
                 className="flex justify-center mb-4"
               >
-                <img
-                  src={LogoPince}
-                  alt="La Pince Logo"
-                  loading="eager"
-                  decoding="async"
-                  width={200}
-                  height={200}
-                  className="object-contain w-40 h-40 md:w-48 md:h-48 lg:w-56 lg:h-56"
-                />
+                <picture>
+                  <source
+                    srcSet={`${LogoPinceSmall} 200w, ${LogoPinceMedium} 400w, ${LogoPinceLarge} 600w`}
+                    sizes="(max-width: 768px) 200px, (max-width: 1024px) 400px, 600px"
+                    type="image/webp"
+                  />
+                  <img
+                    src={LogoPinceSmall}
+                    alt="La Pince Logo"
+                    loading="eager"
+                    decoding="async"
+                    width={200}
+                    height={200}
+                    className="object-contain w-40 h-40 md:w-48 md:h-48 lg:w-56 lg:h-56"
+                  />
+                </picture>
               </motion.div>
               <motion.h1
                 className="text-5xl font-bold md:text-7xl lg:text-8xl"
@@ -623,15 +632,22 @@ export const LandingPage = () => {
         <footer className="container px-4 py-12 mx-auto">
           <div className="flex flex-col items-center justify-between gap-6 pt-8 border-t md:flex-row border-blue-500/10">
             <div className="flex items-center space-x-2">
-              <img
-                src={LogoPince}
-                alt="La Pince Logo"
-                loading="lazy"
-                decoding="async"
-                width={40}
-                height={40}
-                className="w-10 h-10 mt-2"
-              />
+              <picture>
+                <source
+                  srcSet={`${LogoPinceSmall} 200w, ${LogoPinceMedium} 400w, ${LogoPinceLarge} 600w`}
+                  sizes="(max-width: 768px) 200px, (max-width: 1024px) 400px, 600px"
+                  type="image/webp"
+                />
+                <img
+                  src={LogoPinceSmall}
+                  alt="La Pince Logo"
+                  loading="lazy"
+                  decoding="async"
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 mt-2"
+                />
+              </picture>
               <span className="text-xl font-bold text-white">LaPince</span>
             </div>
             <p className="text-sm text-gray-400">
@@ -656,21 +672,13 @@ export const LandingPage = () => {
 
         <ScrollToTop />
 
-        <Modal
-          isOpen={isPrivacyOpen}
-          onClose={() => setIsPrivacyOpen(false)}
-          title="Politique de confidentialité"
-        >
+        <Modal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)}>
           <div className="max-h-[70vh] overflow-y-auto pr-2">
             <PrivacyPolicy />
           </div>
         </Modal>
 
-        <Modal
-          isOpen={isTermsOpen}
-          onClose={() => setIsTermsOpen(false)}
-          title="Conditions d'utilisation"
-        >
+        <Modal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)}>
           <div className="max-h-[70vh] overflow-y-auto pr-2">
             <TermsOfService />
           </div>

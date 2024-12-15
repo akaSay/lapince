@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -5,21 +6,24 @@ import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import { LandingPage } from "./components/landing/LandingPage";
 import Layout from "./components/layout/Layout";
+import { Loading } from "./components/ui/loading";
 import { FilterProvider } from "./contexts/FilterContext";
 import { ProfileProvider } from "./contexts/ProfileContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Budget from "./pages/Budget";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-import Reports from "./pages/Reports";
-import Settings from "./pages/Settings";
-import Transactions from "./pages/Transactions";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ResetPassword from "./pages/auth/ResetPassword";
 
-const App: React.FC = () => {
+// Lazy loading des pages
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Budget = lazy(() => import("./pages/Budget"));
+const Settings = lazy(() => import("./pages/Settings"));
+const Transactions = lazy(() => import("./pages/Transactions"));
+const Reports = lazy(() => import("./pages/Reports"));
+const Profile = lazy(() => import("./pages/Profile"));
+
+export const App = () => {
   return (
     <ThemeProvider>
       <FilterProvider>
@@ -27,10 +31,14 @@ const App: React.FC = () => {
           <BrowserRouter>
             <GoogleAnalytics />
             <Routes>
-              {/* Routes publiques */}
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="/reset-password/:resetToken"
+                element={<ResetPassword />}
+              />
 
               {/* Routes protégées */}
               <Route
@@ -39,15 +47,54 @@ const App: React.FC = () => {
                   <PrivateRoute>
                     <Layout>
                       <Routes>
-                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route
+                          path="/dashboard"
+                          element={
+                            <Suspense fallback={<Loading />}>
+                              <Dashboard />
+                            </Suspense>
+                          }
+                        />
                         <Route
                           path="/transactions"
-                          element={<Transactions />}
+                          element={
+                            <Suspense fallback={<Loading />}>
+                              <Transactions />
+                            </Suspense>
+                          }
                         />
-                        <Route path="/budget" element={<Budget />} />
-                        <Route path="/reports" element={<Reports />} />
-                        <Route path="/profile" element={<Profile />} />
-                        <Route path="/settings" element={<Settings />} />
+                        <Route
+                          path="/budget"
+                          element={
+                            <Suspense fallback={<Loading />}>
+                              <Budget />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/reports"
+                          element={
+                            <Suspense fallback={<Loading />}>
+                              <Reports />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/profile"
+                          element={
+                            <Suspense fallback={<Loading />}>
+                              <Profile />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/settings"
+                          element={
+                            <Suspense fallback={<Loading />}>
+                              <Settings />
+                            </Suspense>
+                          }
+                        />
                         <Route
                           path="*"
                           element={<Navigate to="/dashboard" replace />}
@@ -56,11 +103,6 @@ const App: React.FC = () => {
                     </Layout>
                   </PrivateRoute>
                 }
-              />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route
-                path="/reset-password/:resetToken"
-                element={<ResetPassword />}
               />
             </Routes>
             <ToastContainer
@@ -81,5 +123,3 @@ const App: React.FC = () => {
     </ThemeProvider>
   );
 };
-
-export default App;

@@ -1,0 +1,28 @@
+# Configuration globale pour tous les robots
+User-agent: *
+
+# Pages publiques autorisées
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /about
+Allow: /contact
+Allow: /features
+
+# Pages privées à ne pas indexer
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /settings
+Disallow: /budget
+Disallow: /transactions
+Disallow: /reports
+Disallow: /api/
+
+# Bloquer l'accès aux assets privés
+Disallow: /assets/private/
+
+# Temps minimum entre chaque requête (en secondes)
+Crawl-delay: 10
+
+# Sitemap (à activer quand vous aurez un domaine)
+# Sitemap: https://lapince.com/sitemap.xml 

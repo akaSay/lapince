@@ -15,6 +15,9 @@ const BudgetPlanningForm: React.FC<BudgetPlanningFormProps> = ({
     limit: initialValues?.limit || 0,
     period: initialValues?.period || "monthly",
     startDate: initialValues?.startDate || new Date(),
+    month: initialValues?.month || new Date().toISOString().slice(0, 7),
+    status: initialValues?.status || "active",
+    icon: initialValues?.icon || "💰",
   });
 
   const handleSubmit = (e: React.FormEvent) => {

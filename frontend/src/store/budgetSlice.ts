@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Budget from "../types/Budget";
+import { Budget } from "../types/Budget";
 
 interface BudgetState {
   budgets: Budget[];
