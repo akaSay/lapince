@@ -1,14 +1,14 @@
-export interface BudgetData {
+export type Budget = {
+  id?: string;
   category: string;
   limit: number;
-  icon: string;
-}
-
-export interface Budget extends BudgetData {
-  id?: string;
   spent?: number;
-  period: string;
+  period: "monthly" | "yearly";
   startDate: Date;
   month: string;
   status: string;
-}
+  icon: string;
+};
+
+// Type pour la création d'un nouveau budget
+export type CreateBudgetInput = Omit<Budget, "id" | "spent">;
