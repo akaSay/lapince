@@ -8,6 +8,8 @@ export default defineConfig({
     port: 5173,
   },
   build: {
+    outDir: "dist",
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -21,5 +23,8 @@ export default defineConfig({
         },
       },
     },
+  },
+  define: {
+    "process.env.VITE_API_URL": JSON.stringify(process.env.VITE_API_URL),
   },
 });
