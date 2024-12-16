@@ -4,11 +4,14 @@ export interface BudgetData {
   icon: string;
 }
 
-export interface Budget extends BudgetData {
-  id?: string;
-  spent?: number;
-  period: string;
+export type Budget = {
+  id: string;
+  category: string;
+  limit: number;
+  spent: number;
+  period: "monthly" | "yearly";
   startDate: Date;
   month: string;
-  status: string;
-}
+  status: "active" | "inactive";
+  icon: string;
+};

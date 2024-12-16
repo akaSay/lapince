@@ -1,15 +1,12 @@
 import React, { useState } from "react";
 import { Budget } from "../../types/Budget";
 
-interface BudgetPlanningFormProps {
+type Props = {
   onSubmit: (budget: Omit<Budget, "id" | "spent">) => void;
   initialValues?: Budget;
-}
+};
 
-const BudgetPlanningForm: React.FC<BudgetPlanningFormProps> = ({
-  onSubmit,
-  initialValues,
-}) => {
+export const BudgetPlanningForm = ({ onSubmit, initialValues }: Props) => {
   const [formData, setFormData] = useState({
     category: initialValues?.category || "",
     limit: initialValues?.limit || 0,
@@ -100,5 +97,3 @@ const BudgetPlanningForm: React.FC<BudgetPlanningFormProps> = ({
     </form>
   );
 };
-
-export default BudgetPlanningForm;
