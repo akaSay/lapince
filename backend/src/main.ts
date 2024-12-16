@@ -9,7 +9,11 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    origin: [
+      'https://lapince-git-seo-akasayzy-gmailcoms-projects.vercel.app',
+      'https://lapince-liy9xj13t-akasayzy-gmailcoms-projects.vercel.app',
+      // Ajoutez aussi le domaine quand vous visitez le site (si différent)
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
