@@ -47,26 +47,29 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const result = await this.authService.login(loginDto);
+    const { access_token, refresh_token, user } =
+      await this.authService.login(loginDto);
 
-    // Cookie pour le token d'accès
-    response.cookie('vercel_jwt', result.access_token, {
+    // Mise à jour des noms de cookies pour correspondre exactement
+    response.cookie('vercel_jwt', access_token, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      path: '/',
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    // Cookie pour le refresh token
-    response.cookie('refresh_token', result.refresh_token, {
+    response.cookie('refresh_token', refresh_token, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
     });
 
     return {
-      user: result.user,
+      user,
+      message: 'Login successful',
     };
   }
 
@@ -83,11 +86,11 @@ export class AuthController {
 
     const tokens = await this.authService.refreshTokens(refreshToken);
 
-    // Mettre à jour les deux cookies
     response.cookie('vercel_jwt', tokens.access_token, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      path: '/',
       maxAge: 15 * 60 * 1000,
     });
 
@@ -95,6 +98,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

@@ -28,7 +28,7 @@ export const useSettings = () => {
 
   const updateSettings = async (newSettings: Partial<SettingsData>) => {
     try {
-      const response = await api.patch("/settings", newSettings);
+      const response = await api.patch("/api/settings", newSettings);
       setSettings(response.data);
       return response.data;
     } catch (err) {

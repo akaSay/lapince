@@ -19,7 +19,7 @@ export const useLanguage = () => {
       localStorage.setItem("currency", currency);
 
       // Mettre à jour les paramètres utilisateur
-      await api.patch("/settings", {
+      await api.patch("/api/settings", {
         language,
         currency,
       });

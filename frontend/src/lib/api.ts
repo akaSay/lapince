@@ -23,6 +23,7 @@ api.interceptors.request.use((config) => {
     url: config.url,
     withCredentials: config.withCredentials,
   });
+  console.log("Request cookies:", document.cookie);
   return config;
 });
 
@@ -65,6 +66,7 @@ api.interceptors.response.use(
       data: error.response?.data,
       url: originalRequest?.url,
     });
+    console.log("Response error:", error.response);
     return Promise.reject(error);
   }
 );
