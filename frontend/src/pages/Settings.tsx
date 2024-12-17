@@ -1,13 +1,13 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "../contexts/ThemeContext";
-import { notificationService } from "../services/notificationService";
-import { exportService } from "../services/exportService";
 import SettingsForm from "../components/settings/SettingsForm";
+import { useTheme } from "../contexts/ThemeContext";
 import { useSettings } from "../hooks/useSettings";
-import { SettingsData } from "../types/settings";
 import { useToast } from "../hooks/useToast";
 import api from "../lib/api";
+import { exportService } from "../services/exportService";
+import { notificationService } from "../services/notificationService";
+import { SettingsData } from "../types/settings";
 
 const Settings: React.FC = () => {
   const { t } = useTranslation();
@@ -95,7 +95,7 @@ const Settings: React.FC = () => {
   const handleDeleteAccount = async () => {
     if (window.confirm(t("settings.confirmDelete"))) {
       try {
-        await api.delete("/users/me");
+        await api.delete("/api/users/me");
         localStorage.removeItem("token");
         window.location.href = "/login";
         success("success.account.deleted");

@@ -29,7 +29,7 @@ export const useAuth = () => {
 
   const isAuthenticated = async () => {
     try {
-      await api.get("/auth/profile");
+      await api.get("/api/auth/profile");
       return true;
     } catch {
       return false;
@@ -74,7 +74,7 @@ export const useAuth = () => {
       setError(null);
 
       const response = await api.post<AuthResponse>(
-        "/auth/register",
+        "/api/auth/register",
         credentials
       );
 
@@ -103,7 +103,7 @@ export const useAuth = () => {
 
   const logout = async () => {
     try {
-      await api.post("/auth/logout");
+      await api.post("/api/auth/logout");
       clearProfile();
       navigate("/login", { replace: true });
     } catch (error) {
@@ -113,7 +113,7 @@ export const useAuth = () => {
 
   const requestPasswordReset = async (email: string) => {
     try {
-      await api.post("/auth/forgot-password", { email });
+      await api.post("/api/auth/forgot-password", { email });
     } catch (err) {
       throw new Error(t("errors.resetPassword"));
     }
@@ -121,7 +121,7 @@ export const useAuth = () => {
 
   const resetPassword = async (token: string, newPassword: string) => {
     try {
-      await api.post("/auth/reset-password", {
+      await api.post("/api/auth/reset-password", {
         token,
         password: newPassword,
       });

@@ -1,6 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "../lib/api";
 import { User } from "../types/User";
+import { setLoading } from "../store/budgetSlice";
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 

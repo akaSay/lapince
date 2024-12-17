@@ -74,7 +74,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchSavingsGoal = async () => {
       try {
-        const response = await api.get(`/savings-goals/${currentMonth}`);
+        const response = await api.get(`/api/savings-goals/${currentMonth}`);
         setSavingsGoal(response.data);
       } catch (error) {
         console.error(
@@ -208,83 +208,70 @@ const Dashboard: React.FC = () => {
     setIsBudgetDetailsModalOpen(true);
   };
 
-  const handleUpdateSavingsGoal = async (newTarget: number) => {
+  const handleTargetUpdate = async (newTarget: number) => {
     try {
-      const response = await api.patch(`/savings-goals/${savingsGoal.month}`, {
-        target: newTarget,
-      });
+      const response = await api.patch(
+        `/api/savings-goals/${savingsGoal.month}`,
+        {
+          target: newTarget,
+        }
+      );
       setSavingsGoal(response.data);
     } catch (error) {
       console.error("Erreur lors de la mise à jour de l'objectif:", error);
     }
   };
 
-  const handleUpdateCurrentSavings = async (newAmount: number) => {
-    const savingsTransaction = {
-      amount: newAmount,
-      type: "expense",
-      category: "savings",
-      description: "Épargne",
-      date: new Date(),
-    };
-
+  const handleSavingsAdd = async (newAmount: number) => {
     try {
-      await createTransaction(savingsTransaction as Omit<Transaction, "id">);
-      const response = await api.patch(`/savings-goals/${currentMonth}`, {
+      const response = await api.patch(`/api/savings-goals/${currentMonth}`, {
         current: savingsGoal.current + newAmount,
       });
       setSavingsGoal(response.data);
     } catch (error) {
-      console.error("Erreur lors de la mise à jour de l'épargne:", error);
+      console.error("Erreur lors de l'ajout d'épargne:", error);
     }
   };
 
   const handleTransactionUpdate = async (transaction: Transaction) => {
     try {
-      // Si c'est une transaction d'épargne, mettre à jour l'objectif d'épargne
       if (transaction.category === "savings") {
         const oldTransaction = transactions.find(
           (t) => t.id === transaction.id
         );
         const difference = transaction.amount - (oldTransaction?.amount || 0);
 
-        // Appel API au lieu du localStorage
-        try {
-          const response = await api.patch(`/savings-goals/${currentMonth}`, {
-            current: savingsGoal.current + difference,
-          });
-          setSavingsGoal(response.data);
-        } catch (error) {
-          console.error("Erreur lors de la mise à jour de l'épargne:", error);
-        }
+        const response = await api.patch(`/api/savings-goals/${currentMonth}`, {
+          current: savingsGoal.current + difference,
+        });
+        setSavingsGoal(response.data);
       }
 
-      // Extraire les données nécessaires pour la mise à jour
       const { id, ...transactionData } = transaction;
       await updateTransaction(id, transactionData);
       setIsTransactionModalOpen(false);
       await fetchBudgets();
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleTransactionDelete = async (transaction: Transaction) => {
     if (window.confirm(t("transactions.confirmDelete"))) {
       try {
-        // Si c'est une transaction d'épargne, mettre à jour l'objectif d'épargne
         if (transaction.category === "savings") {
-          // Appel API au lieu du localStorage
-          try {
-            const response = await api.patch(`/savings-goals/${currentMonth}`, {
+          const response = await api.patch(
+            `/api/savings-goals/${currentMonth}`,
+            {
               current: savingsGoal.current - transaction.amount,
-            });
-            setSavingsGoal(response.data);
-          } catch (error) {
-            console.error("Erreur lors de la mise à jour de l'épargne:", error);
-          }
+            }
+          );
+          setSavingsGoal(response.data);
         }
-
         await deleteTransaction(transaction.id);
-      } catch (error) {}
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -353,8 +340,8 @@ const Dashboard: React.FC = () => {
           amount: totalSavings,
           progress: (savingsGoal.current / savingsGoal.target) * 100,
         }}
-        onUpdateSavingsGoal={handleUpdateSavingsGoal}
-        onUpdateCurrentSavings={handleUpdateCurrentSavings}
+        onUpdateSavingsGoal={handleTargetUpdate}
+        onUpdateCurrentSavings={handleSavingsAdd}
       />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">

@@ -30,9 +30,9 @@ export const useBudget = (): UseBudgetReturn => {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get<Budget[]>("/budgets");
+      const response = await api.get("/api/budgets");
       setBudgets(response.data);
-    } catch (err) {
+    } catch (error) {
       setError("errors.budget.fetch");
       showError("errors.budget.fetch");
     } finally {
@@ -43,7 +43,7 @@ export const useBudget = (): UseBudgetReturn => {
   const createBudget = async (budgetData: Omit<Budget, "id" | "spent">) => {
     try {
       setLoading(true);
-      const response = await api.post("/budgets", budgetData);
+      const response = await api.post("/api/budgets", budgetData);
       setBudgets((prev) => [...prev, response.data]);
       success("success.budget.create");
       return response.data;
@@ -61,7 +61,7 @@ export const useBudget = (): UseBudgetReturn => {
   ) => {
     try {
       setLoading(true);
-      const response = await api.put(`/budgets/${id}`, budgetData);
+      const response = await api.put(`/api/budgets/${id}`, budgetData);
       setBudgets((prev) =>
         prev.map((budget) => (budget.id === id ? response.data : budget))
       );
@@ -78,7 +78,7 @@ export const useBudget = (): UseBudgetReturn => {
   const deleteBudget = async (id: string) => {
     try {
       setLoading(true);
-      await api.delete(`/budgets/${id}`);
+      await api.delete(`/api/budgets/${id}`);
       setBudgets((prev) => prev.filter((budget) => budget.id !== id));
       success("success.budget.delete");
     } catch (err) {
