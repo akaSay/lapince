@@ -10,10 +10,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
 
+    console.log('Cookies:', request.cookies);
+    console.log('Headers:', request.headers);
+
     // Vérifier les cookies
     const token = request.cookies?.vercel_jwt;
     if (token) {
+      console.log('Token found in cookies');
       request.headers.authorization = `Bearer ${token}`;
+    } else {
+      console.log('No token found in cookies');
     }
 
     return super.canActivate(context);

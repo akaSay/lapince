@@ -64,18 +64,28 @@ export const useAuth = () => {
       setLoading(true);
       setError(null);
 
+      console.log("Attempting login...");
+
       const response = await api.post<AuthResponse>(
         "/api/auth/login",
         credentials
       );
 
+      console.log("Login response:", {
+        status: response.status,
+        headers: response.headers,
+        cookies: document.cookie,
+      });
+
       if (response.status === 201) {
+        console.log("Login successful, fetching profile...");
         await fetchProfile();
         navigate("/dashboard", { replace: true });
       } else {
         setError("Une erreur est survenue lors de la connexion");
       }
     } catch (err) {
+      console.error("Login error:", err);
       if (axios.isAxiosError(err)) {
         const errorData = err.response?.data;
         if (errorData && typeof errorData === "object") {

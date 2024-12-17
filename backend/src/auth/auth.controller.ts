@@ -47,8 +47,15 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) response: Response,
   ) {
+    console.log('Login attempt with:', loginDto.email);
+
     const { access_token, refresh_token, user } =
       await this.authService.login(loginDto);
+
+    console.log('Generated tokens:', {
+      access_token_length: access_token.length,
+      refresh_token_length: refresh_token.length,
+    });
 
     // Mise à jour des noms de cookies pour correspondre exactement
     response.cookie('vercel_jwt', access_token, {
@@ -56,6 +63,7 @@ export class AuthController {
       secure: true,
       sameSite: 'none',
       path: '/',
+      domain: '.onrender.com', // Ajout du domaine
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
@@ -64,8 +72,11 @@ export class AuthController {
       secure: true,
       sameSite: 'none',
       path: '/',
+      domain: '.onrender.com', // Ajout du domaine
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
     });
+
+    console.log('Cookies set in response');
 
     return {
       user,
@@ -109,8 +120,18 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async logout(@Request() req, @Res({ passthrough: true }) response: Response) {
     await this.authService.logout(req.user.userId);
-    response.clearCookie('token');
-    response.clearCookie('refresh_token');
+    response.clearCookie('vercel_jwt', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: '/',
+    });
+    response.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: '/',
+    });
     return { message: 'Logged out successfully' };
   }
 
