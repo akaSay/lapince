@@ -1,15 +1,11 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL || "https://lapince-api.onrender.com/api",
+  baseURL: "http://localhost:3001/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
-    Accept: "application/json",
   },
-  xsrfCookieName: "vercel_jwt",
-  xsrfHeaderName: "X-XSRF-TOKEN",
 });
 
 // Intercepteur pour les requêtes

@@ -97,11 +97,10 @@ export class AuthController {
 
     const tokens = await this.authService.refreshTokens(refreshToken);
 
-    response.cookie('vercel_jwt', tokens.access_token, {
+    response.cookie('token', tokens.access_token, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 15 * 60 * 1000,
     });
 

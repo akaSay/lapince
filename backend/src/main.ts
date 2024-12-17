@@ -10,18 +10,14 @@ async function bootstrap() {
   // Configuration CORS plus permissive
   app.enableCors({
     origin: [
-      'https://lapince-git-seo-akasayzy-gmailcoms-projects.vercel.app',
       'http://localhost:5173',
+      'http://localhost:5174',
+      'https://lapince.vercel.app',
+      'https://lapince-git-seo-akasayzy-gmailcoms-projects.vercel.app',
     ],
     credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: [
-      'Content-Type',
-      'Accept',
-      'Authorization',
-      'X-Requested-With',
-    ],
-    exposedHeaders: ['Set-Cookie'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   // Configuration du cookie parser
