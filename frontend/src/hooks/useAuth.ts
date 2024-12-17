@@ -52,7 +52,13 @@ export const useAuth = () => {
       setLoading(true);
       setError(null);
 
-      await api.post<AuthResponse>("/api/auth/login", credentials);
+      const response = await api.post<AuthResponse & { accessToken: string }>(
+        "/api/auth/login",
+        credentials
+      );
+      if (response.data.accessToken) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+      }
       await fetchProfile();
       navigate("/dashboard", { replace: true });
     } catch (err) {
@@ -105,6 +111,7 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       await api.post("/api/auth/logout");
+      localStorage.removeItem("accessToken");
       clearProfile();
       navigate("/login", { replace: true });
     } catch (error) {

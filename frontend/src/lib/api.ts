@@ -1,4 +1,8 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+
+interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 const api = axios.create({
   baseURL:
@@ -9,76 +13,56 @@ const api = axios.create({
   },
 });
 
-let isRefreshing = false;
-let refreshSubscribers: ((token: string) => void)[] = [];
-
-const subscribeTokenRefresh = (cb: (token: string) => void) => {
-  refreshSubscribers.push(cb);
-};
-
-const onRefreshed = (token: string) => {
-  refreshSubscribers.map((cb) => cb(token));
-  refreshSubscribers = [];
-};
-
-api.interceptors.request.use((request) => {
-  console.log("Sending request to:", request.url);
-  return request;
+// Add token to requests
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  console.log("Sending request to:", config.url);
+  return config;
 });
 
+// Handle responses and errors
 api.interceptors.response.use(
   (response) => {
     console.log("Response:", response.status, response.data);
     return response;
   },
-  (error) => {
-    console.error("API Error:", {
-      status: error.response?.status,
-      data: error.response?.data,
-      url: error.config?.url,
-    });
-    return Promise.reject(error);
-  }
-);
-
-api.interceptors.response.use(
-  (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as CustomInternalAxiosRequestConfig;
 
-    if (originalRequest?.url === "/api/auth/login") {
-      return Promise.reject(error);
-    }
-
+    // Don't retry these requests
     if (
-      !error.response ||
-      error.response.status !== 401 ||
-      originalRequest?.url === "/api/auth/refresh" ||
-      !originalRequest
+      !originalRequest ||
+      originalRequest.url === "/api/auth/login" ||
+      originalRequest.url === "/api/auth/refresh" ||
+      originalRequest._retry
     ) {
       return Promise.reject(error);
     }
 
-    if (!isRefreshing) {
-      isRefreshing = true;
-
+    if (error.response?.status === 401) {
+      originalRequest._retry = true;
       try {
-        const { data } = await api.post("/api/auth/refresh");
-        isRefreshing = false;
-        onRefreshed(data.access_token);
+        const response = await api.post("/api/auth/refresh");
+        const { accessToken } = response.data;
+        localStorage.setItem("accessToken", accessToken);
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        isRefreshing = false;
+        localStorage.removeItem("accessToken");
         window.dispatchEvent(new CustomEvent("auth:expired"));
         return Promise.reject(refreshError);
       }
     }
 
-    return new Promise((resolve) => {
-      subscribeTokenRefresh(() => {
-        resolve(api(originalRequest));
-      });
+    console.error("API Error:", {
+      status: error.response?.status,
+      data: error.response?.data,
+      url: originalRequest?.url,
     });
+    return Promise.reject(error);
   }
 );
 
