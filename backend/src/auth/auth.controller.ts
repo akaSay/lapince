@@ -58,27 +58,25 @@ export class AuthController {
       refresh_token_length: refresh_token.length,
     });
 
-    // Configuration des cookies
+    // Configuration des cookies avec un domaine plus permissif
     const cookieOptions = {
       httpOnly: true,
       secure: true,
       sameSite: 'none' as const,
       path: '/',
+      domain: '.onrender.com', // Domaine parent
       maxAge: 15 * 60 * 1000, // 15 minutes
     };
 
+    // Définir les cookies avec les nouvelles options
     response.cookie('vercel_jwt', access_token, cookieOptions);
     response.cookie('refresh_token', refresh_token, {
       ...cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
     });
 
-    // Log des headers et cookies
-    console.log('Response headers:', response.getHeaders());
-    console.log('Cookies being set:', {
-      vercel_jwt: access_token.substring(0, 20) + '...',
-      refresh_token: refresh_token.substring(0, 20) + '...',
-    });
+    // Log pour le débogage
+    console.log('Setting cookies with options:', cookieOptions);
 
     return {
       user,
@@ -137,10 +135,12 @@ export class AuthController {
     return { message: 'Logged out successfully' };
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('profile')
+  @UseGuards(JwtAuthGuard)
   async getProfile(@Request() req) {
-    return this.authService.getProfile(req.user.userId);
+    console.log('Profile request cookies:', req.cookies);
+    console.log('Profile request headers:', req.headers);
+    return req.user;
   }
 
   @UseGuards(JwtAuthGuard)

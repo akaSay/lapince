@@ -1,60 +1,32 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    cors: false,
-  });
+  const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
 
+  // Configuration CORS plus permissive
   app.enableCors({
     origin: [
       'https://lapince-git-seo-akasayzy-gmailcoms-projects.vercel.app',
       'http://localhost:5173',
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: [
-      'Origin',
-      'X-Requested-With',
       'Content-Type',
       'Accept',
       'Authorization',
-      'Access-Control-Allow-Credentials',
+      'X-Requested-With',
     ],
     exposedHeaders: ['Set-Cookie'],
   });
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      skipMissingProperties: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-    }),
-  );
-
+  // Configuration du cookie parser
   app.use(cookieParser());
 
   await app.listen(process.env.PORT || 3000);
-
-  const server = app.getHttpServer();
-  const router = server._events.request._router;
-
-  console.log('Routes disponibles :');
-  router.stack.forEach((layer: any) => {
-    if (layer.route) {
-      console.log({
-        path: layer.route.path,
-        method: Object.keys(layer.route.methods)[0].toUpperCase(),
-      });
-    }
-  });
 }
 bootstrap();
