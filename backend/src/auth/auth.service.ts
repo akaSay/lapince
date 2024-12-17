@@ -65,31 +65,30 @@ export class AuthService {
     });
 
     if (!user) {
-      console.log('User not found, throwing error');
-      const error = new UnauthorizedException({
-        type: 'user.not_found',
-        message: 'Aucun compte associé à cette adresse email',
-      });
-      console.log('Error object:', error.getResponse());
-      throw error;
+      throw new UnauthorizedException('User not found');
     }
 
     const passwordValid = await argon2.verify(user.password, loginDto.password);
     if (!passwordValid) {
-      console.log('Invalid password, throwing error');
-      const error = new UnauthorizedException({
-        type: 'invalid.password',
-        message: 'Mot de passe incorrect',
-      });
-      console.log('Error object:', error.getResponse());
-      throw error;
+      throw new UnauthorizedException('Invalid password');
     }
 
     const tokens = await this.generateTokens(user.id, user.email);
 
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        refreshToken: await argon2.hash(tokens.refresh_token),
+      },
+    });
+
     return {
       ...tokens,
-      user,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
     };
   }
 
@@ -190,22 +189,9 @@ export class AuthService {
 
   async generateTokens(userId: string, email: string) {
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(
-        { sub: userId, email },
-        { expiresIn: '15m' }, // Access token expire après 15 minutes
-      ),
-      this.jwtService.signAsync(
-        { sub: userId, email },
-        { expiresIn: '7d' }, // Refresh token expire après 7 jours
-      ),
+      this.jwtService.signAsync({ sub: userId, email }, { expiresIn: '15m' }),
+      this.jwtService.signAsync({ sub: userId, email }, { expiresIn: '7d' }),
     ]);
-
-    // Stocker le hash du refresh token en base de données
-    const hashedRefreshToken = await argon2.hash(refreshToken);
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { refreshToken: hashedRefreshToken },
-    });
 
     return {
       access_token: accessToken,
@@ -213,25 +199,39 @@ export class AuthService {
     };
   }
 
-  async refreshTokens(userId: string, refreshToken: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
+  async refreshTokens(refreshToken: string) {
+    try {
+      const payload = this.jwtService.verify(refreshToken);
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+      });
 
-    if (!user || !user.refreshToken) {
+      if (!user || !user.refreshToken) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      const refreshTokenMatches = await argon2.verify(
+        user.refreshToken,
+        refreshToken,
+      );
+
+      if (!refreshTokenMatches) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      const tokens = await this.generateTokens(user.id, user.email);
+
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          refreshToken: await argon2.hash(tokens.refresh_token),
+        },
+      });
+
+      return tokens;
+    } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
-
-    const refreshTokenMatches = await argon2.verify(
-      user.refreshToken,
-      refreshToken,
-    );
-
-    if (!refreshTokenMatches) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-
-    return this.generateTokens(user.id, user.email);
   }
 
   async logout(userId: string) {

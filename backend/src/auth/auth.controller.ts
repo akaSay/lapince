@@ -49,12 +49,20 @@ export class AuthController {
   ) {
     const result = await this.authService.login(loginDto);
 
-    // Configurer les cookies après la connexion
-    response.cookie('token', result.access_token, {
+    // Cookie pour le token d'accès
+    response.cookie('vercel_jwt', result.access_token, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: 15 * 60 * 1000,
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    // Cookie pour le refresh token
+    response.cookie('refresh_token', result.refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
     });
 
     return {
@@ -70,16 +78,13 @@ export class AuthController {
   ) {
     const refreshToken = req.cookies['refresh_token'];
     if (!refreshToken) {
-      throw new UnauthorizedException('Refresh token not found');
+      throw new UnauthorizedException('No refresh token');
     }
 
-    const tokens = await this.authService.refreshTokens(
-      req.user.userId,
-      refreshToken,
-    );
+    const tokens = await this.authService.refreshTokens(refreshToken);
 
-    // Mettre à jour les cookies
-    response.cookie('token', tokens.access_token, {
+    // Mettre à jour les deux cookies
+    response.cookie('vercel_jwt', tokens.access_token, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
@@ -93,7 +98,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return { message: 'Tokens refreshed successfully' };
+    return { message: 'Tokens refreshed' };
   }
 
   @Post('logout')
