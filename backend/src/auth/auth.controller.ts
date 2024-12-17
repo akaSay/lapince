@@ -44,44 +44,49 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(
-    @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    console.log('Login attempt with:', loginDto.email);
+  async login(@Body() loginDto: LoginDto, @Res() response: Response) {
+    try {
+      const tokens = await this.authService.login(loginDto);
 
-    const { access_token, refresh_token, user } =
-      await this.authService.login(loginDto);
+      // Configuration des cookies pour la production
+      const cookieOptions = {
+        httpOnly: true,
+        secure: true, // Toujours true en production
+        sameSite: 'none' as const, // Important pour cross-domain
+        path: '/',
+        domain: '.onrender.com', // Domaine principal de l'API
+      };
 
-    console.log('Generated tokens:', {
-      access_token_length: access_token.length,
-      refresh_token_length: refresh_token.length,
-    });
+      response.cookie('token', tokens.access_token, {
+        ...cookieOptions,
+        maxAge: 15 * 60 * 1000, // 15 minutes
+      });
 
-    // Configuration des cookies avec un domaine plus permissif
-    const cookieOptions = {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none' as const,
-      path: '/',
-      domain: '.onrender.com', // Domaine parent
-      maxAge: 15 * 60 * 1000, // 15 minutes
-    };
+      response.cookie('refresh_token', tokens.refresh_token, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+      });
 
-    // Définir les cookies avec les nouvelles options
-    response.cookie('vercel_jwt', access_token, cookieOptions);
-    response.cookie('refresh_token', refresh_token, {
-      ...cookieOptions,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
-    });
+      // Log pour déboguer
+      console.log('Setting cookies with options:', cookieOptions);
+      console.log('Response headers:', response.getHeaders());
 
-    // Log pour le débogage
-    console.log('Setting cookies with options:', cookieOptions);
-
-    return {
-      user,
-      message: 'Login successful',
-    };
+      return response.json({
+        message: 'Login successful',
+        user: tokens.user,
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      if (error instanceof UnauthorizedException) {
+        const errorResponse = error.getResponse() as any;
+        return response.status(401).json({
+          statusCode: 401,
+          message: errorResponse.message,
+          type: errorResponse.type,
+        });
+      }
+      throw error;
+    }
   }
 
   @Post('refresh')
