@@ -10,19 +10,31 @@ const api = axios.create({
   },
 });
 
-// Simplifier l'intercepteur pour le débogage
-api.interceptors.request.use((config) => {
-  console.log("Request:", {
-    method: config.method?.toUpperCase(),
+// Intercepteur pour les requêtes
+api.interceptors.request.use(async (config) => {
+  // Log pour le débogage
+  console.log("Request config:", {
     url: config.url,
+    method: config.method,
+    withCredentials: config.withCredentials,
+    headers: config.headers,
   });
   return config;
 });
 
+// Intercepteur pour les réponses
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Log pour le débogage
+    console.log("Response:", {
+      status: response.status,
+      headers: response.headers,
+      cookies: document.cookie,
+    });
+    return response;
+  },
   async (error) => {
-    console.log("Error response:", error.response);
+    console.error("Response error:", error.response);
     return Promise.reject(error);
   }
 );

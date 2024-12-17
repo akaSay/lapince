@@ -57,27 +57,27 @@ export class AuthController {
       refresh_token_length: refresh_token.length,
     });
 
-    // Configuration des cookies sans domain
-    response.cookie('vercel_jwt', access_token, {
+    // Configuration des cookies
+    const cookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',
+      sameSite: 'none' as const,
       path: '/',
       maxAge: 15 * 60 * 1000, // 15 minutes
-    });
+    };
 
+    response.cookie('vercel_jwt', access_token, cookieOptions);
     response.cookie('refresh_token', refresh_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      path: '/',
+      ...cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
     });
 
-    // Ne pas définir manuellement les headers CORS ici
-    // car ils sont gérés par la configuration CORS globale
-
+    // Log des headers et cookies
     console.log('Response headers:', response.getHeaders());
+    console.log('Cookies being set:', {
+      vercel_jwt: access_token.substring(0, 20) + '...',
+      refresh_token: refresh_token.substring(0, 20) + '...',
+    });
 
     return {
       user,
