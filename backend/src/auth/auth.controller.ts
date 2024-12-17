@@ -48,34 +48,30 @@ export class AuthController {
     try {
       const tokens = await this.authService.login(loginDto);
 
-      // Configuration des cookies pour la production
+      // Configuration des cookies pour la production avec Cloudflare
       const cookieOptions = {
         httpOnly: true,
         secure: true,
         sameSite: 'none' as const,
         path: '/',
+        domain: 'lapince-api.onrender.com', // Domaine explicite
       };
 
-      // Utiliser le même nom de cookie que Vercel
+      // Définir les cookies avec les nouvelles options
       response.cookie('vercel_jwt', tokens.access_token, {
         ...cookieOptions,
         maxAge: 15 * 60 * 1000, // 15 minutes
       });
 
-      response.cookie('refresh_token', tokens.refresh_token, {
-        ...cookieOptions,
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
-      });
+      // Log pour débogger
+      console.log('Setting cookies with options:', cookieOptions);
+      console.log('Response headers:', response.getHeaders());
 
-      // Log pour déboguer
-      console.log('Tokens generated:', {
-        access_token: tokens.access_token.substring(0, 20) + '...',
-        refresh_token: tokens.refresh_token.substring(0, 20) + '...',
-      });
-
+      // Ajouter le token dans la réponse pour le débogage
       return response.json({
         message: 'Login successful',
         user: tokens.user,
+        access_token: tokens.access_token, // Temporaire pour le débogage
       });
     } catch (error) {
       console.error('Login error:', error);
@@ -144,8 +140,16 @@ export class AuthController {
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   async getProfile(@Request() req) {
-    console.log('Profile request cookies:', req.cookies);
-    console.log('Profile request headers:', req.headers);
+    // Log détaillé pour le débogage
+    console.log('Profile request received');
+    console.log('Cookies:', req.cookies);
+    console.log('Headers:', req.headers);
+    console.log('Authorization header:', req.headers.authorization);
+
+    if (!req.cookies.vercel_jwt && !req.headers.authorization) {
+      console.log('No token found in cookies or Authorization header');
+    }
+
     return this.authService.getProfile(req.user.userId);
   }
 

@@ -18,29 +18,25 @@ console.log("API Base URL:", BASE_URL);
 // Intercepteur pour les requêtes
 api.interceptors.request.use(
   (config) => {
-    config.withCredentials = true;
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Intercepteur pour les réponses
 api.interceptors.response.use(
-  (response) => {
-    // Log pour le débogage
-    console.log("Response:", {
-      status: response.status,
-      headers: response.headers,
-      cookies: document.cookie,
-    });
+  async (response) => {
+    // Si la réponse contient un access_token, le stocker
+    if (response.data?.access_token) {
+      localStorage.setItem("access_token", response.data.access_token);
+    }
     return response;
   },
-  async (error) => {
-    console.error("Response error:", error.response);
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export default api;
