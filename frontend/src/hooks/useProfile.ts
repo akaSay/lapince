@@ -18,7 +18,7 @@ export const useProfile = () => {
 
     try {
       setLoading(true);
-      const { data } = await api.get("/auth/profile");
+      const { data } = await api.get("/api/auth/profile");
       setProfile(data);
       lastFetch.current = now;
     } catch (err) {
@@ -31,7 +31,7 @@ export const useProfile = () => {
   const updateProfile = async (newData: Partial<User>) => {
     try {
       setLoading(true);
-      const { data } = await api.put("/auth/profile", newData);
+      const { data } = await api.put("/api/auth/profile", newData);
       setProfile(data);
       lastFetch.current = Date.now();
     } catch (err) {
@@ -52,9 +52,7 @@ export const useProfile = () => {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      fetchProfile();
-    }
+    fetchProfile();
   }, []);
 
   return { profile, loading, error, fetchProfile, updateProfile, clearProfile };

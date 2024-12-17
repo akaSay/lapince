@@ -16,7 +16,7 @@ export const useSettings = () => {
     }
 
     try {
-      const response = await api.get("/settings");
+      const response = await api.get("/api/settings");
       setSettings(response.data);
       setError(null);
     } catch (err) {
