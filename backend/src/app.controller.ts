@@ -22,6 +22,14 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Get('health')
+  healthCheck() {
+    return {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+    };
+  }
+
   @Post('app-update')
   @UseGuards(JwtAuthGuard)
   async notifyUpdate(@Request() req, @Body() updateInfo: { version: string }) {

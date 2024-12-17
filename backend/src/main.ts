@@ -12,11 +12,12 @@ async function bootstrap() {
     origin: [
       'https://lapince-git-seo-akasayzy-gmailcoms-projects.vercel.app',
       'https://lapince-liy9xj13t-akasayzy-gmailcoms-projects.vercel.app',
-      // Ajoutez aussi le domaine quand vous visitez le site (si différent)
+      'http://localhost:5173', // Pour le développement local
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    exposedHeaders: ['Set-Cookie'],
   });
 
   app.useGlobalPipes(
