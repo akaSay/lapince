@@ -27,7 +27,7 @@ export const useTransaction = (): UseTransactionReturn => {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/transactions");
+      const response = await api.get("/api/transactions");
       const transactionsData = response.data.data || [];
       setTransactions(transactionsData);
     } catch (error) {
@@ -41,7 +41,7 @@ export const useTransaction = (): UseTransactionReturn => {
   const createTransaction = async (data: Omit<Transaction, "id">) => {
     try {
       setLoading(true);
-      const response = await api.post("/transactions", data);
+      const response = await api.post("/api/transactions", data);
       const newTransaction = response.data;
       await fetchTransactions();
       success("success.transaction.create");
@@ -57,7 +57,7 @@ export const useTransaction = (): UseTransactionReturn => {
   const updateTransaction = async (id: string, data: Partial<Transaction>) => {
     try {
       setLoading(true);
-      const response = await api.put(`/transactions/${id}`, data);
+      const response = await api.put(`/api/transactions/${id}`, data);
       const updatedTransaction = response.data;
       setTransactions((prev) =>
         prev.map((t) => (t.id === id ? updatedTransaction : t))
@@ -75,7 +75,7 @@ export const useTransaction = (): UseTransactionReturn => {
   const deleteTransaction = async (id: string) => {
     try {
       setLoading(true);
-      await api.delete(`/transactions/${id}`);
+      await api.delete(`/api/transactions/${id}`);
       setTransactions((prev) => prev.filter((t) => t.id !== id));
       success("success.transaction.delete");
     } catch (error) {

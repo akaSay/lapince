@@ -38,6 +38,7 @@ export const useAuth = () => {
 
   const initAuth = async () => {
     try {
+      await api.get("/api/auth/profile");
       await fetchProfile();
       return true;
     } catch (error) {

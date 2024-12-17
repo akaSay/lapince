@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { Notification } from "../types/Notification";
-import api from "../lib/api";
+import { useEffect, useState } from "react";
 import { useToast } from "../hooks/useToast";
+import api from "../lib/api";
+import { Notification } from "../types/Notification";
 
 export const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -12,7 +12,7 @@ export const useNotifications = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/notifications");
+      const response = await api.get("/api/notifications");
       const notifs = response.data;
       setNotifications(notifs);
       setUnreadCount(notifs.filter((n: Notification) => !n.isRead).length);
@@ -25,7 +25,7 @@ export const useNotifications = () => {
 
   const markAsRead = async (id: string) => {
     try {
-      await api.put(`/notifications/${id}/read`);
+      await api.put(`/api/notifications/${id}/read`);
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
       );
@@ -37,7 +37,7 @@ export const useNotifications = () => {
 
   const markAllAsRead = async () => {
     try {
-      await api.put("/notifications/read-all");
+      await api.put("/api/notifications/read-all");
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0);
     } catch (err) {
@@ -47,7 +47,7 @@ export const useNotifications = () => {
 
   const deleteNotification = async (id: string) => {
     try {
-      await api.delete(`/notifications/${id}`);
+      await api.delete(`/api/notifications/${id}`);
       setNotifications((prev) => {
         const filtered = prev.filter((n) => n.id !== id);
         setUnreadCount(filtered.filter((n) => !n.isRead).length);
