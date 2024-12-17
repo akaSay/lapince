@@ -12,6 +12,7 @@ async function bootstrap() {
     origin: [
       'https://lapince-git-seo-akasayzy-gmailcoms-projects.vercel.app',
       'https://lapince-liy9xj13t-akasayzy-gmailcoms-projects.vercel.app',
+      'https://lapince-pubr1h9qh-akasayzy-gmailcoms-projects.vercel.app',
       'http://localhost:5173',
     ],
     credentials: true,
