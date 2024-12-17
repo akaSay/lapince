@@ -21,6 +21,26 @@ const onRefreshed = (token: string) => {
   refreshSubscribers = [];
 };
 
+api.interceptors.request.use((request) => {
+  console.log("Sending request to:", request.url);
+  return request;
+});
+
+api.interceptors.response.use(
+  (response) => {
+    console.log("Response:", response.status, response.data);
+    return response;
+  },
+  (error) => {
+    console.error("API Error:", {
+      status: error.response?.status,
+      data: error.response?.data,
+      url: error.config?.url,
+    });
+    return Promise.reject(error);
+  }
+);
+
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {

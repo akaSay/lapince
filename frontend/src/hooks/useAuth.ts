@@ -51,7 +51,7 @@ export const useAuth = () => {
       setLoading(true);
       setError(null);
 
-      await api.post<AuthResponse>("/auth/login", credentials);
+      await api.post<AuthResponse>("/api/auth/login", credentials);
       await fetchProfile();
       navigate("/dashboard", { replace: true });
     } catch (err) {
