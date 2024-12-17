@@ -51,13 +51,13 @@ export class AuthController {
       // Configuration des cookies pour la production
       const cookieOptions = {
         httpOnly: true,
-        secure: true, // Toujours true en production
-        sameSite: 'none' as const, // Important pour cross-domain
+        secure: true,
+        sameSite: 'none' as const,
         path: '/',
-        domain: '.onrender.com', // Domaine principal de l'API
       };
 
-      response.cookie('token', tokens.access_token, {
+      // Utiliser le même nom de cookie que Vercel
+      response.cookie('vercel_jwt', tokens.access_token, {
         ...cookieOptions,
         maxAge: 15 * 60 * 1000, // 15 minutes
       });
@@ -68,8 +68,10 @@ export class AuthController {
       });
 
       // Log pour déboguer
-      console.log('Setting cookies with options:', cookieOptions);
-      console.log('Response headers:', response.getHeaders());
+      console.log('Tokens generated:', {
+        access_token: tokens.access_token.substring(0, 20) + '...',
+        refresh_token: tokens.refresh_token.substring(0, 20) + '...',
+      });
 
       return response.json({
         message: 'Login successful',
@@ -144,7 +146,7 @@ export class AuthController {
   async getProfile(@Request() req) {
     console.log('Profile request cookies:', req.cookies);
     console.log('Profile request headers:', req.headers);
-    return req.user;
+    return this.authService.getProfile(req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
