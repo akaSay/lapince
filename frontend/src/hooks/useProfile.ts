@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import api from "../lib/api";
 import { User } from "../types/User";
 
@@ -23,6 +23,7 @@ export const useProfile = () => {
       lastFetch.current = now;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue");
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -50,10 +51,6 @@ export const useProfile = () => {
     setProfile(null);
     lastFetch.current = 0;
   };
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
 
   return { profile, loading, error, fetchProfile, updateProfile, clearProfile };
 };

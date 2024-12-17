@@ -29,6 +29,12 @@ export const useAuth = () => {
 
   const isAuthenticated = async () => {
     try {
+      if (
+        window.location.pathname === "/" ||
+        window.location.pathname === "/login"
+      ) {
+        return false;
+      }
       await api.get("/api/auth/profile");
       return true;
     } catch {
@@ -38,6 +44,12 @@ export const useAuth = () => {
 
   const initAuth = async () => {
     try {
+      if (
+        window.location.pathname === "/" ||
+        window.location.pathname === "/login"
+      ) {
+        return false;
+      }
       await api.get("/api/auth/profile");
       await fetchProfile();
       return true;
