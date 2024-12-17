@@ -28,11 +28,12 @@ export class AuthController {
   ) {
     const result = await this.authService.register(registerDto);
 
-    // Configurer les cookies après l'inscription
-    response.cookie('token', result.access_token, {
+    // Utiliser le même nom de cookie que pour le login
+    response.cookie('vercel_jwt', result.access_token, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      path: '/',
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 

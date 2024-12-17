@@ -8,19 +8,20 @@ const api = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
+  xsrfCookieName: "vercel_jwt",
+  xsrfHeaderName: "X-XSRF-TOKEN",
 });
 
 // Intercepteur pour les requêtes
-api.interceptors.request.use(async (config) => {
-  // Log pour le débogage
-  console.log("Request config:", {
-    url: config.url,
-    method: config.method,
-    withCredentials: config.withCredentials,
-    headers: config.headers,
-  });
-  return config;
-});
+api.interceptors.request.use(
+  (config) => {
+    config.withCredentials = true;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // Intercepteur pour les réponses
 api.interceptors.response.use(
