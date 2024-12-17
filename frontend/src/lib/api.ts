@@ -13,16 +13,6 @@ const api = axios.create({
   },
 });
 
-// Add token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  console.log("Sending request to:", config.url);
-  return config;
-});
-
 // Handle responses and errors
 api.interceptors.response.use(
   (response) => {
@@ -45,13 +35,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       originalRequest._retry = true;
       try {
-        const response = await api.post("/api/auth/refresh");
-        const { accessToken } = response.data;
-        localStorage.setItem("accessToken", accessToken);
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        await api.post("/api/auth/refresh");
         return api(originalRequest);
       } catch (refreshError) {
-        localStorage.removeItem("accessToken");
         window.dispatchEvent(new CustomEvent("auth:expired"));
         return Promise.reject(refreshError);
       }
