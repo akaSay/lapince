@@ -57,7 +57,7 @@ export class AuthController {
       refresh_token_length: refresh_token.length,
     });
 
-    // Configuration plus permissive des cookies
+    // Configuration des cookies sans domain
     response.cookie('vercel_jwt', access_token, {
       httpOnly: true,
       secure: true,
@@ -74,13 +74,8 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
     });
 
-    // Ajout des headers CORS spécifiques
-    response.header('Access-Control-Allow-Credentials', 'true');
-    response.header(
-      'Access-Control-Allow-Origin',
-      'https://lapince-git-seo-akasayzy-gmailcoms-projects.vercel.app',
-    );
-    response.header('Access-Control-Expose-Headers', 'Set-Cookie');
+    // Ne pas définir manuellement les headers CORS ici
+    // car ils sont gérés par la configuration CORS globale
 
     console.log('Response headers:', response.getHeaders());
 
