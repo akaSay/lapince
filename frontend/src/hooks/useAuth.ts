@@ -52,9 +52,17 @@ export const useAuth = () => {
       setLoading(true);
       setError(null);
 
-      await api.post<AuthResponse>("/api/auth/login", credentials);
-      await fetchProfile();
-      navigate("/dashboard", { replace: true });
+      const response = await api.post<AuthResponse>(
+        "/api/auth/login",
+        credentials
+      );
+
+      if (response.status === 201) {
+        await fetchProfile();
+        navigate("/dashboard", { replace: true });
+      } else {
+        setError("Une erreur est survenue lors de la connexion");
+      }
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const errorData = err.response?.data;

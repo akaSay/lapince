@@ -10,13 +10,30 @@ const api = axios.create({
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
+    Accept: "application/json",
   },
+  xsrfCookieName: "XSRF-TOKEN",
+  xsrfHeaderName: "X-XSRF-TOKEN",
+});
+
+// Log requests
+api.interceptors.request.use((config) => {
+  console.log("Request:", {
+    method: config.method?.toUpperCase(),
+    url: config.url,
+    withCredentials: config.withCredentials,
+  });
+  return config;
 });
 
 // Handle responses and errors
 api.interceptors.response.use(
   (response) => {
-    console.log("Response:", response.status, response.data);
+    console.log("Response:", {
+      status: response.status,
+      data: response.data,
+      headers: response.headers,
+    });
     return response;
   },
   async (error: AxiosError) => {
