@@ -9,10 +9,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          // Extraire le token du cookie
-          const token = request?.cookies?.vercel_jwt;
+          const token =
+            request?.cookies?.vercel_jwt ||
+            request?.headers?.authorization?.replace('Bearer ', '');
+
           if (!token) {
-            throw new UnauthorizedException('No token found');
+            return null; // Retourner null au lieu de throw
           }
           return token;
         },
@@ -23,8 +25,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    // Log pour le débogage
-    console.log('JWT Payload:', payload);
+    if (!payload) {
+      throw new UnauthorizedException('Invalid token payload');
+    }
 
     return { userId: payload.sub, email: payload.email };
   }
