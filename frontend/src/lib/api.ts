@@ -46,14 +46,14 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config;
 
-    if (originalRequest?.url === "/auth/login") {
+    if (originalRequest?.url === "/api/auth/login") {
       return Promise.reject(error);
     }
 
     if (
       !error.response ||
       error.response.status !== 401 ||
-      originalRequest?.url === "/auth/refresh" ||
+      originalRequest?.url === "/api/auth/refresh" ||
       !originalRequest
     ) {
       return Promise.reject(error);
@@ -63,7 +63,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await api.post("/auth/refresh");
+        const { data } = await api.post("/api/auth/refresh");
         isRefreshing = false;
         onRefreshed(data.access_token);
         return api(originalRequest);
