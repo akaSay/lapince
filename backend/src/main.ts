@@ -9,12 +9,11 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: true,
+    origin: 'https://lapince-git-seo-akasayzy-gmailcoms-projects.vercel.app',
     credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'Origin'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'Cookie'],
+    exposedHeaders: ['Set-Cookie'],
   });
 
   app.useGlobalPipes(

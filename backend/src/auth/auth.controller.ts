@@ -57,13 +57,12 @@ export class AuthController {
       refresh_token_length: refresh_token.length,
     });
 
-    // Mise à jour des noms de cookies pour correspondre exactement
+    // Configuration plus permissive des cookies
     response.cookie('vercel_jwt', access_token, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
       path: '/',
-      domain: '.onrender.com', // Ajout du domaine
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
@@ -72,11 +71,18 @@ export class AuthController {
       secure: true,
       sameSite: 'none',
       path: '/',
-      domain: '.onrender.com', // Ajout du domaine
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
     });
 
-    console.log('Cookies set in response');
+    // Ajout des headers CORS spécifiques
+    response.header('Access-Control-Allow-Credentials', 'true');
+    response.header(
+      'Access-Control-Allow-Origin',
+      'https://lapince-git-seo-akasayzy-gmailcoms-projects.vercel.app',
+    );
+    response.header('Access-Control-Expose-Headers', 'Set-Cookie');
+
+    console.log('Response headers:', response.getHeaders());
 
     return {
       user,
