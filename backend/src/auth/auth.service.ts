@@ -56,6 +56,12 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: loginDto.email },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        password: true,
+      },
     });
 
     if (!user) {
@@ -79,7 +85,12 @@ export class AuthService {
       throw error;
     }
 
-    return this.generateTokens(user.id, user.email);
+    const tokens = await this.generateTokens(user.id, user.email);
+
+    return {
+      ...tokens,
+      user,
+    };
   }
 
   async getProfile(userId: string) {

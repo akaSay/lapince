@@ -22,41 +22,44 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
+  async register(
+    @Body() registerDto: RegisterDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result = await this.authService.register(registerDto);
+
+    // Configurer les cookies après l'inscription
+    response.cookie('token', result.access_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    return {
+      user: result.user,
+      message: 'Registration successful',
+    };
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto, @Res() response: Response) {
-    try {
-      const tokens = await this.authService.login(loginDto);
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result = await this.authService.login(loginDto);
 
-      response.cookie('token', tokens.access_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 15 * 60 * 1000,
-      });
+    // Configurer les cookies après la connexion
+    response.cookie('token', result.access_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 15 * 60 * 1000,
+    });
 
-      response.cookie('refresh_token', tokens.refresh_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
-
-      return response.json({ message: 'Login successful' });
-    } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        const errorResponse = error.getResponse() as any;
-        return response.status(401).json({
-          statusCode: 401,
-          message: errorResponse.message,
-          type: errorResponse.type,
-        });
-      }
-      throw error;
-    }
+    return {
+      user: result.user,
+    };
   }
 
   @Post('refresh')
@@ -78,15 +81,15 @@ export class AuthController {
     // Mettre à jour les cookies
     response.cookie('token', tokens.access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       maxAge: 15 * 60 * 1000,
     });
 
     response.cookie('refresh_token', tokens.refresh_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
