@@ -1,8 +1,8 @@
 import {
   BarElement,
   CategoryScale,
-  Chart as ChartJS,
   ChartData,
+  Chart as ChartJS,
   ChartOptions,
   Legend,
   LinearScale,
@@ -11,7 +11,6 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
-import React from "react";
 import { Chart } from "react-chartjs-2";
 import { useTranslation } from "react-i18next";
 

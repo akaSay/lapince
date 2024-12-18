@@ -1,3 +1,4 @@
+import { Chart as ChartJS, registerables } from "chart.js";
 import { Suspense, lazy } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -22,6 +23,9 @@ const Settings = lazy(() => import("./pages/Settings"));
 const Transactions = lazy(() => import("./pages/Transactions"));
 const Reports = lazy(() => import("./pages/Reports"));
 const Profile = lazy(() => import("./pages/Profile"));
+
+// Enregistrer les contrôleurs Chart.js
+ChartJS.register(...registerables);
 
 export const App = () => {
   return (
