@@ -1,4 +1,3 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
 import ExpenseChart from "../components/dashboard/ExpenseChart";
@@ -12,26 +11,27 @@ import { getMonthlyData } from "../lib/chartUtils";
 import { isDateInRange } from "../lib/dateUtils";
 import { formatCurrency } from "../lib/utils";
 
-const Reports: React.FC = () => {
+export const Reports = () => {
   const { t } = useTranslation();
   const { filters } = useFilters();
-  const { transactions } = useTransaction();
-  const { budgets } = useBudget();
+  const { transactions = [] } = useTransaction();
+  const { budgets = [] } = useBudget();
 
-  const filteredTransactions = transactions.filter((transaction) => {
-    if (!isDateInRange(transaction.date, filters.dateRange)) {
-      return false;
-    }
+  const filteredTransactions =
+    transactions?.filter((transaction) => {
+      if (!transaction || !isDateInRange(transaction.date, filters.dateRange)) {
+        return false;
+      }
 
-    if (
-      filters.category &&
-      transaction.category.toLowerCase() !== filters.category.toLowerCase()
-    ) {
-      return false;
-    }
+      if (
+        filters.category &&
+        transaction.category?.toLowerCase() !== filters.category.toLowerCase()
+      ) {
+        return false;
+      }
 
-    return true;
-  });
+      return true;
+    }) ?? [];
 
   const hasDataForPeriod =
     filteredTransactions.length > 0 || !filters.dateRange;
@@ -68,8 +68,8 @@ const Reports: React.FC = () => {
   // Données pour le graphique
   const expenseData = hasDataForPeriod
     ? Object.entries(
-        filteredTransactions
-          .filter((t) => t.type === "expense")
+        (filteredTransactions ?? [])
+          .filter((t) => t?.type === "expense")
           .reduce((acc, transaction) => {
             const category = transaction.category;
             acc[category] = (acc[category] || 0) + transaction.amount;
