@@ -88,15 +88,35 @@ const Dashboard: React.FC = () => {
   }, [currentMonth]);
 
   const filteredTransactions = transactions.filter((transaction) => {
+    // Filtre par date
     if (!isDateInRange(transaction.date, filters.dateRange)) {
       return false;
     }
+
+    // Filtre par catégorie
     if (
       filters.category &&
       transaction.category.toLowerCase() !== filters.category.toLowerCase()
     ) {
       return false;
     }
+
+    // Filtre par statut
+    if (filters.status) {
+      const amount = transaction.amount;
+      switch (filters.status) {
+        case "ajour":
+          if (amount >= 500) return false;
+          break;
+        case "attention":
+          if (amount < 500 || amount >= 1000) return false;
+          break;
+        case "depasse":
+          if (amount < 1000) return false;
+          break;
+      }
+    }
+
     return true;
   });
 

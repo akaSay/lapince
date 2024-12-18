@@ -7,12 +7,12 @@ import TransactionModal from "../components/modals/TransactionModal";
 import StatisticsSkeleton from "../components/skeletons/StatisticsSkeleton";
 import TransactionSkeleton from "../components/skeletons/TransactionSkeleton";
 import { useFilters } from "../contexts/FilterContext";
-import { useTransaction } from "../hooks/useTransaction";
 import { useBudget } from "../hooks/useBudget";
+import { useStatistics } from "../hooks/useStatistics";
+import { useTransaction } from "../hooks/useTransaction";
 import { isDateInRange } from "../lib/dateUtils";
 import { formatCurrency } from "../lib/utils";
 import { Transaction } from "../types/Transaction";
-import { useStatistics } from "../hooks/useStatistics";
 
 const Transactions: React.FC = () => {
   const { t } = useTranslation();
@@ -144,19 +144,10 @@ const Transactions: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center">
         <h1 className="text-2xl font-bold text-white">
           {t("transactions.title")}
         </h1>
-        <button
-          onClick={() => {
-            setSelectedTransaction(undefined);
-            setIsModalOpen(true);
-          }}
-          className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
-        >
-          {t("transactions.new")}
-        </button>
       </div>
 
       <DashboardFilters />
