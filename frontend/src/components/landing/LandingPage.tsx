@@ -199,6 +199,7 @@ export const LandingPage = () => {
                         preload="metadata"
                       >
                         <source src="/Demo.mov" type="video/quicktime" />
+                        <source src="/Demo.mp4" type="video/mp4" />
                         Votre navigateur ne supporte pas la lecture de vidéos.
                       </video>
                     </div>
