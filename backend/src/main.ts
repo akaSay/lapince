@@ -1,5 +1,4 @@
 import { NestFactory } from '@nestjs/core';
-import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -7,7 +6,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  // Configuration CORS plus permissive
+  // Configuration CORS simplifiée sans credentials
   app.enableCors({
     origin: [
       'http://localhost:5173',
@@ -15,13 +14,10 @@ async function bootstrap() {
       'https://lapince.vercel.app',
       'https://lapince-git-seo-akasayzy-gmailcoms-projects.vercel.app',
     ],
-    credentials: true,
+    credentials: false,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
-
-  // Configuration du cookie parser
-  app.use(cookieParser());
 
   await app.listen(process.env.PORT || 3000);
 }

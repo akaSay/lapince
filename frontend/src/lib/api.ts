@@ -6,14 +6,11 @@ const BASE_URL = import.meta.env.PROD
 
 const api = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,
+  withCredentials: false,
   headers: {
     "Content-Type": "application/json",
   },
 });
-
-// Log pour déboguer
-console.log("API Base URL:", BASE_URL);
 
 // Intercepteur pour les requêtes
 api.interceptors.request.use(
@@ -30,9 +27,11 @@ api.interceptors.request.use(
 // Intercepteur pour les réponses
 api.interceptors.response.use(
   async (response) => {
-    // Si la réponse contient un access_token, le stocker
     if (response.data?.access_token) {
       localStorage.setItem("access_token", response.data.access_token);
+    }
+    if (response.data?.refresh_token) {
+      localStorage.setItem("refresh_token", response.data.refresh_token);
     }
     return response;
   },
