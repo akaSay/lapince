@@ -80,7 +80,7 @@ const DashboardFilters: React.FC = () => {
   };
 
   return (
-    <div className="grid w-full grid-cols-3 gap-2">
+    <div className="grid w-full grid-cols-3 gap-2 mt-16 p-4">
       <select
         name="dateRange"
         value={filters?.dateRange || ""}
