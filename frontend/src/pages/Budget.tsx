@@ -188,19 +188,6 @@ const Budget: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">{t("budget.title")}</h1>
-        <button
-          onClick={() => {
-            setSelectedBudget(undefined);
-            setIsModalOpen(true);
-          }}
-          className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
-        >
-          {t("budget.new")}
-        </button>
-      </div>
-
       <DashboardFilters />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">

@@ -330,21 +330,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">
-          {t("dashboard.title")}
-        </h1>
-        <button
-          onClick={() => {
-            setSelectedTransaction(undefined);
-            setIsTransactionModalOpen(true);
-          }}
-          className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
-        >
-          {t("dashboard.newTransaction")}
-        </button>
-      </div>
-
       <DashboardFilters />
 
       <DashboardStats
